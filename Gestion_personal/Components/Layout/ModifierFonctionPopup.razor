@@ -1,0 +1,186 @@
+﻿@using GestionPersonnel.Models.Fonctions
+@using GestionPersonnel.Services
+@inject IFonctionService FonctionService
+
+<div class="custom-popup-overlay" style="display:@(IsVisible ? "flex" : "none")">
+    <div class="custom-popup-content">
+        <!-- Main Content -->
+        <h3>Modifier Fonction</h3>
+
+        <!-- Select Fonction Dropdown -->
+        <div class="form-group">
+            <label for="fonctionSelect">Select Fonction</label>
+            <select id="fonctionSelect" class="form-control" @bind="selectedFonctionId">
+                <option value="">-- Select Fonction --</option>
+                @foreach (var fonction in fonctions)
+                {
+                    <option value="@fonction.FonctionID">@fonction.NomFonction</option>
+                }
+            </select>
+        </div>
+
+        <!-- New Fonction Name Input -->
+        <div class="form-group">
+            <label for="newFonctionName">New Fonction Name</label>
+            <input type="text" class="form-control" id="newFonctionName" @bind="newFonctionName" />
+        </div>
+
+        <!-- Save or Cancel Buttons -->
+        <div class="form-actions">
+            <button class="btn btn-primary" @onclick="SaveFonction" disabled="@(string.IsNullOrEmpty(newFonctionName) || selectedFonctionId == 0)">Save</button>
+            <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+        </div>
+
+        <hr />
+
+        @if (selectedFonctionId > 0)
+        {
+            <div class="form-group">
+                <label>Are you sure you want to delete this fonction?</label>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-danger" @onclick="DeleteFonction">Delete</button>
+            </div>
+        }
+    </div>
+</div>
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<Fonction> OnSave { get; set; }
+
+    private List<Fonction> fonctions = new List<Fonction>();
+    private int selectedFonctionId;
+    private string newFonctionName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFonctions();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+       
+        if (IsVisible)
+        {
+            await LoadFonctions();
+        }
+    }
+
+    private async Task LoadFonctions()
+    {
+        try
+        {
+            fonctions = await FonctionService.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error loading fonctions: " + ex.Message);
+        }
+    }
+
+    private async Task SaveFonction()
+    {
+        if (selectedFonctionId > 0 && !string.IsNullOrEmpty(newFonctionName))
+        {
+            var fonctionToUpdate = fonctions.FirstOrDefault(f => f.FonctionID == selectedFonctionId);
+            if (fonctionToUpdate != null)
+            {
+                fonctionToUpdate.NomFonction = newFonctionName;
+
+                try
+                {
+                    await FonctionService.UpdateAsync(fonctionToUpdate);
+                    await OnSave.InvokeAsync(fonctionToUpdate);
+                    await OnClose.InvokeAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error updating fonction: " + ex.Message);
+                }
+            }
+        }
+    }
+
+    private async Task DeleteFonction()
+    {
+        if (selectedFonctionId > 0)
+        {
+            var fonctionToDelete = fonctions.FirstOrDefault(f => f.FonctionID == selectedFonctionId);
+            if (fonctionToDelete != null)
+            {
+                try
+                {
+                    await FonctionService.DeleteAsync(fonctionToDelete.FonctionID);
+                    selectedFonctionId = 0;
+                    await OnClose.InvokeAsync();
+                    await LoadFonctions();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error deleting fonction: " + ex.Message);
+                }
+            }
+        }
+    }
+
+    private async Task Cancel()
+    {
+        selectedFonctionId = 0;
+        newFonctionName = string.Empty;
+        await OnClose.InvokeAsync();
+    }
+
+    public async Task RefreshFonctions(Fonction newFonction)
+    {
+        await LoadFonctions();
+        selectedFonctionId = newFonction.FonctionID;
+    }
+}
+
+
+<style>
+    .custom-popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .custom-popup-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        width: 80%;
+        max-width: 500px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+    }
+
+    hr {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+</style>

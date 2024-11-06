@@ -15,58 +15,37 @@
 
     protected override async Task OnInitializedAsync()
     {
-        
-      
-    }
-    protected override async Task OnParametersSetAsync()
-    {
-       
-        if (IsVisible)
-        {
-            fonctions = await FonctionService.GetAllAsync();
-        }
+        fonctions = await FonctionService.GetAllAsync();
+        Employee.DateDeNaissance = DateTime.Today;
+        Employee.DateEntree = DateTime.Today;
     }
 
     private string DisplayStyle => IsVisible ? "display: flex;" : "display: none;";
-    private void ResetForm()
-{
-    Employee = new Employe();
-      Employee.DateDeNaissance = DateTime.Today;
-        Employee.DateEntree = DateTime.Today;
-   
-    Employee.Photo = System.IO.File.ReadAllBytes("wwwroot/images/default-employee.png");
-}
+    private void Hide() => OnClose.InvokeAsync();
 
-   private void Hide()
-{  
-    ResetForm(); 
-    OnClose.InvokeAsync();
-     Employee.DateDeNaissance = DateTime.Today;
-        Employee.DateEntree = DateTime.Today;
-}
-
- private async Task HandleSubmit()
+    private async Task HandleSubmit()
 {
     if (isSubmitting) return;
 
     isSubmitting = true;
     errorMessage = null;
 
-    
+    // Ensure a photo is provided, or use default
     if (Employee.Photo == null || Employee.Photo.Length == 0)
     {
+        // If no photo is selected, set a default photo
         var defaultPhoto = System.IO.File.ReadAllBytes("wwwroot/images/default-employee.png");
         Employee.Photo = defaultPhoto;
     }
 
-   
+    // Validation
     if (string.IsNullOrWhiteSpace(Employee.Nom) ||
         string.IsNullOrWhiteSpace(Employee.Prenom) ||
         Employee.DateDeNaissance == default ||
         Employee.DateEntree == default)
     {
-        errorMessage = "Veuillez remplir tous les champs obligatoires.";
-        isSubmitting = false; 
+        errorMessage = "Please fill in all required fields.";
+        isSubmitting = false; // Reset submission flag on validation failure
         return;
     }
 
@@ -75,7 +54,7 @@
         Employee.DateEntree < new DateTime(1753, 1, 1) ||
         Employee.DateEntree > new DateTime(9999, 12, 31))
     {
-        errorMessage = "Veuillez remplir tous les champs obligatoires.";
+        errorMessage = "Dates must be between 01/01/1753 and 12/31/9999.";
         isSubmitting = false;
         return;
     }
@@ -83,7 +62,7 @@
     try
     {
         await OnSave.InvokeAsync(Employee);
-        Hide(); 
+        Hide();
     }
     catch (Exception ex)
     {
@@ -95,7 +74,6 @@
         isSubmitting = false;
     }
 }
-
 
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)

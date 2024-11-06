@@ -1,7 +1,11 @@
 ﻿@page "/employe"
 @using GestionPersonnel.Models.Employe
+@using GestionPersonnel.Models.Fonctions
+@using GestionPersonnel.Services
 @inject IEmployeService EmployeService
+@inject IFonctionService FonctionService
 @rendermode InteractiveServer
+
 <div class="panel-employe">
     <div class="option-employe">
         <div class="input-group w-25">
@@ -11,8 +15,8 @@
             </button>
         </div>
         <div class="btn-employe">
-            <button>Modifier Fonction</button>
-            <button>Ajouter Fonction</button>
+            <button @onclick="ShowModifyFonctionPopup" class="btn btn-warning">Modifier Fonction</button>
+            <button @onclick="ShowFonctionPopup">Ajouter Fonction</button>
             <button class="btn btn-primary" @onclick="ShowPopup">Ajouter Employe</button>
         </div>
     </div>
@@ -55,7 +59,7 @@
                                 <button class="btn btn-primary">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
-                                <button class="btn btn-danger">
+                                <button class="btn btn-danger" @onclick="() => DeleteEmployee(employee.EmployeID)">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </td>
@@ -65,13 +69,19 @@
             </tbody>
         </table>
     </div>
-    <!-- hna dir call ll componet a raki ou dirlo visible default False -->
+
     <NewEmployeePopup IsVisible="@isPopupVisible" OnClose="@HidePopup" OnSave="@HandleSave" />
+    <AddFonctionPopup IsVisible="@isFonctionPopupVisible" OnClose="@HideFonctionPopup" OnSave="@HandleFonctionSave" />
+    <ModifierFonctionPopup @ref="modifierPopupRef" IsVisible="@isModifyFonctionPopupVisible" OnClose="@HideModifyFonctionPopup" OnSave="@HandleModifyFonctionSave" />
 </div>
 
 @code {
+    private ModifierFonctionPopup modifierPopupRef;
     private List<GestionPersonnel.Models.Employe.Employe> employees;
+    private List<Fonction> fonctions = new List<Fonction>();
     private bool isPopupVisible = false;
+    private bool isFonctionPopupVisible = false;
+    private bool isModifyFonctionPopupVisible = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -90,20 +100,59 @@
         }
     }
 
-    private void ShowPopup()
+    private async Task LoadFonction()
     {
-        isPopupVisible = true;
+        try
+        {
+            fonctions = await FonctionService.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Fonctions not loaded: " + ex.Message);
+        }
     }
 
-    private void HidePopup()
-    {
-        isPopupVisible = false;
-    }
+    private void ShowPopup() => isPopupVisible = true;
+    private void HidePopup() => isPopupVisible = false;
+    private void ShowFonctionPopup() => isFonctionPopupVisible = true;
+    private void HideFonctionPopup() => isFonctionPopupVisible = false;
+    private void ShowModifyFonctionPopup() => isModifyFonctionPopupVisible = true;
+    private void HideModifyFonctionPopup() => isModifyFonctionPopupVisible = false;
 
     private async Task HandleSave(GestionPersonnel.Models.Employe.Employe newEmployee)
     {
         await EmployeService.AddEmployeAsync(newEmployee);
-        await LoadEmployees(); 
-        HidePopup(); 
+        await LoadEmployees();
+        HidePopup();
+    }
+
+    private async Task HandleFonctionSave()
+    {
+        HideFonctionPopup();
+        await LoadFonction();
+    }
+
+    private async Task DeleteEmployee(int employeID)
+    {
+        try
+        {
+            await EmployeService.DeleteEmployeAsync(employeID);
+            await LoadEmployees();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting employee: {ex.Message}");
+        }
+    }
+
+    private async Task HandleModifyFonctionSave(Fonction newFonction)
+    {
+        await LoadFonction();
+        if (modifierPopupRef != null)
+        {
+            await modifierPopupRef.RefreshFonctions(newFonction);
+        }
+        await LoadFonction();
+        await LoadEmployees();
     }
 }
