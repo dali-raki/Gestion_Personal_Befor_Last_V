@@ -1,32 +1,30 @@
 ﻿@page "/pointage"
+@using ModelsPointage = GestionPersonnel.Models.Pointage
+@using GestionPersonnel.Models.Employe
+@using GestionPersonnel.Services
+@inject IPointageService PointageService
 @rendermode InteractiveServer
 
-
 <div class="panel-employe">
-
-
-    <div class="option-employe">
-
-
-        <div class="input-group w-25">
-            <input type="text" class="form-control" placeholder="Search" aria-label="Recipient's username" aria-describedby="button-addon2">
-            <button class="btn btn-outline-secondary" type="button" id="button-addon2"><i class="fa-solid fa-magnifying-glass"></i></button>
-            
+    <div class="option-employe d-flex align-items-center mb-3">
+        <!-- Search Input with Icon -->
+        <div class="input-group me-3 search-input-group">
+            <input type="text" class="form-control form-control-sm" width="10" placeholder="Search" @bind="searchQuery" aria-label="Search" />
+            <button class="btn btn-outline-secondary btn-sm" type="button" @onclick="OnSearch">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
         </div>
 
-   
-        <div class="btn-employe" id="option-pointage">
-
-            <input type="date" class="date-input" />
-
+        <!-- Date Input for Filtering and Get Button -->
+        <div class="input-group d-flex align-items-center date-input-group">
+            <input type="date" class="form-control form-control-sm" width="10" @bind="selectedDate" />
+            <button class="btn btn-primary btn-sm ms-2" width="10" @onclick="GetPointageByDate">Get</button>
         </div>
-
     </div>
 
-
+    <!-- Table to Display Pointage Data -->
     <div class="tab-employe">
-
-        <table class="table">
+        <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>N</th>
@@ -38,40 +36,193 @@
                     <th>Pourcentage</th>
                     <th>Remarque</th>
                     <th>Option</th>
-
-
                 </tr>
             </thead>
             <tbody>
-
-                <tr>
-                    <td>N</td>
-                    <td>Nom</td>
-                    <td>Prenom</td>
-                    <td>Fonction</td>
-                    <td>Status</td>
-                    <td>Heur</td>
-                    <td>Pourcentage</td>
-                    <td>Remarque</td>
-                    <td>
-                        <button class="btn btn-primary">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </button>
-
-                    </td>
-
-
-
-
-
-                </tr>
-
+                @if (pointages != null && pointages.Any())
+                {
+                    @foreach (var pointage in pointages)
+                    {
+                        <tr>
+                            <td>@pointage.PointageID</td>
+                            <td>@pointage.NomEmploye</td>
+                            <td>@pointage.PrenomEmploye</td>
+                            <td>@pointage.NomFonction</td>
+                            <td>@pointage.Stat</td>
+                            <td>@pointage.HeuresTravaillees</td>
+                            <td>@pointage.Persontage</td>
+                            <td>@pointage.Remarque</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" @onclick="() => ShowModal(pointage)">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" class="text-center">No found Pointage</td>
+                    </tr>
+                }
             </tbody>
-
         </table>
-
-
     </div>
-
-
 </div>
+
+<NewPointagePopUp IsVisible="@isEditPopupVisible"
+                  OnClose="HideModal"
+                  Pointage="selectedPointage" />
+
+
+@code {
+    private string searchQuery = string.Empty;
+    private DateTime? selectedDate;
+    private List<ModelsPointage.Pointage> pointages;
+    private bool isEditPopupVisible = false;
+    private ModelsPointage.Pointage selectedPointage;
+
+    private void ShowModal(ModelsPointage.Pointage pointage)
+    {
+        if (pointage != null)
+        {
+            selectedPointage = pointage;
+            isEditPopupVisible = true;
+        }
+    }
+
+
+    private void HideModal()
+    {
+        isEditPopupVisible = false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        pointages = await PointageService.GetAll();
+    }
+
+    private async Task GetPointageByDate()
+    {
+        if (selectedDate.HasValue)
+        {
+            pointages = await PointageService.GetByDate(selectedDate.Value);
+        }
+        else
+        {
+            pointages = await PointageService.GetAll();
+        }
+    }
+
+    private void OnSearch()
+    {
+        if (!string.IsNullOrWhiteSpace(searchQuery))
+        {
+            pointages = pointages.Where(p =>
+                p.NomEmploye.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                p.PrenomEmploye.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                p.NomFonction.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            ).ToList();
+        }
+    }
+}
+
+
+<style>
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .panel-employe {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .option-employe {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 20px;
+    }
+
+    /* Smaller input fields */
+    .search-input-group input,
+    .date-input-group input {
+        width: 150px;
+        height: 30px;
+        font-size: 14px;
+    }
+
+    .search-input-group .btn,
+    .date-input-group .btn {
+        height: 30px;
+        padding: 0 8px;
+        font-size: 14px;
+    }
+
+    .tab-employe {
+        overflow-x: auto;
+    }
+
+    .table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+    }
+
+    .table-bordered {
+        border: 1px solid #dee2e6;
+    }
+
+    .table th,
+    .table td {
+        padding: 12px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .table th {
+        background-color: #007bff;
+        color: #fff;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .table tbody tr {
+        transition: background-color 0.2s ease-in-out;
+    }
+
+        .table tbody tr:hover {
+            background-color: #f1f3f5;
+        }
+
+    .table td {
+        border: 1px solid #dee2e6;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        color: #fff;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+    .btn-outline-secondary {
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+
+        .btn-outline-secondary:hover {
+            background-color: #6c757d;
+            color: #fff;
+        }
+
+</style>

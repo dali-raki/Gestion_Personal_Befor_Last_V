@@ -15,12 +15,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        
-      
+
+
     }
     protected override async Task OnParametersSetAsync()
     {
-       
+
         if (IsVisible)
         {
             fonctions = await FonctionService.GetAllAsync();
@@ -29,72 +29,75 @@
 
     private string DisplayStyle => IsVisible ? "display: flex;" : "display: none;";
     private void ResetForm()
-{
-    Employee = new Employe();
-      Employee.DateDeNaissance = DateTime.Today;
+    {
+        Employee = new Employe();
+        Employee.DateDeNaissance = DateTime.Today;
         Employee.DateEntree = DateTime.Today;
-   
-    Employee.Photo = System.IO.File.ReadAllBytes("wwwroot/images/default-employee.png");
-}
 
-   private void Hide()
-{  
-    ResetForm(); 
-    OnClose.InvokeAsync();
-     Employee.DateDeNaissance = DateTime.Today;
+        Employee.Photo = System.IO.File.ReadAllBytes("wwwroot/images/default-employee.png");
+    }
+
+    private void Hide()
+    {  
+        ResetForm(); 
+        OnClose.InvokeAsync();
+        Employee.DateDeNaissance = DateTime.Today;
         Employee.DateEntree = DateTime.Today;
-}
-
- private async Task HandleSubmit()
-{
-    if (isSubmitting) return;
-
-    isSubmitting = true;
-    errorMessage = null;
-
-    
-    if (Employee.Photo == null || Employee.Photo.Length == 0)
-    {
-        var defaultPhoto = System.IO.File.ReadAllBytes("wwwroot/images/default-employee.png");
-        Employee.Photo = defaultPhoto;
     }
 
-   
-    if (string.IsNullOrWhiteSpace(Employee.Nom) ||
-        string.IsNullOrWhiteSpace(Employee.Prenom) ||
-        Employee.DateDeNaissance == default ||
-        Employee.DateEntree == default)
+    private async Task HandleSubmit()
     {
-        errorMessage = "Veuillez remplir tous les champs obligatoires.";
-        isSubmitting = false; 
-        return;
-    }
+      
+        if (isSubmitting) return;
 
-    if (Employee.DateDeNaissance < new DateTime(1753, 1, 1) ||
-        Employee.DateDeNaissance > new DateTime(9999, 12, 31) ||
-        Employee.DateEntree < new DateTime(1753, 1, 1) ||
-        Employee.DateEntree > new DateTime(9999, 12, 31))
-    {
-        errorMessage = "Veuillez remplir tous les champs obligatoires.";
-        isSubmitting = false;
-        return;
-    }
+        isSubmitting = true;
+        errorMessage = null;
 
-    try
-    {
-        await OnSave.InvokeAsync(Employee);
-        Hide(); 
+
+        if (Employee.Photo == null || Employee.Photo.Length == 0)
+        {
+            var defaultPhoto = System.IO.File.ReadAllBytes("wwwroot/images/default-employee.png");
+            Employee.Photo = defaultPhoto;
+        }
+
+
+        if (string.IsNullOrWhiteSpace(Employee.Nom) ||
+            string.IsNullOrWhiteSpace(Employee.Prenom) ||
+            Employee.DateDeNaissance == default ||
+            Employee.DateEntree == default)
+        {
+            errorMessage = "Veuillez remplir tous les champs obligatoires.";
+            isSubmitting = false; 
+            return;
+        }
+
+        if (Employee.DateDeNaissance < new DateTime(1753, 1, 1) ||
+            Employee.DateDeNaissance > new DateTime(9999, 12, 31) ||
+            Employee.DateEntree < new DateTime(1753, 1, 1) ||
+            Employee.DateEntree > new DateTime(9999, 12, 31))
+        {
+            errorMessage = "Veuillez remplir tous les champs obligatoires.";
+            isSubmitting = false;
+            return;
+        }
+
+        try
+        {
+            
+            await OnSave.InvokeAsync(Employee);
+            showSuccessPopup();
+            Hide(); 
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "An error occurred while saving the employee: " + ex.Message;
+            Console.WriteLine("Error: " + errorMessage);
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
     }
-    catch (Exception ex)
-    {
-        errorMessage = "An error occurred while saving the employee: " + ex.Message;
-        Console.WriteLine("Error: " + errorMessage);
-    }
-    finally
-    {
-        isSubmitting = false;
-    }
-}
 
 
 
@@ -110,6 +113,13 @@
             }
         }
     }
+
+    private bool isSuccessPopupVisible = false;
+    private void HideSuccessPopup() => isSuccessPopupVisible = false;
+    private void showSuccessPopup() => isSuccessPopupVisible = true;
+
+
+   
 }
 
 <div class="popup-overlay" style="@DisplayStyle">
@@ -204,9 +214,19 @@
                     <input id="NTelephone" type="text" @bind="Employee.NTelephone" class="form-control" required />
                 </div>
                 <div class="form-group">
-                    <label for="SitiationFamiliale">Situation Familiale:</label>
-                    <input id="SitiationFamiliale" type="text" @bind="Employee.SitiationFamiliale" class="form-control" required />
+                    <label for="SitiationFamiliale">Situation Familiale:</label> 
+                    <select id="SitiationFamiliale" @bind="Employee.SitiationFamiliale" class="form-control" required>
+                        <option value="">-- Select Situation Type --</option>
+                        <option value="Célibataire">Célibataire</option>
+                        <option value="Marié">Marié</option>
+                        <option value="Divorcé">Divorcé</option>
+                        <option value="Veuf">Veuf</option>
+                       
+                    </select>
+                
                 </div>
+
+
             </div>
 
             <div class="button-group">
@@ -216,6 +236,9 @@
         </form>
     </div>
 </div>
+<button onclick="@showSuccessPopup"></button>
+<SuccessPopup IsVisible="isSuccessPopupVisible" OnClose="HideSuccessPopup" />
+
 
 <style>
     .popup-overlay {

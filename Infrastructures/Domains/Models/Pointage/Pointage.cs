@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GestionPersonnel.Models.Employees;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,9 +17,21 @@ namespace GestionPersonnel.Models.Pointage
         public TimeSpan HeureSortie { get; set; }
         public decimal HeuresTravaillees { get; set; }
         public string Remarque { get; set; }
-        public string Stat => HeuresTravaillees > 1 ? "Présent" : "Absent";
-        public int persontage => (int)Math.Floor((HeuresTravaillees / 8m) * 100);
+        public string Stat
+        {
+            get => HeuresTravaillees > 1 ? "Présent" : "Absent";
+            set { }
+        }
 
+        public int Persontage
+        {
+            get => (int)Math.Floor((HeuresTravaillees / 8m) * 100);
+            set { }
+        }
+
+        public string NomEmploye { get; set; }
+        public string PrenomEmploye { get; set; }
+        public string NomFonction { get; set; }
 
     }
 }

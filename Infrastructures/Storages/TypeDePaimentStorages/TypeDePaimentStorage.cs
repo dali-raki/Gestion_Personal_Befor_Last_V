@@ -14,9 +14,9 @@ namespace GestionPersonnel.Storages.TypeDePaimentStorages
     {
         private readonly string _connectionString;
 
-        public TypeDePaiementStorage(string connectionString)
+        public TypeDePaiementStorage(IConfiguration configuration)
         {
-            _connectionString = connectionString;
+            _connectionString = configuration.GetConnectionString("DBConnection");
         }
 
         private const string _selectAllQuery = "SELECT * FROM TypesDePaiement";

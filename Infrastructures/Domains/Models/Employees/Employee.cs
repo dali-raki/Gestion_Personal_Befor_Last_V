@@ -26,6 +26,10 @@ namespace GestionPersonnel.Models.Employees
         public string Status { get; set; }
         public string FullName => $"{Nom} {Prenom}";
 
+        public static implicit operator Employee(Employe.Employe v)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

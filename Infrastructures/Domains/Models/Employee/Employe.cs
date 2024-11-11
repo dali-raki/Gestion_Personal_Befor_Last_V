@@ -28,6 +28,7 @@ namespace GestionPersonnel.Models.Employe
         public string Status { get; set; }
         public string FullName => $"{Nom} {Prenom}";
 
+
     }
 }
 
