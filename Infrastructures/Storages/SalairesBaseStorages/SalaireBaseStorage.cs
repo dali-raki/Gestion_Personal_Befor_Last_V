@@ -1,4 +1,5 @@
 ﻿using GestionPersonnel.Models.SalairesBase;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,9 +13,9 @@ namespace GestionPersonnel.Storages.SalairesBaseStorages
     {
         private readonly string _connectionString;
 
-        public SalaireBaseStorage(string connectionString)
+        public SalaireBaseStorage(IConfiguration configuration)
         {
-            _connectionString = connectionString;
+            _connectionString = configuration.GetConnectionString("DBConnection");
         }
 
         private const string SelectAllQuery = "SELECT * FROM SalairesBase";

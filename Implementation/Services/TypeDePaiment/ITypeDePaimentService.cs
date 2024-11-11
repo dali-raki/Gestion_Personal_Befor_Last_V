@@ -1,12 +1,15 @@
-﻿using System;
+﻿using GestionPersonnel.Models.TypeDePaiment;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Implementation.Services.TypeDePaiment
+namespace GestionPersonnel.Services
 {
-    internal class ITypeDePaimentService
+    public interface ITypeDePaiementService
     {
+        Task<List<TypeDePaiement>> GetAllAsync();
+        Task<TypeDePaiement?> GetByIdAsync(int id);
+        Task AddAsync(TypeDePaiement typeDePaiement);
+        Task UpdateAsync(TypeDePaiement typeDePaiement);
+        Task DeleteAsync(int id);
     }
 }

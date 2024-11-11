@@ -7,7 +7,7 @@
 
 <div class="panel-employe">
     <div class="option-employe d-flex align-items-center mb-3">
-        <!-- Search Input with Icon -->
+        
         <div class="input-group me-3 search-input-group">
             <input type="text" class="form-control form-control-sm" width="10" placeholder="Search" @bind="searchQuery" aria-label="Search" />
             <button class="btn btn-outline-secondary btn-sm" type="button" @onclick="OnSearch">
@@ -15,14 +15,14 @@
             </button>
         </div>
 
-        <!-- Date Input for Filtering and Get Button -->
+        
         <div class="input-group d-flex align-items-center date-input-group">
             <input type="date" class="form-control form-control-sm" width="10" @bind="selectedDate" />
             <button class="btn btn-primary btn-sm ms-2" width="10" @onclick="GetPointageByDate">Get</button>
         </div>
     </div>
 
-    <!-- Table to Display Pointage Data -->
+    
     <div class="tab-employe">
         <table class="table table-bordered">
             <thead>
@@ -149,7 +149,7 @@
         gap: 20px;
     }
 
-    /* Smaller input fields */
+    
     .search-input-group input,
     .date-input-group input {
         width: 150px;

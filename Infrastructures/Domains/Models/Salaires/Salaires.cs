@@ -10,6 +10,10 @@ namespace GestionPersonnel.Models.Salaires
     {
         public int SalaireID { get; set; }
         public int EmployeID { get; set; }
+        public string NomEmploye { get; set; }
+        public string PrenomEmploye { get; set; }
+        public string NomFonction { get; set; }
+        public string NomTypePaiement { get; set; }
         public DateTime Mois { get; set; }
         public decimal Salairee { get; set; }
         public decimal Primes { get; set; }

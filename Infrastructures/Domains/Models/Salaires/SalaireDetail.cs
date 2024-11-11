@@ -18,4 +18,5 @@ namespace GestionPersonnel.Models.Salaires
         public decimal SalaireNet { get; set; }
         public string TypePaiement { get; set; }
     }
+
 }

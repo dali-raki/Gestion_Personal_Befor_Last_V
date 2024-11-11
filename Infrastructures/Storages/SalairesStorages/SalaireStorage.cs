@@ -15,10 +15,11 @@ namespace GestionPersonnel.Storages.SalairesStorages
     {
         private readonly string _connectionString;
 
-        public SalaireStorage(string connectionString)
+        public SalaireStorage(IConfiguration configuration)
         {
-            _connectionString = connectionString;
+            _connectionString = configuration.GetConnectionString("DBConnection");
         }
+
         private const string _selectAllQuery = "SELECT * FROM Salaires";
         private const string _selectByIdQuery = "SELECT * FROM Salaires WHERE SalaireID = @id";
         private const string _insertQuery = "INSERT INTO Salaires (EmployeID, Mois, Salaire, Primes, Avances, Dettes, SalaireNet, TypePaiementID) VALUES (@EmployeID, @Mois, @Salaire, @Primes, @Avances, @Dettes, @SalaireNet, @TypePaiementID); SELECT SCOPE_IDENTITY();";
@@ -54,7 +55,7 @@ namespace GestionPersonnel.Storages.SalairesStorages
 
             return (from DataRow row in dataTable.Rows select GetSalaireFromDataRow(row)).ToList();
         }
-
+        
         public async Task<Salaire?> GetById(int id)
         {
             await using var connection = new SqlConnection(_connectionString);
@@ -116,7 +117,59 @@ namespace GestionPersonnel.Storages.SalairesStorages
             connection.Open();
             await cmd.ExecuteNonQueryAsync();
         }
+        public List<SalaireDetail> GetSalaireDetails()
+        {
+            List<SalaireDetail> salaireDetailsList = new List<SalaireDetail>();
 
+            string query = @"
+            SELECT TOP (1000) 
+                s.SalaireID,
+                s.Salaire,
+                s.Primes,
+                s.Avances,
+                s.Dettes,
+                s.SalaireNet,
+                e.Nom AS NomEmploye,
+                e.Prenom AS PrenomEmploye,
+                f.NomFonction,
+                t.NomTypePaiement
+            FROM 
+                [db_aa9d4f_gestionpersonnel].[dbo].[Salaires] s
+            JOIN 
+                [db_aa9d4f_gestionpersonnel].[dbo].[Employes] e ON s.EmployeID = e.EmployeID
+            JOIN 
+                [db_aa9d4f_gestionpersonnel].[dbo].[Fonctions] f ON e.FonctionID = f.FonctionID
+            JOIN 
+                [db_aa9d4f_gestionpersonnel].[dbo].[TypesDePaiement] t ON s.TypePaiementID = t.TypePaiementID";
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                connection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        salaireDetailsList.Add(new SalaireDetail
+                        {
+                            Salaire = reader.IsDBNull(reader.GetOrdinal("Salaire")) ? 0 : reader.GetDecimal(reader.GetOrdinal("Salaire")),
+                            Primes = reader.IsDBNull(reader.GetOrdinal("Primes")) ? 0 : reader.GetDecimal(reader.GetOrdinal("Primes")),
+                            Avances = reader.IsDBNull(reader.GetOrdinal("Avances")) ? 0 : reader.GetDecimal(reader.GetOrdinal("Avances")),
+                            Dettes = reader.IsDBNull(reader.GetOrdinal("Dettes")) ? 0 : reader.GetDecimal(reader.GetOrdinal("Dettes")),
+                            SalaireNet = reader.IsDBNull(reader.GetOrdinal("SalaireNet")) ? 0 : reader.GetDecimal(reader.GetOrdinal("SalaireNet")),
+                            NomEmploye = reader.IsDBNull(reader.GetOrdinal("NomEmploye")) ? string.Empty : reader.GetString(reader.GetOrdinal("NomEmploye")),
+                            PrenomEmploye = reader.IsDBNull(reader.GetOrdinal("PrenomEmploye")) ? string.Empty : reader.GetString(reader.GetOrdinal("PrenomEmploye")),
+                            NomFonction = reader.IsDBNull(reader.GetOrdinal("NomFonction")) ? string.Empty : reader.GetString(reader.GetOrdinal("NomFonction")),
+                            TypePaiement = reader.IsDBNull(reader.GetOrdinal("NomTypePaiement")) ? string.Empty : reader.GetString(reader.GetOrdinal("NomTypePaiement"))
+                        });
+
+                    }
+                }
+            }
+
+            return salaireDetailsList;
+        }
         public async Task<List<SalaireDetail>> GetSalariesByMonth(DateTime mois)
         {
             List<SalaireDetail> salaires = new List<SalaireDetail>();

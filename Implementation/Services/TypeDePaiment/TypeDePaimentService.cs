@@ -1,50 +1,42 @@
 ﻿using GestionPersonnel.Models.TypeDePaiment;
 using GestionPersonnel.Storages.TypeDePaimentStorages;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Implementation.Services.TypeDePaiment
+namespace GestionPersonnel.Services
 {
-    public class TypeDePaimentService
+    public class TypeDePaiementService : ITypeDePaiementService
     {
         private readonly TypeDePaiementStorage _typeDePaiementStorage;
 
-
-        public TypeDePaimentService(TypeDePaiementStorage typeDePaiementStorage)
+        public TypeDePaiementService(TypeDePaiementStorage typeDePaiementStorage)
         {
             _typeDePaiementStorage = typeDePaiementStorage;
         }
-        public async Task<List<TypeDePaiement>> GetTypeDePaiementsAsync()
+
+        public async Task<List<TypeDePaiement>> GetAllAsync()
         {
             return await _typeDePaiementStorage.GetAll();
         }
 
-        public async Task<TypeDePaiement?> GetTypeDePaiementByIdAsync(int id)
+        public async Task<TypeDePaiement?> GetByIdAsync(int id)
         {
             return await _typeDePaiementStorage.GetById(id);
         }
-        public async Task AddTypeDePaiementAsync(TypeDePaiement typeDePaiement)
+
+        public async Task AddAsync(TypeDePaiement typeDePaiement)
         {
             await _typeDePaiementStorage.Add(typeDePaiement);
         }
 
+        public async Task UpdateAsync(TypeDePaiement typeDePaiement)
+        {
+            await _typeDePaiementStorage.Update(typeDePaiement);
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+        public async Task DeleteAsync(int id)
+        {
+            await _typeDePaiementStorage.Delete(id);
+        }
     }
 }
-

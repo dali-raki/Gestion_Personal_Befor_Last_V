@@ -1,34 +1,30 @@
 ﻿@page "/paiement"
+@using GestionPersonnel.Models.Salaires
+@using GestionPersonnel.Services
+@inject ISalaireService SalaireService
 @rendermode InteractiveServer
 
 <div class="panel-employe">
-
-
     <div class="option-employe">
-
-
         <div class="input-group w-25">
             <input type="text" class="form-control" placeholder="Search" aria-label="Recipient's username" aria-describedby="button-addon2">
-            <input type="date" class="date-input" />
-            <button class="btn btn-outline-secondary" type="button" id="button-addon2"><i class="fa-solid fa-magnifying-glass"></i></button>
-        </div>
+            <input type="date" class="date-input" @bind="selectedDate" />
+            <button class="btn btn-outline-secondary" type="button" id="button-addon2" @onclick="GetSalariesByMonth" >
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
 
+        </div>
         <div class="btn-employe">
-
-            <button>Ajouter Employeur Paiement</button>
-
+            <button @onclick="ShowPopup">Ajouter Employeur Paiement</button>
         </div>
-
     </div>
 
-
     <div class="tab-employe">
-
         <table class="table">
             <thead>
                 <tr>
                     <th>N</th>
-                    <th>Nom</th> 
+                    <th>Nom</th>
                     <th>Fonction</th>
                     <th>Type Paiement</th>
                     <th>Salaire</th>
@@ -37,41 +33,61 @@
                     <th>Dettes</th>
                     <th>SalaireNet</th>
                     <th>Option</th>
-
                 </tr>
             </thead>
             <tbody>
-
-                <tr>
-                    <td>N</td>
-                    <td>Nom</td>
-                    <td>Fonction</td>
-                    <td>Type Paiement</td>
-                    <td>Salaire</td>
-                    <td>Primes</td>
-                    <td>Avances</td>
-                    <td>Dettes</td>
-                    <td>SalaireNet</td>
-          
-                    <td>
-                        <button class="btn btn-primary">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </button>
-                      
-                    </td>
-
-
-
-
-
-                </tr>
-
+                @foreach (var salaire in salaireDetails)
+                {
+                    <tr>
+                        <td>1</td>
+                        <td>@salaire.NomEmploye @salaire.PrenomEmploye</td>
+                        <td>@salaire.NomFonction</td>
+                        <td>@salaire.TypePaiement</td>
+                        <td>@salaire.Salaire</td>
+                        <td>@salaire.Primes</td>
+                        <td>@salaire.Avances</td>
+                        <td>@salaire.Dettes</td>
+                        <td>@salaire.SalaireNet</td>
+                        <td>
+                            <button class="btn btn-primary">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
             </tbody>
-
         </table>
-
-
     </div>
-
-
 </div>
+
+<NewpaiementPopUp IsVisible="@IsPopupVisible" OnClose="@HidePopup" />
+
+@code {
+    private List<SalaireDetail> salaireDetails = new List<SalaireDetail>();
+    private DateTime? selectedDate; 
+    private bool IsPopupVisible = false;
+
+    private void ShowPopup() => IsPopupVisible = true;
+    private void HidePopup() => IsPopupVisible = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+       
+        salaireDetails = await SalaireService.GetSalaireDetails();
+    }
+
+    private async Task GetSalariesByMonth()
+    {
+        if (selectedDate.HasValue)
+        {
+            Console.WriteLine($"Filtering by date: {selectedDate.Value.ToShortDateString()}");
+            salaireDetails = await SalaireService.GetSalariesByMonthAsync(selectedDate.Value);
+        }
+        else
+        {
+            Console.WriteLine("No date selected, fetching all salaries.");
+            salaireDetails = await SalaireService.GetSalaireDetails();
+        }
+    }
+
+}
