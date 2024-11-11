@@ -11,6 +11,8 @@ using GestionPersonnel.Storages.FonctionsStorages;
 using Infrastructures.Storages.EmployeStorages;
 using GestionPersonnel.Storages.TypeDePaimentStorages;
 using GestionPersonnel.Storages.SalairesBaseStorages;
+using Implementation.Services.SalaireBase;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +35,7 @@ builder.Services.AddScoped<IFonctionService, FonctionService>();
 builder.Services.AddScoped<IPointageService, PointageService>();
 builder.Services.AddScoped<ISalaireService, SalaireService>();
 builder.Services.AddScoped<ISalaireBaseService, SalaireBaseService>();
+builder.Services.AddScoped<IPDFService, PDFService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

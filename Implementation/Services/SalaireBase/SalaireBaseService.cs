@@ -1,5 +1,6 @@
 ﻿using GestionPersonnel.Models.SalairesBase;
 using GestionPersonnel.Storages.SalairesBaseStorages;
+using Implementation.Services.SalaireBase;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

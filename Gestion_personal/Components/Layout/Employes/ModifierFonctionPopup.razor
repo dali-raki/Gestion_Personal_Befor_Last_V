@@ -4,10 +4,10 @@
 
 <div class="custom-popup-overlay" style="display:@(IsVisible ? "flex" : "none")">
     <div class="custom-popup-content">
-        <!-- Main Content -->
+        
         <h3>Modifier Fonction</h3>
 
-        <!-- Select Fonction Dropdown -->
+        
         <div class="form-group">
             <label for="fonctionSelect">Select Fonction</label>
             <select id="fonctionSelect" class="form-control" @bind="selectedFonctionId">
@@ -19,13 +19,13 @@
             </select>
         </div>
 
-        <!-- New Fonction Name Input -->
+       
         <div class="form-group">
             <label for="newFonctionName">New Fonction Name</label>
             <input type="text" class="form-control" id="newFonctionName" @bind="newFonctionName" />
         </div>
 
-        <!-- Save or Cancel Buttons -->
+       
         <div class="form-actions">
             <button class="btn btn-primary" @onclick="SaveFonction" disabled="@(string.IsNullOrEmpty(newFonctionName) || selectedFonctionId == 0)">Save</button>
             <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
@@ -136,8 +136,6 @@
         await LoadFonctions();
         selectedFonctionId = newFonction.FonctionID;
     }
-
-
 
 }
 

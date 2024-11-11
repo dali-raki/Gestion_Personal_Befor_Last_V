@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace GestionPersonnel.Services
+namespace Implementation.Services.SalaireBase
 {
     public interface ISalaireBaseService
     {

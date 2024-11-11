@@ -1,8 +1,11 @@
 ﻿@page "/paiement"
 @using GestionPersonnel.Models.Salaires
-@using GestionPersonnel.Services
+@using GestionPersonnel.Services;
 @inject ISalaireService SalaireService
+@inject IPDFService PDFService
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
+
 
 <div class="panel-employe">
     <div class="option-employe">
@@ -49,8 +52,8 @@
                         <td>@salaire.Dettes</td>
                         <td>@salaire.SalaireNet</td>
                         <td>
-                            <button class="btn btn-primary">
-                                <i class="fa-solid fa-pen-to-square"></i>
+                            <button class="btn btn-primary" @onclick="() => GeneratePDF(salaire)">
+                                <i class="fa-solid fa-download"></i> PDF
                             </button>
                         </td>
                     </tr>
@@ -88,6 +91,15 @@
             Console.WriteLine("No date selected, fetching all salaries.");
             salaireDetails = await SalaireService.GetSalaireDetails();
         }
+    }
+    private async Task GeneratePDF(SalaireDetail salaire)
+    {
+        var pdfBytes = await PDFService.GenerateSalairePDFAsync(salaire); 
+        var base64String = Convert.ToBase64String(pdfBytes);
+        var fileName = "FicheDePaie.pdf";
+
+        
+        await JSRuntime.InvokeVoidAsync("downloadFile", $"data:application/pdf;base64,{base64String}", fileName);
     }
 
 }

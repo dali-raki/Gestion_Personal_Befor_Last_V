@@ -19,6 +19,16 @@
     <link href="lib/font-awesome/css/all.css" rel="stylesheet" />
     <link href="lib/font-awesome/css/all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="_content/Blazored.Modal/blazored-modal.css"/>
+    <script>
+        function downloadFile(data, fileName) {
+            var a = document.createElement("a");
+            a.href = data;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
 
     <HeadOutlet />
 </head>

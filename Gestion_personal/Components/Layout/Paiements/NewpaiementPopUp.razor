@@ -1,12 +1,11 @@
 ﻿@using GestionPersonnel.Models.Employe
 @using GestionPersonnel.Models.TypeDePaiment
 @using GestionPersonnel.Models.SalairesBase
-@using GestionPersonnel.Models.Fonctions
-@using GestionPersonnel.Services
+@using GestionPersonnel.Services;
+@using Implementation.Services.SalaireBase
 @inject IEmployeService EmployeService
 @inject ITypeDePaiementService TypeDePaiementService
 @inject ISalaireBaseService SalairesBaseService
-@inject IFonctionService FonctionService
 
 <div class="modal-overlay" style="@DisplayStyle">
     <div class="modal-content">
@@ -16,7 +15,7 @@
         <form @onsubmit="HandleFormSubmit">
             <div class="form-group">
                 <label>Choisir Employe</label>
-                <select @bind="selectedEmployeId">
+                <select @onchange="OnEmployeeChange">
                     <option value="">-- Choisir Employe --</option>
                     @if (employes != null)
                     {
@@ -34,7 +33,7 @@
 
             <div class="form-group">
                 <label>Fonction</label>
-                <input type="text" placeholder="Fonction" @bind="fonction" />
+                <input type="text" placeholder="Fonction" @bind="fonction" readonly />
             </div>
 
             <div class="form-group">
@@ -71,13 +70,12 @@
 
     private List<Employe> employes;
     private List<TypeDePaiement> typeDePaiements;
-
     private string selectedEmployeId;
     private string selectedTypePaiementId;
     private string salaire;
     private string fonction;
-    
 
+    private Employe selectedEmploye;
     private string DisplayStyle => IsVisible ? "display: flex;" : "display: none;";
 
     protected override async Task OnInitializedAsync()
@@ -90,24 +88,34 @@
     {
         if (!string.IsNullOrEmpty(selectedEmployeId) && !string.IsNullOrEmpty(selectedTypePaiementId) && !string.IsNullOrEmpty(salaire))
         {
-            
             var salairesBase = new SalairesBase
                 {
-                    EmplyeId =  int.Parse(selectedEmployeId),
-                    TypePaiementID =  int.Parse(selectedTypePaiementId),
-                    SalaireBase = decimal.Parse(salaire), 
-                    
+                    EmplyeId = int.Parse(selectedEmployeId),
+                    TypePaiementID = int.Parse(selectedTypePaiementId),
+                    SalaireBase = decimal.Parse(salaire),
                 };
 
-          
             await SalairesBaseService.Add(salairesBase);
-
-            
             Hide();
         }
         else
         {
-           
+            
+        }
+    }
+
+    private async Task OnEmployeeChange(ChangeEventArgs e)
+    {
+        selectedEmployeId = e.Value.ToString();
+
+        if (!string.IsNullOrEmpty(selectedEmployeId))
+        {
+            selectedEmploye = employes.FirstOrDefault(e => e.EmployeID.ToString() == selectedEmployeId);
+
+            if (selectedEmploye != null)
+            {
+                fonction = selectedEmploye.FonctionName; 
+            }
         }
     }
 
@@ -116,7 +124,6 @@
 
 
 <style>
-   
     .modal-overlay {
         position: fixed;
         top: 0;
@@ -133,13 +140,12 @@
         transition: opacity 0.3s ease, visibility 0s 0.3s;
     }
 
-        .modal-overlay[style*="display: flex;"] {
-            opacity: 1;
-            visibility: visible;
-            transition: opacity 0.3s ease;
-        }
+    .modal-overlay[style*="display: flex;"] {
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 0.3s ease;
+    }
 
-    
     .modal-content {
         background-color: white;
         padding: 20px;
@@ -150,7 +156,6 @@
         position: relative;
     }
 
-   
     .close-btn {
         position: absolute;
         top: 10px;
@@ -160,45 +165,42 @@
         color: #333;
     }
 
-   
     .modal-content h3 {
         margin-top: 0;
         font-size: 1.5rem;
         color: #333;
     }
 
-    
     .form-group {
         margin-bottom: 1.5rem;
     }
 
-        .form-group label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
-        }
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
 
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 10px;
-            font-size: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 10px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
 
-            .form-group input[type="number"] {
-                -moz-appearance: textfield; 
-            }
+    .form-group input[type="number"] {
+        -moz-appearance: textfield;
+    }
 
-        .form-group select {
-            appearance: none;
-            cursor: pointer;
-        }
+    .form-group select {
+        appearance: none;
+        cursor: pointer;
+    }
 
-   
     .submit-btn {
         background-color: #4CAF50;
         color: white;
@@ -212,24 +214,21 @@
         margin-top: 1rem;
     }
 
-        .submit-btn:hover {
-            background-color: #45a049;
-        }
+    .submit-btn:hover {
+        background-color: #45a049;
+    }
 
-   
     .validation-summary {
         margin-top: 10px;
         color: red;
         font-size: 0.875rem;
     }
 
-        .validation-summary ul {
-            padding-left: 20px;
-        }
+    .validation-summary ul {
+        padding-left: 20px;
+    }
 
-        .validation-summary li {
-            list-style: inside;
-        }
-
-
+    .validation-summary li {
+        list-style: inside;
+    }
 </style>
