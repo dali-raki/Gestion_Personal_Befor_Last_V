@@ -1,0 +1,248 @@
+﻿<div class="modal-overlay" style="@DisplayStyle">
+	<div class="modal-content">
+		
+		<span class="close-btn" @onclick="Hide">&times;</span>
+		<h3>Mise à Jour Equipe</h3>
+
+		<EditForm Model="this" OnValidSubmit="UpdateEquipe">
+			
+			<label>Choisir L'Equipe</label>
+			<select @onchange="OnEquipeChange">
+				<option value="">-- Choisir L'Equipe --</option>
+				@if (equipes != null && equipes.Any())
+				{
+					@foreach (var equipe in equipes)
+					{
+						<option value="@equipe.EquipeID">@equipe.NomEquipe</option>
+					}
+				}
+				else
+				{
+					<option>-- Aucune Equipe Disponible --</option>
+				}
+			</select>
+
+			
+			<label>Modifier Le Nom D'Equipe</label>
+			<input type="text" placeholder="Nom D'Equipe" @bind="selectedEquipeName" />
+
+			
+			<label>Modifier Le Chef D'Equipe</label>
+			<select @bind="selectedChefId">
+				<option value="">-- Choisir Le Chef D'Equipe --</option>
+				@if (employes != null && employes.Any())
+				{
+					@foreach (var employe in employes)
+					{
+						<option value="@employe.EmployeID">@employe.Nom @employe.Prenom</option>
+					}
+				}
+				else
+				{
+					<option>-- Aucun Employé Disponible --</option>
+				}
+			</select>
+
+			
+			<label>Choisir Les Membres D'Equipe</label>
+			<div class="checkbox-group">
+				@if (allEmployees != null && allEmployees.Any())
+				{
+					@foreach (var employe in allEmployees)
+					{
+						<label class="checkbox-item">
+							<input type="checkbox" value="@employe.EmployeID"
+								   @onchange="e => OnMemberCheckboxChange(e, employe.EmployeID)"
+								   checked="@selectedMemberIds.Contains(employe.EmployeID)">
+							@employe.Nom @employe.Prenom
+						</label>
+					}
+				}
+				else
+				{
+					<p>Aucun Employé Disponible</p>
+				}
+			</div>
+
+			
+			<button type="submit" class="btn-submit">Mettre à Jour Equipe</button>
+		</EditForm>
+	</div>
+</div>
+@rendermode InteractiveServer
+@using GestionPersonnel.Models.EmplyeeEquipe
+@using GestionPersonnel.Services
+@using GestionPersonnel.Services.EquipeServices
+@using Equipe = GestionPersonnel.Models.Equipe.Equipe
+@using Employe = GestionPersonnel.Models.Employe.Employe
+@inject IEmployeService EmployeService
+@inject IEmployeeEquipeService EmployeeEquipeService
+@inject IEquipeService EquipeService
+@code {
+	[Parameter] public bool IsVisible { get; set; }
+	[Parameter] public EventCallback OnClose { get; set; }
+
+	private List<Employe> employes;
+	private List<Employe> allEmployees;
+	private List<Equipe> equipes;
+	private List<int> selectedMemberIds = new();
+	private string selectedEquipeName;
+	private int? selectedChefId;
+	private int? selectedEquipeId;
+
+	private string DisplayStyle => IsVisible ? "display: flex;" : "display: none;";
+
+	protected override async Task OnInitializedAsync()
+	{
+		employes = await EmployeService.GetEmployeesAsync();
+		equipes = await EquipeService.GetAllEquipesAsync();
+	}
+	protected override async Task OnParametersSetAsync()
+	{
+
+		if (IsVisible)
+		{
+			employes = await EmployeService.GetEmployeesAsync();
+			equipes = await EquipeService.GetAllEquipesAsync();
+		}
+	}
+	private async Task OnEquipeChange(ChangeEventArgs e)
+	{
+		if (int.TryParse(e.Value.ToString(), out var equipeId))
+		{
+			selectedEquipeId = equipeId;
+
+			
+			var selectedEquipe = await EquipeService.GetEquipeByIdAsync(equipeId);
+
+			if (selectedEquipe != null)
+			{
+				selectedEquipeName = selectedEquipe.NomEquipe;
+				selectedChefId = selectedEquipe.ChefEquipeID;
+
+				
+				selectedMemberIds = await EmployeeEquipeService.GetEmployeesByEquipeIdAsync(equipeId)
+																		.ContinueWith(t => t.Result.Select(emp => emp.EmployeID).ToList());
+
+				allEmployees = employes;
+			}
+		}
+	}
+
+	private void Hide() => OnClose.InvokeAsync();
+
+	private void OnMemberCheckboxChange(ChangeEventArgs e, int employeId)
+	{
+		if ((bool)e.Value)
+		{
+			
+			if (!selectedMemberIds.Contains(employeId))
+				selectedMemberIds.Add(employeId);
+		}
+		else
+		{
+			
+			selectedMemberIds.Remove(employeId);
+		}
+	}
+
+	private async Task UpdateEquipe()
+	{
+		if (selectedEquipeId.HasValue)
+		{
+			
+			var updatedEquipe = new Equipe
+				{
+					EquipeID = selectedEquipeId.Value,
+					NomEquipe = selectedEquipeName,
+					ChefEquipeID = selectedChefId
+				};
+
+		
+			await EquipeService.UpdateEquipeAsync(updatedEquipe);
+
+		
+			var existingMembers = await EmployeeEquipeService.GetEmployeesByEquipeIdAsync(selectedEquipeId.Value);
+			var currentMemberIds = selectedMemberIds.ToHashSet();
+
+			foreach (var existingMember in existingMembers)
+			{
+				if (!currentMemberIds.Contains(existingMember.EmployeID))
+				{
+				
+					await EmployeeEquipeService.DeleteEmployeeEquipeAsync(existingMember.EmployeID);
+				}
+			}
+
+			
+			foreach (var employeId in selectedMemberIds)
+			{
+				if (!existingMembers.Any(em => em.EmployeID == employeId))
+				{
+					
+					var newEmployeeEquipe = new EmployeeEquipe
+						{
+							EquipeeID = selectedEquipeId.Value,
+							EmployeeID = employeId,
+
+						};
+					await EmployeeEquipeService.AddEmployeeEquipeAsync(newEmployeeEquipe);
+				}
+			}
+
+			
+			await OnClose.InvokeAsync();
+		}
+	}
+}
+
+
+
+<style>
+	
+	input[type="text"],
+	select {
+		width: 100%;
+		padding: 8px;
+		margin-bottom: 10px;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		font-size: 14px;
+		outline: none;
+		transition: border-color 0.3s ease;
+	}
+
+		
+		input[type="text"]:focus,
+		select:focus {
+			border-color: #007bff;
+		}
+
+	
+	select {
+		appearance: none;
+		background-color: #fff;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='16' height='16'%3E%3Cpath d='M7 10l5 5 5-5z' fill='%23777'/%3E%3C/svg%3E");
+		background-repeat: no-repeat;
+		background-position: right 8px center;
+		background-size: 12px;
+	}
+
+	
+	.btn-submit {
+		background-color: #007bff;
+		color: #fff;
+		border: none;
+		padding: 10px;
+		border-radius: 4px;
+		cursor: pointer;
+		font-size: 14px;
+		transition: background-color 0.3s ease;
+	}
+
+		
+		.btn-submit:hover {
+			background-color: #0056b3;
+		}
+
+</style>

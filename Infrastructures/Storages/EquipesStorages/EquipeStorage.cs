@@ -1,4 +1,6 @@
-﻿using GestionPersonnel.Models.Equipe;
+﻿using GestionPersonnel.Models.Employe;
+using GestionPersonnel.Models.Equipe;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,19 +14,26 @@ namespace GestionPersonnel.Storages.EquipeStorages
     {
         private readonly string _connectionString;
 
-        public EquipeStorage(string connectionString)
+        public EquipeStorage(IConfiguration configuration)
         {
-            _connectionString = connectionString;
+            _connectionString = configuration.GetConnectionString("DBConnection");
         }
 
         // Constantes pour les requêtes SQL
         private const string SelectAllQuery = "SELECT * FROM Equipes Where Status=1";
         private const string SelectByIdQuery = "SELECT * FROM Equipes WHERE EquipeID = @id";
-        private const string InsertQuery = "INSERT INTO Equipes (NomEquipe, ChefEquipeID) VALUES (@NomEquipe, @ChefEquipeID); SELECT SCOPE_IDENTITY();";
+        private const string InsertQuery = "INSERT INTO Equipes (NomEquipe, ChefEquipeID,Status) VALUES (@NomEquipe, @ChefEquipeID,@Status); SELECT SCOPE_IDENTITY();";
         private const string UpdateQuery = "UPDATE Equipes SET NomEquipe = @NomEquipe, ChefEquipeID = @ChefEquipeID WHERE EquipeID = @EquipeID;";
         private const string DeleteQuery = "UPDATE Equipes SET Status = 0 WHERE EquipeID = @EquipeID;";
         private const string UpdateChefEquipeQuery = "UPDATE Equipes SET ChefEquipeID = @ChefEquipeID WHERE EquipeID = @EquipeID;";
-
+        private const string SelectEmployeesByEquipeIdQuery = @"
+        SELECT 
+            Emp.EmployeID, 
+            Emp.Nom, 
+            Emp.Prenom 
+        FROM Employes Emp
+        JOIN EmployeEquipes EE ON Emp.EmployeID = EE.EmployeID
+        WHERE EE.EquipeID = @EquipeID";
         // Méthode pour mapper une DataRow à un objet Equipe
         private static Equipe GetEquipeFromDataRow(DataRow row)
         {
@@ -32,7 +41,8 @@ namespace GestionPersonnel.Storages.EquipeStorages
             {
                 EquipeID = (int)row["EquipeID"],
                 NomEquipe = row["NomEquipe"].ToString(),
-                ChefEquipeID = (int)row["ChefEquipeID"]
+                ChefEquipeID = (int)row["ChefEquipeID"],
+
             };
         }
 
@@ -80,7 +90,7 @@ namespace GestionPersonnel.Storages.EquipeStorages
 
             cmd.Parameters.AddWithValue("@NomEquipe", equipe.NomEquipe ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@ChefEquipeID", equipe.ChefEquipeID);
-
+            cmd.Parameters.AddWithValue("@Status", equipe.Status);
             try
             {
                 await connection.OpenAsync();
@@ -179,6 +189,36 @@ GROUP BY E.EquipeID, E.NomEquipe, Emp.Nom;";
         }
 
 
+    public async Task<List<Employe>> GetEmployeesByEquipeIdAsync(int equipeId)
+    {
+        await using var connection = new SqlConnection(_connectionString);
+        using var cmd = new SqlCommand(SelectEmployeesByEquipeIdQuery, connection);
+        cmd.Parameters.AddWithValue("@EquipeID", equipeId);
+
+        var dataTable = new DataTable();
+        var da = new SqlDataAdapter(cmd);
+
+        await connection.OpenAsync();
+        da.Fill(dataTable);
+
+        return (from DataRow row in dataTable.Rows select GetEmployeFromDataRow(row)).ToList();
+    }
+        private static Employe GetEmployeFromDataRow(DataRow row)
+        {
+            return new Employe
+            {
+                EmployeID = (int)row["EmployeID"],
+                Nom = row["Nom"].ToString(),
+                Prenom = row["Prenom"].ToString()
+            };
+        }
+
 
     }
+
+
+
+
+
+
 }

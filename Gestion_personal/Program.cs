@@ -12,6 +12,10 @@ using Infrastructures.Storages.EmployeStorages;
 using GestionPersonnel.Storages.TypeDePaimentStorages;
 using GestionPersonnel.Storages.SalairesBaseStorages;
 using Implementation.Services.SalaireBase;
+using GestionPersonnel.Storages.EquipeStorages;
+using GestionPersonnel.Services.EquipeServices;
+using GestionPersonnel.Storages.EmployeeEquipeStorages;
+using GestionPersonnel.Storages.Storages.PostesStorages;
 
 
 
@@ -29,6 +33,9 @@ builder.Services.AddScoped<PointageStorage>();
 builder.Services.AddScoped<SalaireStorage>();
 builder.Services.AddScoped<TypeDePaiementStorage>();
 builder.Services.AddScoped<SalaireBaseStorage>();
+builder.Services.AddScoped<EquipeStorage>();
+builder.Services.AddScoped<EmployeeEquipeStorage> ();
+builder.Services.AddScoped<PosteStorage>();
 builder.Services.AddScoped<ITypeDePaiementService, TypeDePaiementService>();
 builder.Services.AddScoped<IEmployeService, EmployeService>();
 builder.Services.AddScoped<IFonctionService, FonctionService>();
@@ -36,6 +43,10 @@ builder.Services.AddScoped<IPointageService, PointageService>();
 builder.Services.AddScoped<ISalaireService, SalaireService>();
 builder.Services.AddScoped<ISalaireBaseService, SalaireBaseService>();
 builder.Services.AddScoped<IPDFService, PDFService>();
+builder.Services.AddScoped<IEquipeService, EquipeService>();
+builder.Services.AddScoped<IEmployeeEquipeService, EmployeeEquipeService>();
+builder.Services.AddScoped<IPosteService, PosteService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

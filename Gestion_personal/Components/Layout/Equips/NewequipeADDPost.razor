@@ -74,8 +74,16 @@
     protected override async Task OnInitializedAsync()
     {
         equipes = await EquipeService.GetAllEquipesAsync();
-    }
 
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+
+        if (IsVisible)
+        {
+            equipes = await EquipeService.GetAllEquipesAsync();
+        }
+    }
     private async Task OnEquipeChanged(ChangeEventArgs e)
     {
         

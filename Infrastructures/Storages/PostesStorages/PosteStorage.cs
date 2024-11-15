@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 
@@ -8,12 +9,13 @@ namespace GestionPersonnel.Storages.Storages.PostesStorages
     {
         private readonly string _connectionString;
 
-        public PosteStorage(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
+		public PosteStorage(IConfiguration configuration)
+		{
+			_connectionString = configuration.GetConnectionString("DBConnection");
+		}
 
-        public async Task InsererDonneesPoste(string idPoste, int idEquipe, DateTime date, List<int> idEmployes)
+
+		public async Task InsererDonneesPoste(string idPoste, int idEquipe, DateTime date, List<int> idEmployes)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {

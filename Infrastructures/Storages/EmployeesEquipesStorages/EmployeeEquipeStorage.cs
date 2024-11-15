@@ -1,5 +1,6 @@
 ﻿using GestionPersonnel.Models.Employees;
 using GestionPersonnel.Models.EmplyeeEquipe;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,13 +14,13 @@ namespace GestionPersonnel.Storages.EmployeeEquipeStorages
     {
         private readonly string _connectionString;
 
-        public EmployeeEquipeStorage(string connectionString)
+        public EmployeeEquipeStorage(IConfiguration configuration)
         {
-            _connectionString = connectionString;
+            _connectionString = configuration.GetConnectionString("DBConnection");
         }
 
         // Constantes pour les requêtes SQL
-       
+
         private const string SelectAllQuery = "SELECT * FROM EmployeEquipes";
         
         private const string SelectByIdQuery = "SELECT * FROM EmployeEquipes WHERE EmployeEquipeID = @id";
@@ -30,7 +31,7 @@ namespace GestionPersonnel.Storages.EmployeeEquipeStorages
         
         private const string UpdateQuery = "UPDATE EmployeEquipes SET EmployeID = @EmployeeID, EquipeID = @EquipeeID WHERE EmployeEquipeID = @EmployeeEquipeID;";
         
-        private const string DeleteQuery = "DELETE FROM EmployeEquipes WHERE EmployeEquipeID = @EmployeeEquipeID";
+        private const string DeleteQuery = "DELETE FROM EmployeEquipes WHERE EmployeID = @EmployeeEquipeID";
 
         // Méthode pour mapper une DataRow à un objet EmployeeEquipe
         private static EmployeeEquipe GetEmployeeEquipeFromDataRow(DataRow row)
