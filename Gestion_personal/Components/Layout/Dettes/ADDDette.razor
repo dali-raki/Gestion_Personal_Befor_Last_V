@@ -1,0 +1,78 @@
+﻿@using GestionPersonnel.Models.Employe
+@using GestionPersonnel.Models.Dettes
+@using GestionPersonnel.Services
+@inject IEmployeService EmployeService
+@inject IDetteService DetteService
+
+<div class="modal-overlay" style="@DisplayStyle">
+    <div class="modal-content">
+        <span class="close-btn" @onclick="Hide">&times;</span>
+        <h3>Ajouter Dette</h3>
+
+        <form @onsubmit="AddDette">
+
+            <label>Employes</label>
+            <select @bind="selectedEmployeId" required>
+                <option value="">-- Choisir Employe --</option>
+                @if (employes != null)
+                {
+                    @foreach (var employe in employes)
+                    {
+                        <option value="@employe.EmployeID">@employe.Nom @employe.Prenom</option>
+                    }
+                }
+                else
+                {
+                    <option>-- Aucun Employe Trouvé --</option>
+                }
+            </select>
+
+            <label>Valeur de Dette</label>
+            <input type="number" @bind="montantDette" placeholder="00000.00DA" required />
+
+            <button type="submit">Confirme</button>
+        </form>
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private List<Employe> employes;
+    private int selectedEmployeId;
+    private decimal montantDette;
+
+    private string DisplayStyle => IsVisible ? "display: flex;" : "display: none;";
+
+    protected override async Task OnInitializedAsync()
+    {
+        employes = await EmployeService.GetEmployeesAsync();
+    }
+
+    private async Task AddDette()
+    {
+        // Check if the selected employee and debt amount are valid
+        if (selectedEmployeId > 0 && montantDette > 0)
+        {
+            var newDette = new Dette
+                {
+                    EmployeID = selectedEmployeId,
+                    Montant = montantDette,
+                    Date = DateTime.Now // Or any date you prefer
+                };
+
+            // Call the service to add the debt
+            await DetteService.AddAsync(newDette);
+
+            // Reset form fields
+            selectedEmployeId = 0;
+            montantDette = 0;
+
+            // Close the modal after saving
+            await OnClose.InvokeAsync();
+        }
+    }
+
+    private void Hide() => OnClose.InvokeAsync();
+}

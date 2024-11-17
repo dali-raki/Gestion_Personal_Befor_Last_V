@@ -28,6 +28,14 @@
             a.click();
             document.body.removeChild(a);
         }
+        function saveAsFile(fileName, data) {
+            const blob = new Blob([data], { type: "application/pdf" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+            link.click();
+        }
+
     </script>
 
     <HeadOutlet />

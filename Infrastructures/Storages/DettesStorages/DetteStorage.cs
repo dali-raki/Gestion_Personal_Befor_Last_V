@@ -9,6 +9,7 @@ using GestionPersonnel.Models.Dettes;
 using GestionPersonnel.Models.Avances;
 using GestionPersonnel.Storages.DettesStorages;
 using GestionPersonnel.Storages.AvancesStorages;
+using Microsoft.Extensions.Configuration;
 
 namespace GestionPersonnel.Storages.DettesStorages
 {
@@ -16,9 +17,9 @@ namespace GestionPersonnel.Storages.DettesStorages
     {
         private readonly string _connectionString;
 
-        public DetteStorage(string connectionString)
+        public DetteStorage(IConfiguration configuration)
         {
-            _connectionString = connectionString;
+            _connectionString = configuration.GetConnectionString("DBConnection");
         }
 
         private const string SelectAllQuery = "SELECT * FROM Dettes";

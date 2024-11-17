@@ -1,4 +1,5 @@
 ﻿using GestionPersonnel.Models.Avances;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,9 +13,9 @@ namespace GestionPersonnel.Storages.AvancesStorages
     {
         private readonly string _connectionString;
 
-        public AvanceStorage(string connectionString)
+        public AvanceStorage(IConfiguration configuration)
         {
-            _connectionString = connectionString;
+            _connectionString = configuration.GetConnectionString("DBConnection");
         }
 
         private const string SelectAllQuery = "SELECT * FROM Avances";
@@ -171,6 +172,61 @@ namespace GestionPersonnel.Storages.AvancesStorages
 
             return totaleAvances;
         }
+        public async Task<List<Avance>> GetAvancesWithEmployee(DateTime specificDate)
+        {
+            var avances = new List<Avance>();
+
+            await using var connection = new SqlConnection(_connectionString);
+
+            // SQL query to filter by specific date
+            var query = @"
+        SELECT 
+            a.AvanceID,
+            a.EmployeID,
+            e.Nom,
+            e.Prenom,
+            a.Montant,
+            a.Date
+        FROM 
+            [db_aa9d4f_gestionpersonnel].[dbo].[Avances] a
+        INNER JOIN 
+            [db_aa9d4f_gestionpersonnel].[dbo].[Employes] e
+        ON 
+            a.EmployeID = e.EmployeID
+        WHERE 
+            a.Date = @Date
+        ORDER BY 
+            a.Date DESC;"; // Filter by specific date and order by date descending
+
+            using var cmd = new SqlCommand(query, connection);
+
+            // Add the specific date parameter to the query
+            cmd.Parameters.AddWithValue("@Date", specificDate);
+
+            var dataTable = new DataTable();
+            var da = new SqlDataAdapter(cmd);
+
+            await connection.OpenAsync();
+            da.Fill(dataTable);
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                var avance = new Avance
+                {
+                    AvanceID = (int)row["AvanceID"],
+                    EmployeID = (int)row["EmployeID"],
+                    NomEmployee = row["Nom"].ToString(),
+                    PrenomEmployee = row["Prenom"].ToString(),
+                    Montant = (decimal)row["Montant"],
+                    Date = (DateTime)row["Date"]
+                };
+
+                avances.Add(avance);
+            }
+
+            return avances;
+        }
+
 
     }
 }

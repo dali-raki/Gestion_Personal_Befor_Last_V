@@ -1,0 +1,87 @@
+﻿@using GestionPersonnel.Models.Employe
+@using GestionPersonnel.Services
+@inject IEmployeService EmployeService
+@inject ISalaireService SalaireService
+
+<div class="modal-overlay" style="@DisplayStyle">
+    <div class="modal-content">
+        <span class="close-btn" @onclick="Hide">&times;</span>
+        <h3>Mise à Jour de Montant Retiré</h3>
+
+        <form>
+            <label>Employés</label>
+            <select @bind="selectedEmployeId">
+                <option value="">-- Choisir L'Équipe --</option>
+                @if (employes != null)
+                {
+                    @foreach (var employe in employes)
+                    {
+                        <option value="@employe.EmployeID">@employe.Nom @employe.Prenom</option>
+                    }
+                }
+                else
+                {
+                    <option value="">-- Aucun Employé --</option>
+                }
+            </select>
+
+            <label>Date</label>
+            <input type="date" @bind="selectedDate" />
+
+            <label>Valeur de Montant Retiré</label>
+            <input type="number" placeholder="00000.00DA" @bind="montant" />
+
+            <button type="submit" @onclick="SubmitForm">Confirmer</button>
+        </form>
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private List<Employe> employes;
+    private int? selectedEmployeId; // To store the selected employee ID
+    private DateTime? selectedDate; // To store the selected date
+    private decimal montant; // To store the entered amount
+
+    private string DisplayStyle => IsVisible ? "display: flex;" : "display: none;";
+
+    protected override async Task OnInitializedAsync()
+    {
+        employes = await EmployeService.GetEmployeesAsync();
+    }
+
+    private void Hide() => OnClose.InvokeAsync();
+
+    private async Task SubmitForm()
+    {
+        if (selectedEmployeId == null || selectedDate == null || montant <= 0)
+        {
+            // Handle validation errors (e.g., show an error message)
+            Console.WriteLine("Invalid input!");
+            return;
+        }
+
+        try
+        {
+            // Call the service to update the dette
+            await SalaireService.UpdateDetteAsync(selectedEmployeId.Value, montant, selectedDate.Value);
+
+            // Optionally reset form fields
+            selectedEmployeId = null;
+            selectedDate = null;
+            montant = 0;
+
+            Console.WriteLine("Dette updated successfully!");
+        }
+        catch (Exception ex)
+        {
+            // Handle errors (e.g., log or display an error message)
+            Console.WriteLine($"Error updating dette: {ex.Message}");
+        }
+
+        // Close the modal
+        Hide();
+    }
+}
