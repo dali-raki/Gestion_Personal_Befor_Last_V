@@ -140,15 +140,15 @@ namespace GestionPersonnel.Storages.DettesStorages
                         {
                             var paimentinfo = new PaimentsInfo
                             {
-                                EmployeID = Convert.ToInt32(reader["EmployeID"]),
-                                Nom = reader["Nom"].ToString(),
-                                Prenom = reader["Prenom"].ToString(),
-                                NomFonction = reader["NomFonction"].ToString(),
-                                TotaleDette = Convert.ToDecimal(reader["TotaleDette"]),
-                                MontantRetrait = Convert.ToDecimal(reader["MontantRetrait"]),
-                                TotaleAvances = Convert.ToDecimal(reader["TotaleAvances"])
-
+                                EmployeID = reader["EmployeID"] != DBNull.Value ? Convert.ToInt32(reader["EmployeID"]) : 0,  // Default to 0 if null
+                                Nom = reader["Nom"] != DBNull.Value ? reader["Nom"].ToString() : string.Empty,  // Default to empty string if null
+                                Prenom = reader["Prenom"] != DBNull.Value ? reader["Prenom"].ToString() : string.Empty,  // Default to empty string if null
+                                NomFonction = reader["Fonction"] != DBNull.Value ? reader["Fonction"].ToString() : string.Empty,  // Default to empty string if null
+                                TotaleDette = reader["TotaleDette"] != DBNull.Value ? Convert.ToDecimal(reader["TotaleDette"]) : 0m,  // Default to 0 if null
+                                MontantRetrait = reader["MontantRetrait"] != DBNull.Value ? Convert.ToDecimal(reader["MontantRetrait"]) : 0m,  // Default to 0 if null
+                                TotaleAvances = reader["TotaleAvances"] != DBNull.Value ? Convert.ToDecimal(reader["TotaleAvances"]) : 0m  // Default to 0 if null
                             };
+
 
                             paimentsInfos.Add(paimentinfo);
                         }

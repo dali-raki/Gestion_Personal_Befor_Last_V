@@ -93,15 +93,41 @@ namespace GestionPersonnel.Storages.SalairesBaseStorages
         public async Task<int> Add(SalairesBase salairesBase)
         {
             await using var connection = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand(InsertQuery, connection);
 
-            cmd.Parameters.AddWithValue("@SalaireBase", salairesBase.SalaireBase);
-            cmd.Parameters.AddWithValue("@TypePaiementID", salairesBase.TypePaiementID);
-            cmd.Parameters.AddWithValue("@EmplyeId", salairesBase.EmplyeId);
+            // Vérifier si un salaire existe déjà pour l'employé
+            const string CheckIfExistsQuery = "SELECT IdSalaireBase FROM SalairesBase WHERE EmployeID = @EmplyeId";
+            using var checkCmd = new SqlCommand(CheckIfExistsQuery, connection);
+            checkCmd.Parameters.AddWithValue("@EmplyeId", salairesBase.EmplyeId);
 
             await connection.OpenAsync();
-            var id = await cmd.ExecuteScalarAsync();
-            return Convert.ToInt32(id);
+            var existingId = await checkCmd.ExecuteScalarAsync();
+
+            if (existingId != null)
+            {
+                // Si un enregistrement existe, effectuer une mise à jour
+                const string UpdateQuery = "UPDATE SalairesBase SET SalaireBase = @SalaireBase, TypePaiementID = @TypePaiementID " +
+                                           "WHERE IdSalaireBase = @IdSalaireBase";
+                using var updateCmd = new SqlCommand(UpdateQuery, connection);
+                updateCmd.Parameters.AddWithValue("@SalaireBase", salairesBase.SalaireBase);
+                updateCmd.Parameters.AddWithValue("@TypePaiementID", salairesBase.TypePaiementID);
+                updateCmd.Parameters.AddWithValue("@IdSalaireBase", existingId);
+
+                await updateCmd.ExecuteNonQueryAsync();
+                return Convert.ToInt32(existingId);
+            }
+            else
+            {
+                // Sinon, insérer un nouvel enregistrement
+                const string InsertQuery = "INSERT INTO SalairesBase (SalaireBase, TypePaiementID, EmployeID) " +
+                                           "VALUES (@SalaireBase, @TypePaiementID, @EmplyeId); SELECT SCOPE_IDENTITY();";
+                using var insertCmd = new SqlCommand(InsertQuery, connection);
+                insertCmd.Parameters.AddWithValue("@SalaireBase", salairesBase.SalaireBase);
+                insertCmd.Parameters.AddWithValue("@TypePaiementID", salairesBase.TypePaiementID);
+                insertCmd.Parameters.AddWithValue("@EmplyeId", salairesBase.EmplyeId);
+
+                var id = await insertCmd.ExecuteScalarAsync();
+                return Convert.ToInt32(id);
+            }
         }
 
 
