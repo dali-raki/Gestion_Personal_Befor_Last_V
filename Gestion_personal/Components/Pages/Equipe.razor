@@ -60,7 +60,7 @@
 
 <NewequipeADDEquipe IsVisible="isAddEquipeModalVisible" OnClose="HideAddEquipePopup" />
 <NewequipeUPDEquipe IsVisible="isUpdateddEquipeModalVisible" OnClose="HideUddEquipePopup"></NewequipeUPDEquipe>
-<NewequipeADDPost IsVisible="isAddpopsModalVisible" OnClose="HideAddEquipePopup"></NewequipeADDPost>
+<NewequipeADDPost IsVisible="isAddpopsModalVisible" OnClose="HideAddEquipePopup" OnSave="@a"></NewequipeADDPost>
 
 @code {
     private List<EquipesInfos> equipesinfo;
@@ -72,6 +72,12 @@
     protected override async Task OnInitializedAsync()
     {
         equipesinfo = await EquipeService.GetEquipePostesInfoAsync();
+    }
+
+    public async Task a()
+    {
+        equipesinfo = await EquipeService.GetEquipePostesInfoAsync();
+
     }
 
     private void ShowAddEquipePopup() => isAddEquipeModalVisible = true;

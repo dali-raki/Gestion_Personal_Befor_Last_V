@@ -6,6 +6,7 @@
 @inject IPosteService PosteService
 @inject IEquipeService EquipeService
 @inject IEmployeService EmployeService
+@rendermode InteractiveServer
 
 <div class="modal-overlay" style="@DisplayStyle">
     <div class="modal-content">
@@ -60,12 +61,17 @@
 @code {
     [Parameter] public bool IsVisible { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<EquipesInfos> OnSave { get; set; }
+    
     private List<Employe> employees;
     private List<Equipe> equipes;
     private List<EmployeeEquipe> employeeequipe;
     private List<int> SelectedEmployeeIds { get; set; } = new List<int>();
     private string DisplayStyle => IsVisible ? "display: flex;" : "display: none;";
-    private void Hide() => OnClose.InvokeAsync();
+    private void Hide() => IsVisible = false;
+   
+
+  
     private DateTime? DateFin { get; set; }
 
     private string IdPoste { get; set; }
@@ -73,9 +79,19 @@
 
     protected override async Task OnInitializedAsync()
     {
-        equipes = await EquipeService.GetAllEquipesAsync();
+        /*equipes = await EquipeService.GetAllEquipesAsync();
+        */
+        LoadEquipe();
 
     }
+
+    public async  void LoadEquipe()
+    {
+        equipes = await EquipeService.GetAllEquipesAsync();
+
+
+    }
+
     protected override async Task OnParametersSetAsync()
     {
 
@@ -115,7 +131,9 @@
         {
             // Ensure DateFin is not null before calling the service
             await PosteService.InsererDonneesPoste(IdPoste, SelectedEquipeId.Value, DateFin ?? DateTime.MinValue, SelectedEmployeeIds);
+            await OnSave.InvokeAsync();
             Hide();
+            
         }
         else
         {
