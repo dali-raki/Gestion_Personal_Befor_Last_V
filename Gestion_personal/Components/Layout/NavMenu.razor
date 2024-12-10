@@ -1,38 +1,56 @@
-﻿<div class="nav-bar">
-
-
-	<div class="nav-bar-logo">
-		<img src="Images/FABELEC.png" />
+﻿<div class="top-row ps-3 navbar navbar-dark">
+	<div class="container-fluid">
+		<a class="navbar-brand" href="">FABELEC</a>
 	</div>
-
-
-	<div class="nav-bar-text">
-		<h1>Welcom to APP</h1>
-	</div>
-
-
-
-
 </div>
 
-<div class="side-bar">
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+	<nav class="flex-column">
+
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+				<span class="bi bi-house-door-fill" aria-hidden="true"></span> Dashboard
+			</NavLink>
+		</div>
+
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="Employe">
+				<span class="bi bi-people-fill" aria-hidden="true"></span> Employe
+			</NavLink>
+		</div>
+
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="Equipe">
+				<span class="bi bi-people" aria-hidden="true"></span> Equipe
+			</NavLink>
+		</div>
+
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="Pointage">
+				<span class="bi bi-calendar-check" aria-hidden="true"></span> Pointage
+			</NavLink>
+		</div>
+
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="paiement">
+				<span class="bi bi-cash" aria-hidden="true"></span> paiement
+			</NavLink>
+		</div>
+
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="Dette">
+				<span class="bi bi-currency-exchange" aria-hidden="true"></span> Dette
+			</NavLink>
+		</div>
+
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="Disconnect">
+				<span class="bi bi-box-arrow-right" aria-hidden="true"></span> Disconnect
+			</NavLink>
+		</div>
 
 
-	<a href="#"><div><i class="fa-solid fa-bars"></i> <p>Menu</p> </div></a>
-	<a href="/Dashboard">	<div><i class="fa-solid fa-house"></i><p>Dashboard</p></div></a>
-	<a href="/employe">	<div><i class="fa-solid fa-user"></i> <p>Employe</p> </div></a>
-	<a href="/Equipe">	<div><i class="fa-solid fa-user-group"></i><p>Equipe</p> </div></a>
-	<a href="/Pointage">	<div><i class="fa-solid fa-clipboard-list"></i> <p>Pointage</p></div></a>
-	<a href="/Paiement">	<div><i class="fa-solid fa-hand-holding-dollar"></i> <p>Paiement</p></div></a>
-	<a href="/Dette">	<div><i class="fa-solid fa-sack-xmark"></i> <p>Dette</p></div></a>
-	<a href="#">	<div><i class="fa-solid fa-right-from-bracket"></i> <p>Desconnecter</p></div></a>
-	
-	
-	
-
-
-
-
-
-
+	</nav>
 </div>

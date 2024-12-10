@@ -19,7 +19,7 @@ namespace GestionPersonnel.Models.Pointage
         public string Remarque { get; set; }
         public string Stat
         {
-            get => HeuresTravaillees > 1 ? "Présent" : "Absent";
+            get => HeuresTravaillees > 0 ? "Présent" : "Absent";
             set { }
         }
 
@@ -32,6 +32,8 @@ namespace GestionPersonnel.Models.Pointage
         public string NomEmploye { get; set; }
         public string PrenomEmploye { get; set; }
         public string NomFonction { get; set; }
+        public decimal JourneeCoefficient { get; set; }
+        public decimal HeuresSupplementairesCoefficient { get; set; }
 
     }
 }

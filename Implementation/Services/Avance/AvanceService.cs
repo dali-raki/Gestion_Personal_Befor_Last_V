@@ -17,27 +17,67 @@ namespace GestionPersonnel.Services
 
         public async Task<List<Avance>> GetAllAsync()
         {
-            return await _avanceStorage.GetAll();
+            try
+            {
+                return await _avanceStorage.GetAll();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("error", exception);
+                throw;
+            }
         }
 
         public async Task<Avance> GetByIdAsync(int avanceId)
         {
-            return await _avanceStorage.GetById(avanceId);
+            try
+            {
+                return await _avanceStorage.GetById(avanceId);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("error", exception);
+                throw;
+            }
         }
 
         public async Task<List<Avance>> GetByEmployeIdAsync(int employeId)
         {
-            return await _avanceStorage.GetByEmployeId(employeId);
+            try
+            {
+                return await _avanceStorage.GetByEmployeId(employeId);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("error", exception);
+                throw;
+            }
         }
 
         public async Task<List<Avance>> GetByDateAsync(DateTime date)
         {
-            return await _avanceStorage.GetByDate(date);
+            try
+            {
+                return await _avanceStorage.GetByDate(date);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("error", exception);
+                throw;
+            }
         }
 
         public async Task<int> AddAsync(Avance avance)
         {
-            return await _avanceStorage.Add(avance);
+            try
+            {
+                return await _avanceStorage.Add(avance);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("error", exception);
+                throw;
+            }
         }
 
         public async Task UpdateAsync(Avance avance)
@@ -54,9 +94,10 @@ namespace GestionPersonnel.Services
         {
             return await _avanceStorage.GetTotale(date);
         }
+
         public async Task<List<Avance>> GetAvancesWithEmployee(DateTime specificDate)
         {
-            return await _avanceStorage.GetAvancesWithEmployee( specificDate);
+            return await _avanceStorage.GetAvancesWithEmployee(specificDate);
         }
     }
 }

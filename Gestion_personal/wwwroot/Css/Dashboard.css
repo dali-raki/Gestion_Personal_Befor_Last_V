@@ -1,40 +1,62 @@
 ﻿.cards {
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 20px; /* Consistent spacing between cards */
+    margin: 20px;
 }
 
 .card {
     display: flex;
     flex-direction: row;
-    border-radius: 3px;
+    align-items: center;
+    border-radius: 8px;
+    overflow: hidden; /* Ensure child elements don't overflow */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: 300px; /* Fixed width for consistency */
+    background-color: #f4f4f4; /* Default background for fallback */
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Subtle lift on hover */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
 }
 
 .card-content {
     display: flex;
     flex-direction: column;
-    margin: 19px;
+    margin: 15px;
     color: white;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: bold;
-    
+    flex: 1;
 }
 
-    .card-content .number {
-        display: flex;
+.card-content .number {
+    display: flex;
+    align-items: baseline;
+    font-size: 1.5rem;
+}
 
-    }
-        .card-content .number p, .card-content .titel p {
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-        .card-icon {
+.card-content .number p {
+    margin-right: 5px;
+}
+
+.card-content .titel p {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    font-size: 1rem;
+    margin-top: 5px;
+}
+
+.card-icon {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 10px;
+    padding: 10px;
     color: white;
     font-size: 2rem;
 }
-
 
 #card-employes {
     background-color: RoyalBlue;
@@ -44,8 +66,6 @@
     background-color: MediumSeaGreen;
 }
 
-
-
 #card-avance {
     background-color: #FF8000;
 }
@@ -53,3 +73,114 @@
 #card-dette {
     background-color: red;
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .cards {
+        flex-direction: column; /* Stack cards on smaller screens */
+        align-items: center;
+    }
+
+    .card {
+        width: 90%; /* Adjust width for smaller screens */
+    }
+}
+
+#container {
+    min-width: 310px;
+    height: 400px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.highcharts-figure,
+.highcharts-data-table table {
+    min-width: 310px;
+    max-width: 800px;
+    margin: 1em auto;
+}
+
+.highcharts-data-table table {
+    font-family: Verdana, sans-serif;
+    border-collapse: collapse;
+    border: 1px solid #ebebeb;
+    margin: 10px auto;
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+.highcharts-data-table caption {
+    padding: 1em 0;
+    font-size: 1.2em;
+    color: #555;
+}
+
+.highcharts-data-table th {
+    font-weight: 600;
+    padding: 0.5em;
+}
+
+.highcharts-data-table td,
+.highcharts-data-table th,
+.highcharts-data-table caption {
+    padding: 0.5em;
+}
+
+.highcharts-data-table thead tr,
+.highcharts-data-table tr:nth-child(even) {
+    background: #f8f8f8;
+}
+
+.highcharts-data-table tr:hover {
+    background: #f1f7ff;
+}
+
+/* Chart container styling */
+.chart_part {
+    display: flex; /* Align children side by side */
+    gap: 20px; /* Add space between charts */
+    justify-content: space-between; /* Evenly distribute charts */
+    align-items: center; /* Align charts vertically */
+    padding: 20px; /* Add padding around the container */
+    background-color: #f9f9f9; /* Subtle background color */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+/* Individual chart styling */
+.chart1, .chart2 {
+    flex: 1; /* Equal width for both charts */
+    border: 1px solid #ccc; /* Subtle border */
+    background-color: #fff; /* White background for charts */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    padding: 15px; /* Add inner padding */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effects */
+}
+
+/* Hover effect for charts */
+.chart1:hover, .chart2:hover {
+    transform: translateY(-5px); /* Lift up on hover */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+/* Chart containers (for charts like Highcharts) */
+#container, #container2 {
+    width: 100%;
+    height: 300px; /* Fixed height for the charts */
+    border-radius: 5px; /* Rounded corners for the chart area */
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+    .chart_part {
+        flex-direction: column; /* Stack charts vertically */
+        gap: 15px;
+    }
+
+    .chart1, .chart2 {
+        width: 100%; /* Full width for stacked charts */
+    }
+}
+

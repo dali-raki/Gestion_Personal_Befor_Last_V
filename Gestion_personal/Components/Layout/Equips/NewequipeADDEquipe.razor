@@ -17,7 +17,7 @@
         <h3>Ajouter Equipe</h3>
 
         <form class="form-container" @onsubmit="HandleSubmit">
-          >
+          
             <div class="form-group">
                 <label>Nom D'Equipe</label>
                 <input type="text" class="form-control" placeholder="Nom D'Equipe" @bind="equipeName" required/>
@@ -61,29 +61,30 @@
                 </select>
             </div>
 
-            
+
             <div class="form-group">
                 <label>Choisir Les Membres D'equipe</label>
-                <div class="checkbox-group">
+                <div class="checkbox-group scrollable">
                     @if (filteredEmployes != null && filteredEmployes.Any())
                     {
-                        @foreach (var employe in filteredEmployes)
-                        {
-                            <label>
-                                <input type="checkbox"
-                                       @bind="employeeSelection[employe.EmployeID]"/>
-                                @employe.Nom @employe.Prenom
-                            </label>
-                        }
+                    @foreach (var employe in filteredEmployes)
+                    {
+                    <label>
+                        <input type="checkbox"
+                               @bind="employeeSelection[employe.EmployeID]" />
+                        @employe.Nom @employe.Prenom
+                    </label>
+                    }
                     }
                     else
                     {
-                        <p>Aucun employé disponible</p>
+                    <p>Aucun employé disponible</p>
                     }
                 </div>
             </div>
 
-           
+
+
             <div class="form-group">
                 <button type="submit" class="btn-submit">Ajouter Equipe</button>
             </div>
@@ -295,4 +296,11 @@
     .btn-submit:hover {
         background-color: #2980b9;
     }
+    .scrollable {
+        max-height: 200px; /* Adjust this value as needed */
+        overflow-y: auto;
+        border: 1px solid #ccc; /* Optional: Add a border for better visibility */
+        padding: 5px; /* Optional: Add padding for better spacing */
+    }
+
 </style>

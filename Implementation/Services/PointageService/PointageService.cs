@@ -45,5 +45,11 @@ namespace GestionPersonnel.Services
         {
             await _pointageStorage.Delete(id);
         }
+
+        public async Task <List<Pointage>> GetAll_Pointage()
+        {
+            return await _pointageStorage.GetAllWithCoefficients();
+
+        }
     }
 }

@@ -165,7 +165,65 @@ namespace GestionPersonnel.Storages.PointagesStorages
 
 
 
+ private const string _selectWithCoefficientsQuery = @"
+            SELECT
+                pointage.PointageID,
+                pointage.EmployeID,
+                pointage.Date,
+                pointage.HeureEntree,
+                pointage.HeureSortie,
+                pointage.HeuresTravaillees,
+                pointage.Remarque,
+                cof.JourneeCoefficient,
+                cof.HeuresSupplementairesCoefficient,
+                  e.Nom AS EmployeNom, 
+                e.Prenom AS EmployePrenom, 
+                f.NomFonction AS FonctionNom
+            FROM
+                Pointage pointage
+             JOIN
+                CoefficientsTravail cof
+            ON
+                pointage.EmployeID = cof.EmployeID
+                AND pointage.Date = cof.Date
+            JOIN 
+                [db_aa9d4f_gestionpersonnel].[dbo].[Employes] e ON pointage.EmployeID = e.EmployeID
+            JOIN 
+                [db_aa9d4f_gestionpersonnel].[dbo].[Fonctions] f ON e.FonctionID = f.FonctionID;
+        ";
 
+        private static Pointage GetPointageWithCoefficientsFromDataRow(DataRow row)
+        {
+            return new Pointage
+            {
+                PointageID = row["PointageID"] == DBNull.Value ? 0 : (int)row["PointageID"],
+                EmployeID = row["EmployeID"] == DBNull.Value ? 0 : (int)row["EmployeID"],
+                Date = row["Date"] == DBNull.Value ? DateTime.MinValue : (DateTime)row["Date"],
+                HeureEntree = row["HeureEntree"] == DBNull.Value ? TimeSpan.Zero : (TimeSpan)row["HeureEntree"],
+                HeureSortie = row["HeureSortie"] == DBNull.Value ? TimeSpan.Zero : (TimeSpan)row["HeureSortie"],
+                HeuresTravaillees = row["HeuresTravaillees"] == DBNull.Value ? 0m : (decimal)row["HeuresTravaillees"],
+                Remarque = row["Remarque"] == DBNull.Value ? null : (string)row["Remarque"],
+                JourneeCoefficient = row["JourneeCoefficient"] == DBNull.Value ? 0m : (decimal)row["JourneeCoefficient"],
+                HeuresSupplementairesCoefficient = row["HeuresSupplementairesCoefficient"] == DBNull.Value ? 0m : (decimal)row["HeuresSupplementairesCoefficient"],
+                NomEmploye = row["EmployeNom"] == DBNull.Value ? null : (string)row["EmployeNom"],
+                PrenomEmploye = row["EmployePrenom"] == DBNull.Value ? null : (string)row["EmployePrenom"],
+                NomFonction = row["FonctionNom"] == DBNull.Value ? null : (string)row["FonctionNom"]
+            };
+        }
+
+        public async Task<List<Pointage>> GetAllWithCoefficients()
+        {
+            await using var connection = new SqlConnection(_connectionString);
+            SqlCommand cmd = new(_selectWithCoefficientsQuery, connection);
+
+            DataTable dataTable = new();
+            SqlDataAdapter da = new(cmd);
+
+            connection.Open();
+            da.Fill(dataTable);
+
+            return (from DataRow row in dataTable.Rows select GetPointageWithCoefficientsFromDataRow(row)).ToList();
+        }
 
 
 

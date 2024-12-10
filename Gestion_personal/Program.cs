@@ -1,8 +1,6 @@
 using Blazored.Modal;
 using Gestion_personal.Components;
 using GestionPersonnel.Services;
-using Implementation.App.Employee;
-using MudBlazor.Services;
 using Services;
 using Services.Interfaces;
 using GestionPersonnel.Storages.PointagesStorages;

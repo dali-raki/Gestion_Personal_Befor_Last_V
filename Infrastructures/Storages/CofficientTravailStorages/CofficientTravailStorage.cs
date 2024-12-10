@@ -20,19 +20,19 @@ namespace GestionPersonnel.Storages.CoefficientTravailStorages
             _connectionString = connectionString;
         }
         private const string SelectByEmployeIdAndDateQuery =
-    "SELECT * FROM CoefficientTravail WHERE EmployeID = @EmployeID AND Date = @Date";
+    "SELECT * FROM CoefficientsTravail WHERE EmployeID = @EmployeID AND Date = @Date";
 
-        private const string SelectAllQuery = "SELECT * FROM CoefficientTravail";
-        private const string SelectByIdQuery = "SELECT * FROM CoefficientTravail WHERE CoefficientID = @id";
-        private const string InsertQuery = "INSERT INTO CoefficientTravail (EmployeID, Date, JourneeCoefficient, HeuresSupplementairesCoefficient) " +
+        private const string SelectAllQuery = "SELECT * FROM CoefficientsTravail";
+        private const string SelectByIdQuery = "SELECT * FROM CoefficientsTravail WHERE CoefficientID = @id";
+        private const string InsertQuery = "INSERT INTO CoefficientsTravail (EmployeID, Date, JourneeCoefficient, HeuresSupplementairesCoefficient) " +
                                            "VALUES (@EmployeID, @Date, @JourneeCoefficient, @HeuresSupplementairesCoefficient); SELECT SCOPE_IDENTITY();";
-        private const string UpdateQuery = "UPDATE CoefficientTravail SET EmployeID = @EmployeID, Date = @Date, " +
+        private const string UpdateQuery = "UPDATE CoefficientsTravail SET EmployeID = @EmployeID, Date = @Date, " +
                                            "JourneeCoefficient = @JourneeCoefficient, HeuresSupplementairesCoefficient = @HeuresSupplementairesCoefficient " +
                                            "WHERE CoefficientID = @CoefficientID;";
-        private const string DeleteQuery = "DELETE FROM CoefficientTravail WHERE CoefficientID = @CoefficientID;";
+        private const string DeleteQuery = "DELETE FROM CoefficientsTravail WHERE CoefficientID = @CoefficientID;";
         private const string SelectTotalHeuresSupplementairesByMonthQuery = @"
     SELECT SUM(HeuresSupplementairesCoefficient) AS TotalHeuresSupplementaires
-    FROM CoefficientTravail
+    FROM CoefficientsTravail
     WHERE EmployeID = @EmployeID AND
           YEAR(Date) = @Year AND
           MONTH(Date) = @Month";
@@ -120,7 +120,7 @@ namespace GestionPersonnel.Storages.CoefficientTravailStorages
             await connection.OpenAsync();
             await cmd.ExecuteNonQueryAsync();
         }
-        public async Task<List<CoefficientTravail>> GetByEmployeIdAndDate(int employeId, DateTime date)
+        public async Task<CoefficientTravail> GetByEmployeIdAndDate(int employeId, DateTime date)
         {
             await using var connection = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand(SelectByEmployeIdAndDateQuery, connection);
@@ -134,7 +134,10 @@ namespace GestionPersonnel.Storages.CoefficientTravailStorages
             await connection.OpenAsync();
             da.Fill(dataTable);
 
-            return (from DataRow row in dataTable.Rows select GetCoefficientTravailFromDataRow(row)).ToList();
+            if (dataTable.Rows.Count == 0)
+                throw new KeyNotFoundException($"CoefficientTravail with ID {employeId} not found.");
+
+            return GetCoefficientTravailFromDataRow(dataTable.Rows[0]);
         }
         public async Task<decimal> GetTotalHeuresSupplementairesByMonth(int employeId, DateTime Date)
         {

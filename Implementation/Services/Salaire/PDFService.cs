@@ -32,10 +32,10 @@ namespace GestionPersonnel.Services
                 double yPoint = margin;
 
                 
-                gfx.DrawString("Fiche de Paie", titleFont, XBrushes.Black,
+                /*gfx.DrawString("Fiche de Paie", titleFont, XBrushes.Black,
                     new XRect(0, yPoint, page.Width, page.Height),
                     XStringFormats.TopCenter);
-                yPoint += 40;
+                yPoint += 40;*/
 
                 
                 gfx.DrawString($"Date de génération: {DateTime.Now:dd/MM/yyyy}", regularFont, XBrushes.Black,

@@ -13,5 +13,6 @@ namespace GestionPersonnel.Services
         Task Add(Pointage pointage);
         Task Update(Pointage pointage);
         Task Delete(int id);
+        Task <List<Pointage>> GetAll_Pointage();
     }
 }
