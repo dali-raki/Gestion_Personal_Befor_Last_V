@@ -5,7 +5,7 @@
 @inject IFonctionService FonctionService
 
 @code {
-    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public bool IsVisibleAddEmploye { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
     [Parameter] public EventCallback<Employe> OnSave { get; set; }
     [Parameter] public Employe Employee { get; set; } = new Employe();
@@ -15,19 +15,19 @@
 
     protected override async Task OnInitializedAsync()
     {
-
+          Employee.DateDeNaissance = DateTime.Today;
+        Employee.DateEntree = DateTime.Today;
 
     }
     protected override async Task OnParametersSetAsync()
     {
 
-        if (IsVisible)
+        if (IsVisibleAddEmploye)
         {
             fonctions = await FonctionService.GetAllAsync();
         }
     }
 
-    private string DisplayStyle => IsVisible ? "display: flex;" : "display: none;";
     private void ResetForm()
     {
         Employee = new Employe();
@@ -37,7 +37,7 @@
         Employee.Photo = System.IO.File.ReadAllBytes("wwwroot/images/default-employee.png");
     }
 
-    private void Hide()
+    private void Hide_Popup_AddEmploye()
     {  
         ResetForm(); 
         OnClose.InvokeAsync();
@@ -86,7 +86,7 @@
             
             await OnSave.InvokeAsync(Employee);
             showSuccessPopup();
-            Hide(); 
+            Hide_Popup_AddEmploye(); 
         }
         catch (Exception ex)
         {
@@ -121,21 +121,25 @@
 
    
 }
+@if (IsVisibleAddEmploye)
+{
 
-<div class="popup-overlay" style="@DisplayStyle">
-    <div class="popup-content">
-        <h3>Ajouter Employe</h3>
+    <div class="modal" tabindex="-1" style="display: block;">
+    <div class="modal-dialog" id="css-modal">
+        <div class="modal-content" id="css-modal">
+            <div class="modal-header">
+                <h5 class="modal-title">Ajouter Employe</h5>
+            </div>
+            <div class="modal-body">
         @if (!string.IsNullOrEmpty(errorMessage))
         {
             <div class="alert alert-danger">@errorMessage</div>
         }
         <form @onsubmit="HandleSubmit">
+         
             <div class="form-grid">
-               
-               
-
                 
-                <div class="form-group" style="grid-area: nom;">
+    <div class="form-group" style="grid-area: nom;">
         <label for="Nom">Nom:</label>
         <input id="Nom" type="text" @bind="Employee.Nom" class="form-control" required />
     </div>
@@ -160,6 +164,7 @@
         </div>
              <label for="file-upload" class="upload-button">Choose Photo</label>
     </div>
+                          
                 <div class="form-group">
                     <label for="DateNaissance">Date de Naissance:</label>
                     <input id="DateNaissance" type="date" @bind="Employee.DateDeNaissance" class="form-control" required />
@@ -229,109 +234,26 @@
 
             </div>
 
-            <div class="button-group">
-                <button type="submit" class="btn btn-success">Save</button>
-                <button type="button" class="btn btn-secondary" @onclick="Hide">Cancel</button>
+             <div class="modal-footer">
+
+                            <button type="button" class="btn-c" @onclick="Hide_Popup_AddEmploye">Annuler</button>
+                        <button type="submit" class="btn-p">Sauvegarder</button>
+                 
+               
             </div>
         </form>
     </div>
 </div>
+    </div>
+</div>
+<style>
+    #css-modal {
+        width: 750px;
+        max-width: none;
+    }
+</style>
+}
 <button onclick="@showSuccessPopup"></button>
 <SuccessPopup IsVisible="isSuccessPopupVisible" OnClose="HideSuccessPopup" />
 
 
-<style>
-    .popup-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    }
-
-    .popup-content {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        width: 80%;
-        max-width: 900px;
-        max-height: 700px;
-        overflow-y: auto;
-    }
-
-     .form-grid {
-        display: grid;
-        grid-template-areas: 
-            "nom photo"
-            "prenom photo";
-        gap: 10px;
-    }
-
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .photo-group {
-        grid-column: span 2;
-    }
-     .form-group[style*="grid-area: nom"] {
-        grid-area: nom;
-    }
-    
-    .form-group[style*="grid-area: prenom"] {
-        grid-area: prenom;
-    }
-   .photo-card {
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        padding: 10px;
-        background-color: #f9f9f9;
-        text-align: center;
-    }
-     .form-group.photo-group {
-        grid-area: photo;
-    }
-    .upload-button {
-    cursor: pointer;
-    color: #fff;
-    background-color: #007bff;
-    border: 1px solid #007bff;
-    padding: 0.375rem 0.75rem;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    border-radius: 0.25rem; 
-    transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-
-
-
-    .uploaded-photo {
-        max-width: 100px;
-        max-height: 100px;
-        margin-top: 10px;
-    }
-
-    .button-group {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-        margin-top: 20px;
-    }
-    .upload-button:hover {
-    color: #0056b3; 
-    text-decoration: none;
-    }
-
-</style> 

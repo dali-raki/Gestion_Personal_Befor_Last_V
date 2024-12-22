@@ -3,51 +3,67 @@
 @using GestionPersonnel.Services
 @inject IEmployeService EmployeService
 @inject IDetteService DetteService
+@if (IsVisibleDette)
+{
+    <div class="modal" tabindex="-1" style="display: block;">
+        <div class="modal-dialog w-100">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajouter Dette</h5>
 
-<div class="modal-overlay" style="@DisplayStyle">
-    <div class="modal-content">
-        <span class="close-btn" @onclick="Hide">&times;</span>
-        <h3>Ajouter Dette</h3>
+                </div>
+                <div class="modal-body">
+                    <form @onsubmit="AddDette">
+                        <div class="form-group">
+                            <label>Employes</label>
+                            <select @bind="selectedEmployeId" class="form-control" required>
+                                <option>-- Select Employee --</option>
+                                @if (employes != null)
+                                {
+                                    @foreach (var employe in employes)
+                                    {
+                                        <option value="@employe.EmployeID">@employe.Nom @employe.Prenom</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option>-- Aucun Employe Trouvé --</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Valeur de Dette</label>
+                            <input type="number" class="form-control" @bind="montantDette" placeholder="00000.00DA" required />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" @onclick="@Hide_Popup_AddDette" class="btn-c">Anuller</button>
+                            <button type="submit" class="btn-p">Confirme</button>
 
-        <form @onsubmit="AddDette">
-
-            <label>Employes</label>
-            <select @bind="selectedEmployeId" required>
-                <option value="">-- Choisir Employe --</option>
-                @if (employes != null)
-                {
-                    @foreach (var employe in employes)
-                    {
-                        <option value="@employe.EmployeID">@employe.Nom @employe.Prenom</option>
-                    }
-                }
-                else
-                {
-                    <option>-- Aucun Employe Trouvé --</option>
-                }
-            </select>
-
-            <label>Valeur de Dette</label>
-            <input type="number" @bind="montantDette" placeholder="00000.00DA" required />
-
-            <button type="submit">Confirme</button>
-        </form>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+}
+
 
 @code {
-    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public bool IsVisibleDette { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
 
     private List<Employe> employes;
     private int selectedEmployeId;
     private decimal montantDette;
 
-    private string DisplayStyle => IsVisible ? "display: flex;" : "display: none;";
-
     protected override async Task OnInitializedAsync()
     {
         employes = await EmployeService.GetEmployeesAsync();
+    }
+
+    private void Hide_Popup_AddDette()
+    {   
+        OnClose.InvokeAsync();
     }
 
     private async Task AddDette()
@@ -69,10 +85,12 @@
             selectedEmployeId = 0;
             montantDette = 0;
 
+ 
             // Close the modal after saving
             await OnClose.InvokeAsync();
+            StateHasChanged();
         }
     }
 
-    private void Hide() => OnClose.InvokeAsync();
+ 
 }

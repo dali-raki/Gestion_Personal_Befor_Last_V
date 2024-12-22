@@ -3,9 +3,110 @@
     padding: 0;
 }
 
+
 :root {
     --B1: #1a659e; /* Define a color variable */
     --B2: #004e89;
     --W1: #efefd0; /* Define another color variable */
     --R1: #EE4266;
 }
+
+
+
+.btn-p {
+    background-color: #3498db;
+    color: white;
+    font-size: 16px;
+    font-weight:bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+    .btn-p:hover {
+        background-color: #0570e4;
+        transform: scale(1.05);
+    }
+
+    .btn-p:active {
+        background-color: #004085; 
+    }
+
+
+.btn-d {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+    .btn-d:hover {
+        background-color: #d32f2f; 
+        transform: scale(1.05);
+    }
+
+    .btn-d:active {
+        background-color: #c62828; 
+        transform: scale(0.98); 
+    }
+
+.btn-c {
+    background-color: white; /* White background */
+    color: #007bff; /* Blue text */
+    font-size: 16px;
+    font-weight: bold; /* Font size */
+    padding: 10px 20px; /* Padding for size */
+    border: 2px solid #007bff; /* Blue border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s, transform 0.2s;
+}
+    .btn-c:hover {
+        background-color: #f8f9f9;
+        transform: scale(1.05); /* Soft shadow on hover */
+    }
+
+.btn-c:active {
+        background-color: #004085; /* Darker blue on click */
+        border-color: #003366; /* Darker border when clicked */
+}
+
+/* Title Container */
+.title {
+    display: flex; /* Flexbox for vertical centering */
+    align-items: center; /* Vertical alignment */
+    padding: 5px 20px; /* Compact padding for a professional, minimal look */
+    margin-bottom: 20px; /* Bottom margin for spacing */
+}
+
+    /* Title Text */
+    .title h1 {
+        font-family: 'Poppins', sans-serif; /* Elegant and modern font */
+        font-size: 1.6rem; /* Smaller size but still prominent */
+        font-weight: 600; /* Medium weight for readability */
+        color: #2C3E50; /* Subtle, deep blue color for professionalism */
+        text-transform: uppercase; /* Clear hierarchy with uppercase */
+        letter-spacing: 2px; /* Increased letter spacing for better clarity */
+        margin: 0; /* Remove default margin */
+        padding-left: 10px; /* Subtle padding on the left */
+        border-left: 4px solid #3498db; /* Blue left border for a modern touch */
+    }
+
+        /* Optional: Add a subtle hover effect */
+        .title h1:hover {
+            color: #3498db; /* Change color on hover for interactivity */
+            cursor: pointer; /* Indicate it's clickable (if needed) */
+            transition: color 0.3s ease; /* Smooth transition */
+        }
+
+    /* Optional: Text shadow for more depth */
+    .title h1 {
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    }

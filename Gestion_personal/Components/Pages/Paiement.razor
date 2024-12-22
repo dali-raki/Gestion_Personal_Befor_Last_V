@@ -1,33 +1,33 @@
 ﻿@page "/paiement"
 @using GestionPersonnel.Models.Salaires
-@using GestionPersonnel.Services;
+@using GestionPersonnel.Services
 @inject ISalaireService SalaireService
 @inject IPDFService PDFService
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
-
 <div class="panel-employe">
+    <div class="title">
+        <h1>Paiement</h1>
+    </div>
     <div class="option-employe">
-        <div class="input-group w-25">
-            <input type="text" class="form-control" placeholder="Search" aria-label="Recipient's username" aria-describedby="button-addon2">
-            <input type="date" class="date-input" @bind="selectedDate" />
-            <button class="btn btn-outline-secondary" type="button" id="button-addon2" @onclick="GetSalariesByMonth" >
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
-
+        <div class="input-group w-50">
+            
+                <input type="text" class="form-control" placeholder="Search" @bind="searchQuery" @oninput="OnSearch" aria-label="Search">
+                <input type="date" class="form-control" @bind="selectedDate" />
+                <button class="btn-p" type="button" @onclick="GetSalariesByMonth">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+        
         </div>
-        <div class="btn-employe">
-            <button @onclick="ShowPopup">Ajouter Employeur Paiement</button>
-        </div>
+        <button class="btn-p" @onclick="Show_Popup_Paiement">Ajouter Employeur Paiement</button>
     </div>
 
     <div class="tab-employe">
         <table class="table">
             <thead>
                 <tr>
-                    <th>N</th>
-                    <th>Nom</th>
+                    <th>Nom et Prenom</th>
                     <th>Fonction</th>
                     <th>Type Paiement</th>
                     <th>Salaire</th>
@@ -39,67 +39,96 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var salaire in salaireDetails)
+                @foreach (var salaire in filteredSalaries)
                 {
                     <tr>
-                        <td>1</td>
-                        <td>@salaire.NomEmploye @salaire.PrenomEmploye</td>
-                        <td>@salaire.NomFonction</td>
-                        <td>@salaire.TypePaiement</td>
-                        <td>@salaire.Salaire</td>
-                        <td>@salaire.Primes</td>
-                        <td>@salaire.Avances</td>
-                        <td>@salaire.Dettes</td>
-                        <td>@salaire.SalaireNet</td>
-                        <td>
-                            <button class="btn btn-primary" @onclick="() => GeneratePDF(salaire)">
-                                <i class="fa-solid fa-download"></i> PDF
+                        <td class="text-left align-middle">@salaire.NomEmploye @salaire.PrenomEmploye</td>
+                        <td class="text-center align-middle">@salaire.NomFonction</td>
+                        <td class="text-center align-middle">@salaire.TypePaiement</td>
+                        <td class="text-center align-middle">@salaire.Salaire</td>
+                        <td class="text-center align-middle">@salaire.Primes</td>
+                        <td class="text-center align-middle">@salaire.Avances</td>
+                        <td class="text-center align-middle">@salaire.Dettes</td>
+                        <td class="text-center align-middle">@salaire.SalaireNet</td>
+                        <td class="text-center align-middle">
+                            <button class="btn-d px-3 py-2" @onclick="() => GeneratePDF(salaire)">
+                                <i class="bi bi-filetype-pdf" style="font-weight:bold; font-size:18px;"></i>
                             </button>
                         </td>
                     </tr>
+
                 }
             </tbody>
         </table>
     </div>
 </div>
 
-<NewpaiementPopUp IsVisible="@IsPopupVisible" OnClose="@HidePopup" />
+<NewpaiementPopUp IsVisible="@IsPopupVisible" OnClose="@Hide_Popup_Paiement" />
 
 @code {
     private List<SalaireDetail> salaireDetails = new List<SalaireDetail>();
-    private DateTime? selectedDate; 
+    private List<SalaireDetail> filteredSalaries = new List<SalaireDetail>();
+    private string searchQuery = string.Empty;
+    private DateTime? selectedDate = DateTime.Now;
     private bool IsPopupVisible = false;
 
-    private void ShowPopup() => IsPopupVisible = true;
-    private void HidePopup() => IsPopupVisible = false;
+    private void Show_Popup_Paiement()
+    {
+        IsPopupVisible = true;
+        StateHasChanged(); // Ensure the UI updates when showing the popup
+    }
+
+    private void Hide_Popup_Paiement()
+    {
+        IsPopupVisible = false;
+        StateHasChanged(); // Ensure the UI updates when hiding the popup
+    }
 
     protected override async Task OnInitializedAsync()
     {
-       
         salaireDetails = await SalaireService.GetSalaireDetails();
+        filteredSalaries = salaireDetails;
     }
 
     private async Task GetSalariesByMonth()
     {
         if (selectedDate.HasValue)
         {
-            Console.WriteLine($"Filtering by date: {selectedDate.Value.ToShortDateString()}");
             salaireDetails = await SalaireService.GetSalariesByMonthAsync(selectedDate.Value);
         }
         else
         {
-            Console.WriteLine("No date selected, fetching all salaries.");
             salaireDetails = await SalaireService.GetSalaireDetails();
         }
+        FilterSalaries();
     }
+
+    private void OnSearch()
+    {
+        FilterSalaries();
+    }
+
+    private void FilterSalaries()
+    {
+        if (!string.IsNullOrWhiteSpace(searchQuery))
+        {
+            filteredSalaries = salaireDetails.Where(s =>
+                !string.IsNullOrEmpty(s.NomEmploye) && s.NomEmploye.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                !string.IsNullOrEmpty(s.PrenomEmploye) && s.PrenomEmploye.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                !string.IsNullOrEmpty(s.NomFonction) && s.NomFonction.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        else
+        {
+            filteredSalaries = salaireDetails;
+        }
+    }
+
     private async Task GeneratePDF(SalaireDetail salaire)
     {
-        var pdfBytes = await PDFService.GenerateSalairePDFAsync(salaire); 
+        var pdfBytes = await PDFService.GenerateSalairePDFAsync(salaire);
         var base64String = Convert.ToBase64String(pdfBytes);
         var fileName = "FicheDePaie.pdf";
 
-        
         await JSRuntime.InvokeVoidAsync("downloadFile", $"data:application/pdf;base64,{base64String}", fileName);
     }
-
 }

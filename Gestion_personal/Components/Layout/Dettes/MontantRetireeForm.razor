@@ -1,0 +1,46 @@
+﻿@using GestionPersonnel.Models.Employe
+@using GestionPersonnel.Services
+@inject IEmployeService EmployeService
+@inject ISalaireService SalaireService
+@rendermode InteractiveServer
+
+@if (displayModal)
+{
+    <div class="modal d-flex " tabindex="-1" style="display: block;">
+        <div class="modal-dialog" id="css-modal">
+            <div class="modal-content" id="css-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Mise à Jour de Montant Retiré</h5>
+                   
+                </div>
+                <div class="modal-body">
+                    <form @onsubmit="SubmitForm">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" class="form-control" @bind="selectedDate" />
+                        </div>
+                        <div class="form-group">
+                            <label>Valeur de Montant Retiré</label>
+                            <input type="number" class="form-control" placeholder="00000.00DA" @bind="montant" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-c" @onclick="@Hide_Popup_MontantRetiree">Anuller</button>
+                            <button type="submit" class="btn-p">Confirmer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+    </style>
+
+    
+}
+
+

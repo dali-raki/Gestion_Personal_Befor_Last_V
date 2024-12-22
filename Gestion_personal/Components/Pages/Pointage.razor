@@ -6,30 +6,32 @@
 @rendermode InteractiveServer
 
 <div class="panel-employe">
-    <div class="option-employe d-flex align-items-center mb-3">
-        
-        <div class="input-group me-3 search-input-group">
-            <input type="text" class="form-control form-control-sm" width="10" placeholder="Search" @bind="searchQuery" aria-label="Search" />
-            <button class="btn btn-outline-secondary btn-sm" type="button" @onclick="OnSearch">
+    <div class="title">
+        <h1>Pointage</h1>
+    </div>
+    <div class="option-employe">
+
+        <div class="input-group w-25">
+            <input type="text" class="form-control" placeholder="Search" @bind="searchQuery" />
+            <button class="btn-p" type="button" @onclick="OnSearch">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </button>
         </div>
 
-        
-        <div class="input-group d-flex align-items-center date-input-group">
-            <input type="date" class="form-control form-control-sm" width="10" @bind="selectedDate" />
-            <button class="btn btn-primary btn-sm ms-2" width="10" @onclick="GetPointageByDate">Get</button>
+
+        <div class="btn-employe">
+            <input type="date" class="form-control" @bind="selectedDate" />
+            <button class="btn-p" @onclick="GetPointageByDate">Get</button>
         </div>
     </div>
 
-    
+
     <div class="tab-employe">
-        <table class="table table-bordered">
+        <table class="table">
             <thead>
                 <tr>
-                    <th>N</th>
-                    <th>Nom</th>
-                    <th>Prenom</th>
+
+                    <th>Nom Prenom</th>
                     <th>Fonction</th>
                     <th>Status</th>
                     <th>Heur</th>
@@ -39,25 +41,26 @@
                 </tr>
             </thead>
             <tbody>
-                @if (pointages != null && pointages.Any())
+                @if (filteredPointages != null && filteredPointages.Any())
                 {
-                    @foreach (var pointage in pointages)
+                    @foreach (var pointage in filteredPointages)
                     {
                         <tr>
-                            <td>@pointage.PointageID</td>
-                            <td>@pointage.NomEmploye</td>
-                            <td>@pointage.PrenomEmploye</td>
-                            <td>@pointage.NomFonction</td>
-                            <td>@pointage.Stat</td>
-                            <td>@pointage.HeuresTravaillees</td>
-                            <td>@pointage.JourneeCoefficient<span>%</span></td>
-                            <td>@pointage.Remarque</td>
-                            <td>
-                                <button class="btn btn-primary btn-sm" @onclick="() => ShowModal(pointage)">
+                            <td class="text-left align-middle">@pointage.NomEmploye @pointage.PrenomEmploye</td>
+                            <td class="text-center align-middle">@pointage.NomFonction</td>
+                            <td class="text-center align-middle">@pointage.Stat</td>
+                            <td class="text-center align-middle">@pointage.HeuresTravaillees</td>
+                            <td class="text-center align-middle">
+                                @pointage.JourneeCoefficient<span>%</span>
+                            </td>
+                            <td class="text-center align-middle">@pointage.Remarque</td>
+                            <td class="text-center align-middle">
+                                <button class="btn-p px-3 py-2" @onclick="() => Show_Popup_UpdatePointage(pointage)">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
                             </td>
                         </tr>
+
                     }
                 }
                 else
@@ -71,36 +74,37 @@
     </div>
 </div>
 
-<NewPointagePopUp IsVisible="@isEditPopupVisible"
-                  OnClose="HideModal"
+<NewPointagePopUp IsVisiblePointage="@isVisiblePointage"
+                  OnClose="Hide_Popup_UpdatePointage"
                   Pointage="selectedPointage" />
 
 
 @code {
     private string searchQuery = string.Empty;
-    private DateTime? selectedDate;
+    private DateTime? selectedDate = DateTime.Now;
     private List<ModelsPointage.Pointage> pointages;
-    private bool isEditPopupVisible = false;
+    private List<ModelsPointage.Pointage> filteredPointages;
+    private bool isVisiblePointage = false;
     private ModelsPointage.Pointage selectedPointage;
 
-    private void ShowModal(ModelsPointage.Pointage pointage)
+    private void Show_Popup_UpdatePointage(ModelsPointage.Pointage pointage)
     {
         if (pointage != null)
         {
             selectedPointage = pointage;
-            isEditPopupVisible = true;
+            isVisiblePointage = true;
         }
     }
 
-
-    private void HideModal()
+    private void Hide_Popup_UpdatePointage()
     {
-        isEditPopupVisible = false;
+        isVisiblePointage = false;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        pointages = await PointageService.GetAll_Pointage();
+        pointages = await PointageService.GetByDate(DateTime.Now);
+        filteredPointages = pointages;
     }
 
     private async Task GetPointageByDate()
@@ -113,116 +117,26 @@
         {
             pointages = await PointageService.GetAll_Pointage();
         }
+        FilterPointages();
     }
 
     private void OnSearch()
     {
+        FilterPointages();
+    }
+
+    private void FilterPointages()
+    {
         if (!string.IsNullOrWhiteSpace(searchQuery))
         {
-            pointages = pointages.Where(p =>
-                p.NomEmploye.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
-                p.PrenomEmploye.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
-                p.NomFonction.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
-            ).ToList();
+            filteredPointages = pointages.Where(p =>
+                !string.IsNullOrEmpty(p.NomEmploye) && p.NomEmploye.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                !string.IsNullOrEmpty(p.PrenomEmploye) && p.PrenomEmploye.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                !string.IsNullOrEmpty(p.NomFonction) && p.NomFonction.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        else
+        {
+            filteredPointages = pointages;
         }
     }
 }
-
-
-<style>
-    
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .panel-employe {
-        padding: 20px;
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .option-employe {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 20px;
-    }
-
-    
-    .search-input-group input,
-    .date-input-group input {
-        width: 150px;
-        height: 30px;
-        font-size: 14px;
-    }
-
-    .search-input-group .btn,
-    .date-input-group .btn {
-        height: 30px;
-        padding: 0 8px;
-        font-size: 14px;
-    }
-
-    .tab-employe {
-        overflow-x: auto;
-    }
-
-    .table {
-        width: 100%;
-        margin-top: 20px;
-        border-collapse: collapse;
-    }
-
-    .table-bordered {
-        border: 1px solid #dee2e6;
-    }
-
-    .table th,
-    .table td {
-        padding: 12px;
-        text-align: center;
-        vertical-align: middle;
-    }
-
-    .table th {
-        background-color: #007bff;
-        color: #fff;
-        font-weight: bold;
-        text-transform: uppercase;
-    }
-
-    .table tbody tr {
-        transition: background-color 0.2s ease-in-out;
-    }
-
-        .table tbody tr:hover {
-            background-color: #f1f3f5;
-        }
-
-    .table td {
-        border: 1px solid #dee2e6;
-    }
-
-    .btn-primary {
-        background-color: #007bff;
-        border: none;
-        color: #fff;
-        transition: background-color 0.3s ease-in-out;
-    }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-
-    .btn-outline-secondary {
-        color: #6c757d;
-        border-color: #6c757d;
-    }
-
-        .btn-outline-secondary:hover {
-            background-color: #6c757d;
-            color: #fff;
-        }
-
-</style>

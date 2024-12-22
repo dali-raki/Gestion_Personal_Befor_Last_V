@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GestionPersonnel.Models.Employe;
+using Infrastructures.Domains.Models.Dashboard;
 
 
 namespace Infrastructures.Storages.EmployeStorages
@@ -55,8 +56,53 @@ namespace Infrastructures.Storages.EmployeStorages
 
 
 
+        private const string countNumberOfemployesbyFunctionQuery = @"  SELECT 
+    f.[NomFonction], 
+    e.[FonctionID], 
+    COUNT(*) AS NumberOfEmployees
+FROM 
+    [db_aa9d4f_gestionpersonnel].[dbo].[Employes] e
+INNER JOIN 
+    [db_aa9d4f_gestionpersonnel].[dbo].[Fonctions] f
+ON 
+    e.[FonctionID] = f.[FonctionID]
+GROUP BY 
+    e.[FonctionID],f.[NomFonction] 
+    
+ORDER BY 
+    NumberOfEmployees DESC;
+";
 
-		private static Employe GetEmployeFromDataRow(DataRow row)
+
+        public async Task<List<Countfunction>> GetNumberOfEmployeesByFunction()
+        {
+            await using var connection = new SqlConnection(_connectionString);
+            SqlCommand cmd = new(countNumberOfemployesbyFunctionQuery, connection);
+
+            DataTable dataTable = new();
+            SqlDataAdapter da = new(cmd);
+
+            await connection.OpenAsync();
+            da.Fill(dataTable);
+
+            var result = new List<Countfunction>();
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                var countFunction = new Countfunction
+                {
+                    Name = (string)row["NomFonction"],
+                    FunctionId = (int)row["FonctionID"],
+                    Total = (int)row["NumberOfEmployees"]
+                };
+                result.Add(countFunction);
+            }
+
+            return result;
+        }
+
+
+        private static Employe GetEmployeFromDataRow(DataRow row)
 		{
 			return new Employe
 			{

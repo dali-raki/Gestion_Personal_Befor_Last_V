@@ -7,6 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Infrastructures.Domains.Models.Dashboard;
 
 namespace GestionPersonnel.Storages.EmployeesStorages
 {
@@ -50,9 +51,6 @@ namespace GestionPersonnel.Storages.EmployeesStorages
     FROM Employes E
     INNER JOIN Fonctions F ON E.FonctionID = F.FonctionID
     WHERE E.Nom = @Nom AND E.Prenom = @Prenom AND F.NomFonction = @NomFonction";
-
-     
-
 
         private static Employee GetEmployeFromDataRow(DataRow row)
         {

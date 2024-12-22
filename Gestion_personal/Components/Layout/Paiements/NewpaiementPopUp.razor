@@ -1,68 +1,74 @@
-﻿@using GestionPersonnel.Models.Employe
+﻿@using GestionPersonnel.Models.SalairesBase
 @using GestionPersonnel.Models.TypeDePaiment
-@using GestionPersonnel.Models.SalairesBase
-@using GestionPersonnel.Services;
+@using GestionPersonnel.Services
 @using Implementation.Services.SalaireBase
-@inject IEmployeService EmployeService
-@inject ITypeDePaiementService TypeDePaiementService
-@inject ISalaireBaseService SalairesBaseService
+@if (IsVisible)
+{
+    <div class="modal" tabindex="-1" style="display: block;">
+        <div class="modal-dialog w-50">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajouter Employeur Paiement</h5>
+                  
+                </div>
+                <div class="modal-body">
+                    <form @onsubmit="HandleFormSubmit">
+                        <div class="form-group">
+                            <label>Choisir Employe</label>
+                            <select @onchange="OnEmployeeChange" class="form-control">
+                                <option value="">-- Choisir Employe --</option>
+                                @if (employes != null)
+                                {
+                                    @foreach (var employe in employes)
+                                    {
+                                        <option value="@employe.EmployeID">@employe.Nom @employe.Prenom</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option>-- Null --</option>
+                                }
+                            </select>
+                        </div>
 
-<div class="modal-overlay" style="@DisplayStyle">
-    <div class="modal-content">
-        <span class="close-btn" @onclick="Hide">&times;</span>
+                        <div class="form-group">
+                            <label>Fonction</label>
+                            <input type="text" class="form-control" placeholder="Fonction" @bind="fonction" readonly />
+                        </div>
 
-        <h3>Ajouter Employeur Paiment</h3>
-        <form @onsubmit="HandleFormSubmit">
-            <div class="form-group">
-                <label>Choisir Employe</label>
-                <select @onchange="OnEmployeeChange">
-                    <option value="">-- Choisir Employe --</option>
-                    @if (employes != null)
-                    {
-                        @foreach (var employe in employes)
-                        {
-                            <option value="@employe.EmployeID">@employe.Nom @employe.Prenom</option>
-                        }
-                    }
-                    else
-                    {
-                        <option>-- Null --</option>
-                    }
-                </select>
+                        <div class="form-group">
+                            <label>Choisir Type de Paiement</label>
+                            <select @bind="selectedTypePaiementId" class="form-control">
+                                <option value="">-- Choisir Type Paiement --</option>
+                                @if (typeDePaiements != null)
+                                {
+                                    @foreach (var typepaiment in typeDePaiements)
+                                    {
+                                        <option value="@typepaiment.TypePaiementID">@typepaiment.NomTypePaiement</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option>-- Null --</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Salaire</label>
+                            <input type="text" class="form-control" placeholder="Salaire" @bind="salaire" />
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn-c" @onclick="ClosePopup">Annuler</button>
+                            <button type="submit" class="btn-p">Ajouter Paiment</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label>Fonction</label>
-                <input type="text" placeholder="Fonction" @bind="fonction" readonly />
-            </div>
-
-            <div class="form-group">
-                <label>Choisir Type de Paiement</label>
-                <select @bind="selectedTypePaiementId">
-                    <option value="">-- Choisir Type Paiement --</option>
-                    @if (typeDePaiements != null)
-                    {
-                        @foreach (var typepaiment in typeDePaiements)
-                        {
-                            <option value="@typepaiment.TypePaiementID">@typepaiment.NomTypePaiement</option>
-                        }
-                    }
-                    else
-                    {
-                        <option>-- Null --</option>
-                    }
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Salaire</label>
-                <input type="text" placeholder="Salaire" @bind="salaire" />
-            </div>
-
-            <button type="submit" class="submit-btn">Ajouter Paiment</button>
-        </form>
+        </div>
     </div>
-</div>
+}
 
 @code {
     [Parameter] public bool IsVisible { get; set; }
@@ -74,9 +80,11 @@
     private string selectedTypePaiementId;
     private string salaire;
     private string fonction;
-
     private Employe selectedEmploye;
-    private string DisplayStyle => IsVisible ? "display: flex;" : "display: none;";
+
+    [Inject] private IEmployeService EmployeService { get; set; }
+    [Inject] private ITypeDePaiementService TypeDePaiementService { get; set; }
+    [Inject] private ISalaireBaseService SalairesBaseService { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -96,11 +104,7 @@
                 };
 
             await SalairesBaseService.Add(salairesBase);
-            Hide();
-        }
-        else
-        {
-            
+            ClosePopup();
         }
     }
 
@@ -110,125 +114,17 @@
 
         if (!string.IsNullOrEmpty(selectedEmployeId))
         {
-            selectedEmploye = employes.FirstOrDefault(e => e.EmployeID.ToString() == selectedEmployeId);
+            selectedEmploye = employes.FirstOrDefault(emp => emp.EmployeID.ToString() == selectedEmployeId);
 
             if (selectedEmploye != null)
             {
-                fonction = selectedEmploye.FonctionName; 
+                fonction = selectedEmploye.FonctionName;
             }
         }
     }
 
-    private void Hide() => OnClose.InvokeAsync();
+    private void ClosePopup()
+    {
+        OnClose.InvokeAsync();
+    }
 }
-
-
-<style>
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0s 0.3s;
-    }
-
-    .modal-overlay[style*="display: flex;"] {
-        opacity: 1;
-        visibility: visible;
-        transition: opacity 0.3s ease;
-    }
-
-    .modal-content {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        width: 400px;
-        max-width: 100%;
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-        position: relative;
-    }
-
-    .close-btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        font-size: 24px;
-        cursor: pointer;
-        color: #333;
-    }
-
-    .modal-content h3 {
-        margin-top: 0;
-        font-size: 1.5rem;
-        color: #333;
-    }
-
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-        display: block;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-        font-size: 1rem;
-    }
-
-    .form-group input,
-    .form-group select {
-        width: 100%;
-        padding: 10px;
-        font-size: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-
-    .form-group input[type="number"] {
-        -moz-appearance: textfield;
-    }
-
-    .form-group select {
-        appearance: none;
-        cursor: pointer;
-    }
-
-    .submit-btn {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 20px;
-        font-size: 1rem;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        width: 100%;
-        text-align: center;
-        margin-top: 1rem;
-    }
-
-    .submit-btn:hover {
-        background-color: #45a049;
-    }
-
-    .validation-summary {
-        margin-top: 10px;
-        color: red;
-        font-size: 0.875rem;
-    }
-
-    .validation-summary ul {
-        padding-left: 20px;
-    }
-
-    .validation-summary li {
-        list-style: inside;
-    }
-</style>

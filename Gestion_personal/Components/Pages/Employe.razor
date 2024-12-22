@@ -5,234 +5,253 @@
 @inject IEmployeService EmployeService
 @inject IFonctionService FonctionService
 
-
 @rendermode InteractiveServer
 
 <div class="panel-employe">
-	<div class="option-employe">
-		<div class="input-group w-25">
-			<input type="text" class="form-control" placeholder="Search" />
-			<button class="btn btn-outline-secondary" type="button">
-				<i class="fa-solid fa-magnifying-glass"></i>
-			</button>
-		</div>
-		<div class="btn-employe">
-			<button @onclick="ShowModifyFonctionPopup" class="btn btn-warning">Modifier Fonction</button>
-			<button @onclick="ShowFonctionPopup">Ajouter Fonction</button>
-			<button class="btn btn-primary" @onclick="ShowPopup">Ajouter Employe</button>
-		</div>
-	</div>
-	<div class="tab-employe">
-		<table class="table">
-			<thead>
-				<tr>
-					<th>N°</th>
-					<th>Nom</th>
-					<th>Prenom</th>
-					<th>N Securite Sociale</th>
-					<th>Fonction</th>
-					<th>Option</th>
-				</tr>
-			</thead>
-			<tbody>
-				@if (employees == null)
-				{
-					<tr>
-						<td colspan="6" class="text-center">Loading...</td>
-					</tr>
-				}
-				else if (employees.Count == 0)
-				{
-					<tr>
-						<td colspan="6" class="text-center">No employees found.</td>
-					</tr>
-				}
-				else
-				{
-					@foreach (var employee in employees)
-					{
-						<tr>
-							<td>@employee.EmployeID</td>
-							<td>@employee.Nom</td>
-							<td>@employee.Prenom</td>
-							<td>@employee.NSecuriteSocial</td>
-							<td>@employee.FonctionName</td>
-							<td>
-								<button class="btn btn-primary" @onclick="() => ShowEditEmployeePopup(employee)">
-									<i class="fa-solid fa-pen-to-square"></i>
-								</button>
-								<button class="btn btn-danger" @onclick="() => ConfirmDelete(employee.EmployeID)">
-									<i class="fa-solid fa-trash"></i>
-								</button>
-							</td>
-						</tr>
-					}
-				}
-			</tbody>
-		</table>
-	</div>
+    <div class="title">
+        <h1>Employe</h1>
+    </div>
+    <div class="option-employe">
+        <div class="input-group w-25">
+            <input type="text" class="form-control" placeholder="Search" @bind-value="searchTerm" @oninput="SearchEmployees" />
+            <button class="btn-p" type="button">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </div>
+        <div class="btn-employe">
+            <button class="btn-p" @onclick="Show_Popup_UpdateFunction">Modifier Fonction</button>
+            <button class="btn-p" @onclick="Show_Popup_AddFunction">Ajouter Fonction</button>
+            <button class="btn-p" @onclick="Show_Popup_AddEmploye">Ajouter Employe</button>
+        </div>
+    </div>
+    <div class="tab-employe">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nom et Prenom</th>
+                    <th>N Securite Sociale</th>
+                    <th>Fonction</th>
+                    <th>Option</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (filteredEmployees == null)
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">Loading...</td>
+                    </tr>
+                }
+                else if (filteredEmployees.Count == 0)
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">No employees found.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var employee in filteredEmployees)
+                    {
+                        <tr>
+                            <td class="text-left align-middle">@employee.Nom @employee.Prenom</td>
+                            <td class="text-center align-middle">@employee.NSecuriteSocial</td>
+                            <td class="text-center align-middle">@employee.FonctionName</td>
+                            <td class="text-center align-middle">
+                                <button class="btn-p px-3 py-2" @onclick="() => Show_Popup_UpdateEmploye(employee)">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button class="btn-d px-3 py-2" @onclick="() => ConfirmDelete(employee.EmployeID)">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
 
-	<NewEmployeePopup IsVisible="@isPopupVisible" OnClose="@HidePopup" OnSave="@HandleSave" />
-	<AddFonctionPopup IsVisible="@isFonctionPopupVisible" OnClose="@HideFonctionPopup" OnSave="@HandleFonctionSave" />
-	<ModifierFonctionPopup @ref="modifierPopupRef" IsVisible="@isModifyFonctionPopupVisible" OnClose="@HideModifyFonctionPopup" OnSave="@HandleModifyFonctionSave" />
-	<SuccessPopup IsVisible="@isSuccessPopupVisible" OnClose="@HideSuccessPopup" />
-	<UpdateEmployeePopup IsVisible="@isEditPopupVisible" Employee="@selectedEmployee" OnClose="@HideEditPopup" OnSave="@HandleEditSave" />
-	<ConfirmationPopup IsVisible="isConfirmVisible" OnClose="HandlePopupResponse" />
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <NewEmployeePopup IsVisibleAddEmploye="@isPopupVisible" OnClose="@Hide_Popup_AddEmploye" OnSave="@HandleSave" />
+    <AddFonctionPopup IsVisibleAddFunction="@isVisibleAddFunction" OnClose="@Hide_Popup_AddFunction" OnSave="@HandleFonctionSave" />
+    <ModifierFonctionPopup IsVisibleUpdateFunction="@isVisibleUpdFunction" OnClose="@Hide_Popup_UpdateFunction" OnSave="@HandleModifyFonctionSave" />
+    <SuccessPopup IsVisible="@isSuccessPopupVisible" OnClose="@HideSuccessPopup" />
+    <UpdateEmployeePopup IsVisibleUpdateEmploye="@isEditPopupVisible" Employee="@selectedEmployee" OnClose="@Hide_Popup_UpdateEmploye" OnSave="@HandleEditSave" />
+    <ConfirmationPopup IsVisibleConfirm="isConfirmVisible" OnClose="HandlePopupResponse" Title="Confirmation" />
 </div>
 
 @code {
-	private ModifierFonctionPopup modifierPopupRef;
-	private List<GestionPersonnel.Models.Employe.Employe> employees;
-	private List<Fonction> fonctions = new List<Fonction>();
-	private GestionPersonnel.Models.Employe.Employe selectedEmployee = new GestionPersonnel.Models.Employe.Employe();
-	private bool isEditPopupVisible = false;
-	private bool isPopupVisible = false;
-	private bool isFonctionPopupVisible = false;
-	private bool isModifyFonctionPopupVisible = false;
-	private bool isSuccessPopupVisible = false;
-	private bool isConfirmVisible = false;
-	private int employeeToDelete;
+    private ModifierFonctionPopup modifierPopupRef;
+    private List<GestionPersonnel.Models.Employe.Employe> employees;
+    private List<GestionPersonnel.Models.Employe.Employe> filteredEmployees;
+    private List<Fonction> fonctions = new List<Fonction>();
+    private GestionPersonnel.Models.Employe.Employe selectedEmployee = new GestionPersonnel.Models.Employe.Employe();
+    private bool isEditPopupVisible = false;
+    private bool isPopupVisible = false;
+    private bool isVisibleAddFunction = false;
+    private bool isVisibleUpdFunction = false;
+    private bool isSuccessPopupVisible = false;
+    private bool isConfirmVisible = false;
+    private int employeeToDelete;
+    private string searchTerm = string.Empty;
 
-	private void ShowPopup() => isPopupVisible = true;
-	private void HidePopup() => isPopupVisible = false;
-	private void ShowFonctionPopup() => isFonctionPopupVisible = true;
-	private void HideFonctionPopup() => isFonctionPopupVisible = false;
-	private void ShowModifyFonctionPopup() => isModifyFonctionPopupVisible = true;
-	private void HideModifyFonctionPopup() => isModifyFonctionPopupVisible = false;
-	private void ShowSuccessPopup() => isSuccessPopupVisible = true;
-	private void HideSuccessPopup() => isSuccessPopupVisible = false;
-	private void HideEditPopup() => isEditPopupVisible = false;
+    private void Show_Popup_AddEmploye() => isPopupVisible = true;
+    private void Hide_Popup_AddEmploye() => isPopupVisible = false;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadEmployees();
-	}
+    private void Show_Popup_AddFunction() => isVisibleAddFunction = true;
+    private void Hide_Popup_AddFunction() => isVisibleAddFunction = false;
 
-	private async Task LoadEmployees()
-	{
-		try
-		{
-			employees = await EmployeService.GetEmployeesAsync();
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine("employees not loaded: " + ex.Message);
-		}
-	}
+    private void Show_Popup_UpdateFunction() => isVisibleUpdFunction = true;
+    private void Hide_Popup_UpdateFunction() => isVisibleUpdFunction = false;
 
-	private async Task LoadFonction()
-	{
-		try
-		{
-			fonctions = await FonctionService.GetAllAsync();
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine("fonctions not loaded: " + ex.Message);
-		}
-	}
+    private void ShowSuccessPopup() => isSuccessPopupVisible = true;
+    private void HideSuccessPopup() => isSuccessPopupVisible = false;
 
+    private void Hide_Popup_UpdateEmploye() => isEditPopupVisible = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEmployees();
+    }
 
-	private async Task HandleSave(GestionPersonnel.Models.Employe.Employe newEmployee)
-	{
-		try
-		{
-			await EmployeService.AddEmployeAsync(newEmployee);
-			await LoadEmployees();
-			ShowSuccessPopup();
-			HidePopup();
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine($"Error saving employee: {ex.Message}");
-		}
-	}
+    private async Task LoadEmployees()
+    {
+        try
+        {
+            employees = await EmployeService.GetEmployeesAsync();
+            filteredEmployees = employees;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("employees not loaded: " + ex.Message);
+        }
+    }
 
-	private async Task HandleFonctionSave()
-	{
-		HideFonctionPopup();
-		await LoadFonction();
-	}
+    private async Task LoadFonction()
+    {
+        try
+        {
+            fonctions = await FonctionService.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("fonctions not loaded: " + ex.Message);
+        }
+    }
 
-	private async Task DeleteEmployee(int employeID)
-	{
-		try
-		{
-			await EmployeService.DeleteEmployeAsync(employeID);
-			await LoadEmployees();
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine($"error deleting employee: {ex.Message}");
-		}
-	}
+    private async Task HandleSave(GestionPersonnel.Models.Employe.Employe newEmployee)
+    {
+        try
+        {
+            await EmployeService.AddEmployeAsync(newEmployee);
+            await LoadEmployees();
+            ShowSuccessPopup();
+            Show_Popup_AddEmploye();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving employee: {ex.Message}");
+        }
+    }
 
-	private async Task HandleModifyFonctionSave(Fonction newFonction)
-	{
-		await LoadFonction();
-		if (modifierPopupRef != null)
-		{
-			await modifierPopupRef.RefreshFonctions(newFonction);
-		}
-		await LoadFonction();
-		await LoadEmployees();
-	}
+    private async Task HandleFonctionSave()
+    {
+        Hide_Popup_AddFunction();
+        await LoadFonction();
+    }
 
+    private async Task DeleteEmployee(int employeID)
+    {
+        try
+        {
+            await EmployeService.DeleteEmployeAsync(employeID);
+            await LoadEmployees();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"error deleting employee: {ex.Message}");
+        }
+    }
 
-	private void ShowEditEmployeePopup(GestionPersonnel.Models.Employe.Employe employee)
-	{
-		selectedEmployee = new GestionPersonnel.Models.Employe.Employe
-			{
-				EmployeID = employee.EmployeID,
-				Nom = employee.Nom,
-				Prenom = employee.Prenom,
-				NSecuriteSocial = employee.NSecuriteSocial,
-				FonctionID = employee.FonctionID,
-				DateDeNaissance = employee.DateDeNaissance,
-				DateEntree = employee.DateEntree,
-				GroupSanguin = employee.GroupSanguin,
-				Adresse = employee.Adresse,
-				NTelephone = employee.NTelephone,
-				SitiationFamiliale = employee.SitiationFamiliale,
-				Photo = employee.Photo
-			};
-		isEditPopupVisible = true;
-	}
+    private async Task HandleModifyFonctionSave(Fonction newFonction)
+    {
+        await LoadFonction();
+        if (modifierPopupRef != null)
+        {
+            await modifierPopupRef.RefreshFonctions(newFonction);
+        }
+        await LoadFonction();
+        await LoadEmployees();
+    }
 
-	private async Task HandleEditSave(GestionPersonnel.Models.Employe.Employe updatedEmployee)
-	{
-		try
-		{
-			await EmployeService.UpdateEmployeAsync(updatedEmployee);
-			await LoadEmployees();
-			ShowSuccessPopup();
-			HideEditPopup();
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine($"error updating employee: {ex.Message}");
-		}
-	}
-	private void ConfirmDelete(int employeID)
-	{
-		isConfirmVisible = true;
-		employeeToDelete = employeID;
-		
-	}
-	
-	private async Task HandlePopupResponse(bool confirmed)
-	{
-		isConfirmVisible = false;
-		if (confirmed)
-		{
-			await EmployeService.DeleteEmployeAsync(employeeToDelete);
-			employees = await EmployeService.GetEmployeesAsync();
-			Console.WriteLine("action confirmed!");
-		}
-		else
-		{
-			Console.WriteLine("action cancelled.");
-		}
-	}
+    private void Show_Popup_UpdateEmploye(GestionPersonnel.Models.Employe.Employe employee)
+    {
+        selectedEmployee = new GestionPersonnel.Models.Employe.Employe
+            {
+                EmployeID = employee.EmployeID,
+                Nom = employee.Nom,
+                Prenom = employee.Prenom,
+                NSecuriteSocial = employee.NSecuriteSocial,
+                FonctionID = employee.FonctionID,
+                DateDeNaissance = employee.DateDeNaissance,
+                DateEntree = employee.DateEntree,
+                GroupSanguin = employee.GroupSanguin,
+                Adresse = employee.Adresse,
+                NTelephone = employee.NTelephone,
+                SitiationFamiliale = employee.SitiationFamiliale,
+                Photo = employee.Photo
+            };
+        isEditPopupVisible = true;
+    }
+
+    private async Task HandleEditSave(GestionPersonnel.Models.Employe.Employe updatedEmployee)
+    {
+        try
+        {
+            await EmployeService.UpdateEmployeAsync(updatedEmployee);
+            await LoadEmployees();
+            ShowSuccessPopup();
+            Hide_Popup_UpdateEmploye();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"error updating employee: {ex.Message}");
+        }
+    }
+
+    private void ConfirmDelete(int employeID)
+    {
+        isConfirmVisible = true;
+        employeeToDelete = employeID;
+    }
+
+    private async Task HandlePopupResponse(bool confirmed)
+    {
+        isConfirmVisible = false;
+        if (confirmed)
+        {
+            await EmployeService.DeleteEmployeAsync(employeeToDelete);
+            employees = await EmployeService.GetEmployeesAsync();
+            Console.WriteLine("action confirmed!");
+        }
+        else
+        {
+            Console.WriteLine("action cancelled.");
+        }
+    }
+
+    private void SearchEmployees(ChangeEventArgs e)
+    {
+        searchTerm = e.Value.ToString();
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            filteredEmployees = employees;
+        }
+        else
+        {
+            filteredEmployees = employees.Where(emp => emp.Nom.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                                       emp.Prenom.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                                       emp.NSecuriteSocial.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                                       emp.FonctionName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+    }
 }

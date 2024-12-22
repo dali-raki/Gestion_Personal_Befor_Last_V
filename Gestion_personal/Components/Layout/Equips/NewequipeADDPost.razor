@@ -8,71 +8,93 @@
 @inject IEmployeService EmployeService
 @rendermode InteractiveServer
 
-<div class="modal-overlay" style="@DisplayStyle">
-    <div class="modal-content">
-        <span class="close-btn" @onclick="Hide">&times;</span>
-        <h3>Ajouter Post</h3>
+@if (IsVisibleAddPost)
+{
+    <div class="modal" tabindex="-1" style="display: block;">
+        <div class="modal-dialog">
 
-        <form @onsubmit="HandleSubmit">
-            <label>Date De Fin De Poste</label>
-            <input type="date" @bind="DateFin" required />
+            <div class="modal-content">
 
-            <label>ID Post</label>
-            <input type="text" @bind="IdPoste" required />
+                <div class="modal-header">
 
-            <label>Choisir L'Equipe</label>
-            <select @onchange="OnEquipeChanged">
-                <option value="">-- Choisir L'Equipe --</option>
-                @if (equipes != null && equipes.Any())
-                {
-                    @foreach (var equipe in equipes)
-                    {
-                        <option value="@equipe.EquipeID">@equipe.NomEquipe</option>
-                    }
-                }
-                else
-                {
-                    <option>-- Aucune Equipe Disponible --</option>
-                }
-            </select>
-
-            <label>Choisir Les Membres Qui Finissent Le Post</label>
-            @if (employees != null)
-            {
-                @foreach (var employe in employees)
-                {
-                    <label>
-                        <input type="checkbox" value="@employe.EmployeID" @onclick="() => ToggleEmployeeSelection(employe.EmployeID)" />
-                        @employe.Nom @employe.Prenom
-                    </label>
-                    <br />
-                }
-            }
-            else
-            {
-                <p>Loading employees...</p>
-            }
-
-            <button type="submit">Ajouter Poste</button>
-        </form>
+                    <h5 class="modal-title">Ajouter Post</h5>
+                </div>
+                <div class="modal-body">
+                    <form @onsubmit="HandleSubmit">
+                        <div class="form-group">
+                            <label>Date De Fin De Poste</label>
+                            <input type="date" class="form-control" @bind="DateFin" required />
+                        </div>
+                        <div class="form-group">
+                            <label>ID Post</label>
+                            <input type="text" class="form-control" @bind="IdPoste" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Choisir L'Equipe</label>
+                            <select @onchange="OnEquipeChanged" class="form-control">
+                                <option value="">-- Choisir L'Equipe --</option>
+                                @if (equipes != null && equipes.Any())
+                                {
+                                    @foreach (var equipe in equipes)
+                                    {
+                                        <option value="@equipe.EquipeID">@equipe.NomEquipe</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option>-- Aucune Equipe Disponible --</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Choisir Les Membres Qui Finissent Le Post</label>
+                            <div class="checkbox-group scrollable">
+                                @if (employees != null)
+                                {
+                                    @foreach (var employe in employees)
+                                    {
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" value="@employe.EmployeID" @onclick="() => ToggleEmployeeSelection(employe.EmployeID)" />
+                                            @employe.Nom @employe.Prenom
+                                        </label>
+                                        <br />
+                                    }
+                                }
+                                else
+                                {
+                                    <p>Loading employees...</p>
+                                }
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-c" @onclick="Hide_Popup_AddPost">Annuler</button>
+                            <button type="submit" class="btn-p">Ajouter Poste</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+}
 
 @code {
-    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public bool IsVisibleAddPost { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
     [Parameter] public EventCallback<EquipesInfos> OnSave { get; set; }
-    
+
     private List<Employe> employees;
     private List<Equipe> equipes;
     private List<EmployeeEquipe> employeeequipe;
     private List<int> SelectedEmployeeIds { get; set; } = new List<int>();
-    private string DisplayStyle => IsVisible ? "display: flex;" : "display: none;";
-    private void Hide() => IsVisible = false;
-   
+
+    private void Hide_Popup_AddPost() {
+        IsVisibleAddPost = false;
+        OnClose.InvokeAsync();
+    }
 
   
-    private DateTime? DateFin { get; set; }
+    private DateTime? DateFin { get; set; } = DateTime.Now;
+
 
     private string IdPoste { get; set; }
     private int? SelectedEquipeId { get; set; }
@@ -95,7 +117,7 @@
     protected override async Task OnParametersSetAsync()
     {
 
-        if (IsVisible)
+        if (IsVisibleAddPost)
         {
             equipes = await EquipeService.GetAllEquipesAsync();
         }
@@ -132,14 +154,14 @@
             // Ensure DateFin is not null before calling the service
             await PosteService.InsererDonneesPoste(IdPoste, SelectedEquipeId.Value, DateFin ?? DateTime.MinValue, SelectedEmployeeIds);
             await OnSave.InvokeAsync();
-            Hide();
+            Hide_Popup_AddPost();
             
         }
         else
         {
             // Handle form validation if necessary
             Console.WriteLine("Please fill in all the fields.");
-            Hide();
+            Hide_Popup_AddPost();
         }
        
     }
@@ -148,75 +170,3 @@
 }
 
 
-<style>
-    /* The modal overlay */
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
-        display: none; /* Hidden by default, visible when 'display: flex;' is applied */
-        justify-content: center;
-        align-items: center;
-        z-index: 1000; /* Ensure modal is on top of other content */
-        transition: opacity 0.3s ease-in-out; /* Smooth fade-in/fade-out transition */
-    }
-
-    /* Modal content */
-    .modal-content {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        width: 400px;
-        max-width: 90%;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Close button */
-    .close-btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        font-size: 1.5em;
-        cursor: pointer;
-    }
-
-    /* Form styling */
-    form {
-        display: flex;
-        flex-direction: column;
-    }
-
-        form label {
-            margin: 10px 0 5px;
-        }
-
-        form input,
-        form select {
-            padding: 8px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-
-        form button {
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-            form button:hover {
-                background-color: #0056b3;
-            }
-
-    /* Optional: Add some spacing around checkbox labels */
-    .checkbox-item {
-        margin-bottom: 8px;
-    }
-
-</style>

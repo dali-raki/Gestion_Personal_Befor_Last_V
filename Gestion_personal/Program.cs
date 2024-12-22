@@ -16,6 +16,9 @@ using GestionPersonnel.Storages.EmployeeEquipeStorages;
 using GestionPersonnel.Storages.Storages.PostesStorages;
 using GestionPersonnel.Storages.AvancesStorages;
 using GestionPersonnel.Storages.DettesStorages;
+using Gestion_personal.Components.Pages;
+using Infrastructures.Storages.DashboardStorages;
+using Implementation.Services.Dashboard;
 
 
 
@@ -38,6 +41,8 @@ builder.Services.AddScoped<EmployeeEquipeStorage> ();
 builder.Services.AddScoped<PosteStorage>();
 builder.Services.AddScoped<AvanceStorage>();
 builder.Services.AddScoped<DetteStorage>();
+builder.Services.AddScoped<DashboardStorage>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ITypeDePaiementService, TypeDePaiementService>();
 builder.Services.AddScoped<IEmployeService, EmployeService>();
 builder.Services.AddScoped<IFonctionService, FonctionService>();

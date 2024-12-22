@@ -1,13 +1,13 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
+<div class="page" style="background-color:#ecf0f1;">
     <div class="sidebar">
         <NavMenu />
     </div>
 
     <main>
         <div class="top-row px-4">
-            @*  <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>*@
+              <a class="disconnect"href="" target="_blank">Disconnect</a>
         </div>
 
         <article class="content px-4">
@@ -21,3 +21,25 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+<style>
+
+
+    .top-row .disconnect {
+            text-decoration: none; /* Remove underline from the link */
+            font-size: 1rem; /* Comfortable, readable size */
+            font-weight: 600; /* Slightly bold for emphasis */
+            color: #007bff; /* Primary color for the link */
+            border: 2px solid #007bff; /* Border for button effect */
+            border-radius: 0.375rem; /* Rounded corners */
+            padding: 0.5rem 1rem; /* Spacing inside the link */
+            transition: all 0.3s ease; /* Smooth hover effect */
+        }
+
+        .top-row .disconnect:hover {
+                background-color: #007bff; /* Primary color on hover */
+                color: #fff; /* White text for contrast */
+                text-decoration: none; /* Keep underline removed */
+            }
+
+</style>

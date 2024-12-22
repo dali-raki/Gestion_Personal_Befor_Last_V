@@ -1,0 +1,82 @@
+﻿@page "/dette"
+@rendermode InteractiveServer
+
+
+
+<div class="panel-employe">
+	<div class="title">
+		<h1>Dette</h1>
+	</div>
+	<div class="option-employe">
+
+		<div class="input-group w-25">
+			<input type="text" class="form-control" placeholder="Search" z/>
+			<button class="btn-p" type="button">
+				<i class="fa-solid fa-magnifying-glass"></i>
+			</button>
+		</div>
+
+		<div class="btn-employe">
+			<button class="btn-p" @onclick="Show_Popup_FicheAvance">Fiche des Avances</button>
+			<button class="btn-p" @onclick="Show_Popup_AddDette">Ajouter Dette</button>
+			<button class="btn-p" @onclick="Show_Popup_AddAvance">Ajouter Avance</button>
+		</div>
+
+	</div>
+
+	<div class="tab-employe">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Nom et Prenom</th>
+					<th>Fonction</th>
+					<th>Totale Dette</th>
+					<th>Totale Avances</th>
+					<th>Option</th>
+				</tr>
+			</thead>
+			<tbody>
+				@if (paimentsInfos != null && paimentsInfos.Any())
+				{
+					@foreach (var paiement in paimentsInfos)
+					{
+						<tr>
+							<td class="text-left align-middle">@paiement.Nom @paiement.Prenom</td>
+							<td class="text-center align-middle">@paiement.NomFonction</td>
+							<td class="text-center align-middle">@paiement.TotaleDette.ToString("0.00")</td>
+							<td class="text-center align-middle">@paiement.TotaleAvances.ToString("0.00")</td>
+							<td class="text-center align-middle">
+								<button class="btn-p px-3 py-2" @onclick="() => Show_Popup_MontantRetiree(paiement.EmployeID)">
+									<i class="fa-solid fa-magnifying-glass-dollar"></i>
+								</button>
+								<button class="btn-p px-3 py-2" @onclick="() => Show_Popup_FicheAvanceDette(paiement.EmployeID)">
+									<i class="bi bi-eye-fill" style="font-size: 15px;"></i>
+								</button>
+							</td>
+						</tr>
+
+					}
+				}
+				else
+				{
+					<tr>
+						<td colspan="8" class="text-center">No data available</td>
+					</tr>
+				}
+			</tbody>
+
+		</table>
+
+	</div>
+
+</div>
+
+
+<ADDDette IsVisibleDette="@isVisibleADDDette" OnClose="@Hide_Popup_AddDette"/>
+<ADDAvance IsVisibleADDAvance="@isVisibleADDAvance" OnClose="@Hide_Popup_AddAvance"/>
+<FiceAvance IsVisibleFicheAvance="@isVisibleFicheAvance" OnClose="@Hide_Popup_FicheAvance" />
+<DetteAvanceEmployeFrom IsVisibleFicheAvanceDette="@isVisibleFicheAvanceDette" OnClose="@Hide_Popup_FicheAvanceDette" EmployeID="@SelectedEmployeID" />
+<MontantRetireeForm @ref="montantRetireForm" />
+
+
+

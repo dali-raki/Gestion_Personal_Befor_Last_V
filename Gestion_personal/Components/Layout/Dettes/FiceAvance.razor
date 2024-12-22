@@ -4,62 +4,84 @@
 @inject IPdfService PdfService
 @inject IAvanceService AvanceService
 @inject IJSRuntime JSRuntime
+@if (IsVisibleFicheAvance)
+{
+    <div class="modal" tabindex="-1" style="display: block;">
+        <div class="modal-dialog w-100">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Fiche des Avances</h5>
+                   
+                </div>
+                <div class="modal-body">
+                    <div class="ption-employe d-flex justify-content-between" style="height:40px">
+                        <div class="d-flex">
+                            <input type="date" class="form-control" style="width:200px" @bind="selectedDate">
+                            <button @onclick="GetAvances" class="btn-p"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                        <button @onclick="GeneratePdf" class="btn-p " style="font-size:15px">Gerer Fiche</button>
 
-<div class="modal-overlay" style="@DisplayStyle">
-    <div class="modal-content">
-        <span class="close-btn" @onclick="Hide">&times;</span>
+                    </div>
+                    <div class="tab-employe">
+                        <table class="table" id="avancesTable">
+                            <thead>
+                                <tr>
 
-        <div class="pos-option-fich-avance">
-            <div class="input-container">
-                <input type="date" @bind="selectedDate" class="large-input">
-                <button @onclick="GetAvances"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                    <th>Nom Prenom</th>
+
+                                    <th>Valeur Avances</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (avances != null && avances.Any())
+                                {
+                                    @foreach (var avance in avances)
+                                    {
+                                        <tr>
+
+                                            <td>@avance.NomEmployee @avance.PrenomEmployee</td>
+                                            <td>@avance.Montant.ToString("0.00") DA</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" style="text-align:center">Aucune avance trouvée pour cette date</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <div class="modal-footer">
+                            <button type="button" @onclick="@Hide_Popup_FicheAvance" class="btn-c"> Annuler </button>
+                            
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <button @onclick="GeneratePdf">Gerer Fiche PDF</button>
-        <div class="tab-employe">
-            <table class="table" id="avancesTable">
-                <thead>
-                    <tr>
-                        <th>N</th>
-                        <th>Nom</th>
-                        <th>Prénom</th>
-                        <th>Valeur Avances</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (avances != null && avances.Any())
-                    {
-                        @foreach (var avance in avances)
-                        {
-                            <tr>
-                                <td>@avance.AvanceID</td>
-                                <td>@avance.NomEmployee</td>
-                                <td>@avance.PrenomEmployee</td>
-                                <td>@avance.Montant.ToString("0.00") DA</td>
-                            </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="4" style="text-align:center">Aucune avance trouvée pour cette date</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
     </div>
-</div>
+    <style>
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;}
+    </style>
+}
+
 
 @code {
-    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public bool IsVisibleFicheAvance { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
 
-    private string DisplayStyle => IsVisible ? "display: flex;" : "display: none;";
-    private DateTime? selectedDate;
+
+    private DateTime? selectedDate =  DateTime.Now;
     private List<Avance> avances;
     private string media;
+
+    private void Hide_Popup_FicheAvance()
+    {
+        OnClose.InvokeAsync();
+    }
     protected override async Task OnInitializedAsync()
     {
         avances = new List<Avance>();
@@ -92,160 +114,7 @@
         await JSRuntime.InvokeVoidAsync("downloadFile", $"data:application/pdf;base64,{base64Data}", fileName);
     }
 
-    private void Hide() => OnClose.InvokeAsync();
+  
 }
 
 
- 
-<style>
-
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-
-.modal-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    width: 60%;
-    max-width: 800px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    position: relative;
-}
-
-
-.close-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #666;
-    transition: color 0.3s;
-    width: min-content;
-}
-.close-btn:hover {
-    color: #e74c3c;
-}
-
-
-.pos-option-fich-avance {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.search {
-    display: flex;
-    align-items: center;
-}
-
-.search input[type="date"] {
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-right: 10px;
-}
-
-.search button {
-    background-color: #3498db;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.search button:hover {
-    background-color: #2980b9;
-}
-
-
-button {
-    background-color: #2ecc71;
-    color: white;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-button:hover {
-    background-color: #27ae60;
-}
-
-
-.tab-employe {
-    overflow-x: auto;
-}
-
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.table thead {
-    background-color: #f5f5f5;
-}
-
-.table th, .table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-.table th {
-    font-weight: bold;
-    color: #34495e;
-}
-
-.table tbody tr:hover {
-    background-color: #f9f9f9;
-}
-
-.table tbody tr .a {
-    color: #555;
-}
-
-
-@media (max-width: 768px) {
-    .modal-content {
-        width: 90%;
-    }
-
-    .pos-option-fich-avance {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .search input[type="date"] {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-    button {
-        width: 100%;
-    }
-}
-
-
-
-
-
-</style>

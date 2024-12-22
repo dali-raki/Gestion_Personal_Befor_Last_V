@@ -4,50 +4,67 @@
 @inject IEmployeService EmployeService
 @inject IAvanceService AvanceService
 
-<div class="modal-overlay" style="@DisplayStyle">
-    <div class="modal-content">
-        <span class="close-btn" @onclick="Hide">&times;</span>
-        <h3>Ajouter Avance</h3>
+@if (IsVisibleADDAvance)
+{
+    <div class="modal" tabindex="-1" style="display: block;">
+        <div class="modal-dialog w-50">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajouter Avance</h5>
+                </div>
 
-        <form @onsubmit="HandleSubmit">
-            <label>Employes</label>
-            <select @bind="selectedEmployeId">
-                <option value="">-- Choisir Employe --</option>
-                @if (employes != null)
-                {
-                    @foreach (var employe in employes)
-                    {
-                        <option value="@employe.EmployeID">
-                            @employe.Nom @employe.Prenom
-                        </option>
-                    }
-                }
-                else
-                {
-                    <option>-- Null --</option>
-                }
-            </select>
-
-            <label>Valeur de Avance</label>
-            <input type="number" @bind="avanceMontant" placeholder="00000.00DA" step="0.01" required />
-
-            <button type="submit">Confirme</button>
-        </form>
+                <div class="modal-body">
+                    <form @onsubmit="HandleSubmit">
+                        <div class="form-group">
+                            <label>Employes</label>
+                            <select @bind="selectedEmployeId" class="form-control">
+                                <option value="">-- Choisir Employe --</option>
+                                @if (employes != null)
+                                {
+                                    @foreach (var employe in employes)
+                                    {
+                                        <option value="@employe.EmployeID">
+                                            @employe.Nom @employe.Prenom
+                                        </option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option>-- Null --</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Valeur de Avance</label>
+                            <input type="number" class="form-control" @bind="avanceMontant" placeholder="00000.00DA" step="0.01" required />
+                            <div class="modal-footer">
+                                <button type="button" @onclick="@Hide_Popup_AddAvance" class="btn-c">Annuler</button>
+                                <button type="submit " class="btn-p">Confirme</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+}
 
 @code {
-    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public bool IsVisibleADDAvance { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
 
     private List<Employe> employes;
     private int? selectedEmployeId;
     private decimal avanceMontant;
-    private string DisplayStyle => IsVisible ? "display: flex;" : "display: none;";
     private string media;
     protected override async Task OnInitializedAsync()
     {
         employes = await EmployeService.GetEmployeesAsync();
+    }
+
+    private void Hide_Popup_AddAvance()
+    {
+        OnClose.InvokeAsync();
     }
 
     private async Task HandleSubmit()
@@ -71,96 +88,9 @@
 
             // Close the modal after adding
             await OnClose.InvokeAsync();
+            StateHasChanged();
         }
     }
 
-    private void Hide() => OnClose.InvokeAsync();
+    
 }
-
-
-            <style>
-                /* Modal Overlay */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-/* Modal Content */
-.modal-content {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    width: 400px;
-    max-width: 90%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    position: relative;
-}
-
-/* Close Button */
-.close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
-    color: #888;
-    cursor: pointer;
-}
-
-.close-btn:hover {
-    color: #000;
-}
-
-/* Form Labels and Inputs */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-label {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-select,
-input[type="number"] {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-}
-
-/* Submit Button */
-button[type="submit"] {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-button[type="submit"]:hover {
-    background-color: #0056b3;
-}
-
-/* Responsive Design */
-@media (max-width: 480px) {
-    .modal-content {
-        width: 90%;
-        padding: 15px;
-    }
-}
-
-
-
-            </style>

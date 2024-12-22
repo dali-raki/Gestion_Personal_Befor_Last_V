@@ -5,18 +5,21 @@
 @inject IEquipeService EquipeService
 
 <div class="panel-employe">
+    <div class="title">
+        <h1>Equipe</h1>
+    </div>
     <div class="option-employe">
         <div class="input-group w-25">
-            <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="button-addon2">
-            <button class="btn btn-outline-secondary" type="button" id="button-addon2">
+            <input type="text" class="form-control" placeholder="Search" @bind="searchTerm" />
+            <button class="btn-p" type="button" @onclick="SearchTeams">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </button>
         </div>
 
         <div class="btn-employe">
-            <button class="btn btn-warning" @onclick="ShowUddEquipePopup">Mise à Jour Equipe</button>
-            <button class="btn btn-success" @onclick="ShowAddEquipePopup">Ajouter Equipe</button>
-            <button class="btn btn-info" @onclick="ShowAddPostPopup">Ajouter Post</button>
+            <button class="btn-p" @onclick="Show_Popupd_UpdateEquipe">Mise à Jour Equipe</button>
+            <button class="btn-p" @onclick="Show_Popupd_AddEquipe">Ajouter Equipe</button>
+            <button class="btn-p" @onclick="Show_Popupd_AddPost">Ajouter Post</button>
         </div>
     </div>
 
@@ -24,28 +27,20 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>N</th>
                     <th>Nom Equipe</th>
                     <th>Chef Equipe</th>
                     <th>Number Post</th>
-                    <th>Option</th>
                 </tr>
             </thead>
             <tbody>
-                @if (equipesinfo != null && equipesinfo.Any())
+                @if (filteredEquipesinfo != null && filteredEquipesinfo.Any())
                 {
-                    @foreach (var equipe in equipesinfo)
+                    @foreach (var equipe in filteredEquipesinfo)
                     {
                         <tr>
-                            <td class="a">@equipe.EquipeID</td>
                             <td class="a">@equipe.NomEquipe</td>
                             <td class="a">@equipe.ChefEquipeNom</td>
                             <td class="a">@equipe.NombreTotalDesPostes</td>
-                            <td>
-                                <button class="btn btn-primary">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                            </td>
                         </tr>
                     }
                 }
@@ -58,32 +53,57 @@
     </div>
 </div>
 
-<NewequipeADDEquipe IsVisible="isAddEquipeModalVisible" OnClose="HideAddEquipePopup" />
-<NewequipeUPDEquipe IsVisible="isUpdateddEquipeModalVisible" OnClose="HideUddEquipePopup"></NewequipeUPDEquipe>
-<NewequipeADDPost IsVisible="isAddpopsModalVisible" OnClose="HideAddPostPopup" OnSave="@a"></NewequipeADDPost>
+<NewequipeADDEquipe IsVisibleAddEquipe="@isVisibleAddEquipe" OnClose="Hide_Popupd_AddEquipe" />
+<NewequipeUPDEquipe IsVisiblUpdateEquipe="@isVisibleUpdateEquipe" OnClose="Hide_Popupd_UpdateEquipe"></NewequipeUPDEquipe>
+<NewequipeADDPost isVisibleAddPost="@isVisibleAddPost" OnClose="Hide_Popupd_AddPost" OnSave="@a"></NewequipeADDPost>
 
 @code {
     private List<EquipesInfos> equipesinfo;
-    private bool isAddEquipeModalVisible = false;
-    private bool isUpdateddEquipeModalVisible = false;
-    private bool isAddpopsModalVisible = false;
+    private List<EquipesInfos> filteredEquipesinfo;
+    private bool isVisibleAddEquipe = false;
+    private bool isVisibleUpdateEquipe = false;
+    private bool isVisibleAddPost = false;
+    private string searchTerm = string.Empty;
 
     // Fetch Equipe data on page load
     protected override async Task OnInitializedAsync()
     {
         equipesinfo = await EquipeService.GetEquipePostesInfoAsync();
+        filteredEquipesinfo = equipesinfo;
     }
 
     public async Task a()
     {
         equipesinfo = await EquipeService.GetEquipePostesInfoAsync();
-
+        FilterTeams();
     }
 
-    private void ShowAddEquipePopup() => isAddEquipeModalVisible = true;
-    private void HideAddEquipePopup() => isAddEquipeModalVisible = false;
-    private void ShowUddEquipePopup() => isUpdateddEquipeModalVisible = true;
-    private void HideUddEquipePopup() => isUpdateddEquipeModalVisible = false;
-    private void ShowAddPostPopup() => isAddpopsModalVisible = true;
-    private void HideAddPostPopup() => isAddpopsModalVisible = false;
+    private void Show_Popupd_AddEquipe() => isVisibleAddEquipe = true;
+    private void Hide_Popupd_AddEquipe() => isVisibleAddEquipe = false;
+
+    private void Show_Popupd_UpdateEquipe() => isVisibleUpdateEquipe = true;
+    private void Hide_Popupd_UpdateEquipe() => isVisibleUpdateEquipe = false;
+
+    private void Show_Popupd_AddPost() => isVisibleAddPost = true;
+    private void Hide_Popupd_AddPost() => isVisibleAddPost = false;
+
+    private void SearchTeams()
+    {
+        FilterTeams();
+    }
+
+    private void FilterTeams()
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            filteredEquipesinfo = equipesinfo;
+        }
+        else
+        {
+            filteredEquipesinfo = equipesinfo
+                .Where(e => e.NomEquipe.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                            e.ChefEquipeNom.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+    }
 }

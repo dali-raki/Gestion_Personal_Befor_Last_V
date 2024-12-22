@@ -2,195 +2,127 @@
 @rendermode InteractiveServer
 
 <div class="panel-employe">
-
-	<div class="cards">
-
-
-		<div class="card" id="card-employes">
-
-			<div class="card-content">
-
-				<div class="number" >
-					<p >@Total_Number_Employe</p>
-				</div>
-
-				<div class="titel">
-					<p>Nombre D'employe</p>
-				</div>
-
-			</div>
-
-			<div class="card-icon">
-				<i class="fa-solid fa-user"></i>
-			</div>
-
-		</div>
+    <div class="title">
+        <h1>Dashborad</h1>
+    </div>
+    <div class="cards">
 
 
-	</div>
+        <div class="card" id="card-employes">
 
-	<div class="chart_part">
+            <div class="card-content">
 
-		<div class="chart1">
-			<div id="container"></div>
-		</div>
-		<div class="chart2">
-			<div id="container2"></div>
-		</div>
+                <div class="number">
+                    <p>@Total_Number_Employe</p>
+                </div>
 
-	</div>
+                <div class="titel">
+                    <p>Nombre D'employe</p>
+                </div>
+
+            </div>
+
+            <div class="card-icon">
+                <i class="fa-solid fa-user"></i>
+            </div>
+
+        </div>
+
+
+        <div class="card" id="card-employes">
+
+            <div class="card-content">
+
+                <div class="number">
+                    <p>@Total_Number_Employe</p>
+                </div>
+
+                <div class="titel">
+                    <p>Nombre D'post</p>
+                </div>
+
+            </div>
+
+            <div class="card-icon">
+
+                <i class="fa-solid fa-house-crack"></i>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <div class="chart_part">
+
+        <div class="chart1">
+            <div id="container"></div>
+        </div>
+        <div class="chart2">
+            <div id="container2"></div>
+        </div>
+
+    </div>
+
+    
 
 
 
 </div>
 <script>
-    function renderCharts(totalAvance, totalDette, totalEmploye, totaleDargent) {
-        // Chart 1: Pie chart
+    function renderCharts(totalEmploye, avanceDetteList, countfunctionEmployesList) {
+        const currentYear = new Date().getFullYear();
+        console.log("Total Employees: ", totalEmploye);
+    console.log("Avance & Dette List: ", avanceDetteList);
+    console.log("Countfunction Employees List: ", countfunctionEmployesList);
+        // Pie Chart
         Highcharts.chart('container', {
             colors: ['#01BAF2', '#71BF45', '#FAA74B', '#B37CD2'],
-            chart: {
-                type: 'pie'
-            },
-            title: {
-                text: 'Air composition'
-            },
-            tooltip: {
-                valueSuffix: '%'
-            },
+            chart: { type: 'pie' },
+            title: { text: 'Types of Employees' },
+            tooltip: { pointFormat: '<b>{point.name}:</b> {point.y}' },
             plotOptions: {
                 pie: {
                     allowPointSelect: true,
                     cursor: 'pointer',
-                    dataLabels: {
-                        enabled: true,
-                        format: '{point.name}: {y} %'
-                    },
+                    dataLabels: { enabled: true, format: '{point.name}: {y}' },
                     showInLegend: true
                 }
             },
             series: [{
-                name: 'Percentage',
+                name: 'Resources',
                 colorByPoint: true,
-                innerSize: '75%',
-                data: [
-                    { name: 'ADM', y: totalAvance },
-                    { name: 'Gerant', y: totalDette },
-                    { name: 'Electricien', y: totalEmploye }
-                ]
+                data: countfunctionEmployesList.map(item => ({ name: item[0], y: item[1] }))
             }]
         });
 
-        // Chart 2: Spline chart
+        // Column Chart (Dynamic Data)
         Highcharts.chart('container2', {
-            chart: {
-                type: 'spline',
-            },
-            title: {
-                text: 'Metabolic Provenance of Energy',
-            },
-            subtitle: {
-                text: 'Source: <a href="https://www.mdpi.com/2072-6643/14/3/489" target="_blank">MDPI</a>',
-            },
+            chart: { type: 'column' },
+            title: { text: `Dettes & Avance of ${currentYear}` },
             xAxis: {
-                title: {
-                    text: 'Time (hours)',
-                },
-                type: 'datetime',
-                labels: {
-                    formatter: function () {
-                        return convertMsToHM(this.value);
-                    },
-                },
-                tickInterval: 10 * 60 * 60 * 1000, // 10 hours
+                categories: [
+                    'January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'
+                ]
             },
             yAxis: {
-                title: {
-                    text: 'Contribution to EE (%)',
-                },
-                labels: {
-                    format: '{value}%',
-                },
+                min: 0,
+                title: { text: 'Amount' }
             },
             tooltip: {
-                formatter: function () {
-                    return `<strong>${this.series.name}</strong><br>Time: ${convertMsToHM(this.x)}<br>Value: ${this.y}%`;
-                },
+                shared: true,
+                valueSuffix: ' units'
             },
             plotOptions: {
-                spline: {
-                    dataLabels: {
-                        enabled: false,
-                    },
-                    marker: {
-                        enabled: false,
-                    },
-                },
+                column: {
+                    dataLabels: { enabled: true }
+                }
             },
             series: [
-                {
-                    name: 'Dette',
-                    data: [
-                        [828000, 3.19],
-                        [1008000, 38.09],
-                        [1440000, 69.63],
-                        [3456000, 73.93],
-                        [13680000, 55.13],
-                        [16956000, 40.64],
-                        [22464000, 18.62],
-                        [26928000, 8.69],
-                        [32256000, 2.52],
-                    ],
-                    pointStart: 0,
-                    pointInterval: 3600000, // 1 hour
-                },
-                {
-                    name: 'Avance',
-                    data: [
-                        [3060000, 11.38],
-                        [11844000, 14.19],
-                        [22032000, 23.46],
-                        [30420000, 31.51],
-                        [45504000, 39.7],
-                        [61020000, 40.37],
-                        [75924000, 42.11],
-                        [124488000, 44.13],
-                        [160020000, 45.34],
-                        [218160000, 45.87],
-                        [260208000, 46.01],
-                    ],
-                },
-                {
-                    name: 'Totale D\'argent',
-                    data: [
-                        [8172000, 2.65],
-                        [9396000, 8.69],
-                        [13680000, 19.16],
-                        [18576000, 26.28],
-                        [27756000, 31.91],
-                        [36540000, 29.36],
-                        [43884000, 25.6],
-                        [54684000, 21.98],
-                        [67752000, 18.62],
-                        [79380000, 14.33],
-                        [90216000, 9.9],
-                        [103896000, 6.68],
-                        [117144000, 4.8],
-                        [129204000, 3.05],
-                        [139176000, 1.98],
-                    ],
-                },
-            ],
+                { name: 'Avance', data: avanceDetteList.map(item => item[1]) },
+                { name: 'Dette', data: avanceDetteList.map(item => item[0]) }
+            ]
         });
-    }
-
-    function convertMsToHM(milliseconds) {
-        let totalMinutes = Math.floor(milliseconds / (1000 * 60));
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
-        return `${padTo2Digits(hours)}h ${padTo2Digits(minutes)}m`;
-    }
-
-    function padTo2Digits(num) {
-        return num.toString().padStart(2, '0');
     }
 </script>

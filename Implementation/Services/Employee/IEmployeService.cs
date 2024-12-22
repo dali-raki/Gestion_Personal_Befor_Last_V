@@ -1,4 +1,5 @@
 ﻿using GestionPersonnel.Models.Employe;
+using Infrastructures.Domains.Models.Dashboard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,9 @@ namespace Services.Interfaces
 
 		Task<int?> GetEmployeIdByNameAsync(string nom, string prenom, string nomfunction);
 
+		Task<List<Countfunction>> GetNumberOfEmployeesByFunction();
 
-	}
+
+
+    }
 }

@@ -51,6 +51,7 @@
 .nav-item {
     font-size: 0.9rem;
     padding-bottom: 1rem;
+    color:red;
 }
 
 .nav-item:first-of-type {

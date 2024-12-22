@@ -1,111 +1,46 @@
 ﻿@using GestionPersonnel.Models.Pointage
 @using GestionPersonnel.Services
-@using GestionPersonnel.Models.Pointage
 @inject IPointageService PointageService
-@code {
-    [Parameter] public bool IsVisible { get; set; }
-    [Parameter] public EventCallback OnClose { get; set; }
-    [Parameter] public Pointage Pointage { get; set; }
 
-    private string ModalClass => IsVisible ? "popup-overlay show" : "popup-overlay hide";
-    private void CloseModal()
-    {
-        OnClose.InvokeAsync();
-    }
-    private async Task Update(Pointage pointage)
-    {
-        
-        await PointageService.Update(pointage);
-    }
-    private async Task SaveChanges()
-    {
-        if (Pointage != null)
-        {
-           
-            await Update(Pointage);
-           
-            CloseModal();
-        }
-    }
-}
-
-<div class="@ModalClass" style="display:@(IsVisible ? "flex" : "none")">
-    <div class="popup-content">
-        <div class="modal-header">
-            <h5 class="modal-title">Edit Pointage</h5>
-            <button type="button" class="close" @onclick="CloseModal">&times;</button>
-        </div>
-        <div class="modal-body">
-            @if (Pointage != null)
-            {
-                <div>
-                    <p><strong>Full name:</strong> @Pointage.NomEmploye  @Pointage.PrenomEmploye</p>
-                    <p><strong>Nom Fonction:</strong>@Pointage.NomFonction</p>
-                    <p><strong>Stat:</strong>@Pointage.Stat</p>
-                    <div>
-                        <strong>HeuresTravaillees:</strong>
-                        <input type="number" @bind="Pointage.HeuresTravaillees" class="form-control" />
-                    </div>
-                    <p><strong>Persontage:</strong>@Pointage.Persontage %</p>
-                    <div>
-                        <strong>Remarque:</strong>
-                        <textarea @bind="Pointage.Remarque" class="form-control" rows="4"></textarea>
-                    </div>
+@if (IsVisiblePointage)
+{
+    <div class="modal" tabindex="-1" style="display: block;">
+        <div class="modal-dialog w-100">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Pointage</h5>
                 </div>
-            }
-            else
-            {
-                <p>No Pointage data available</p>
-            }
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
-            <button type="button" class="btn btn-primary" @onclick="SaveChanges">Save Changes</button>
+           
+            <div class="modal-body">
+                @if (Pointage != null)
+                {
+                    <div>
+                        <p><strong>Full name:</strong> @Pointage.NomEmploye  @Pointage.PrenomEmploye</p>
+                        <p><strong>Nom Fonction:</strong>@Pointage.NomFonction</p>
+                        <p><strong>Stat:</strong>@Pointage.Stat</p>
+                        <div>
+                            <strong>HeuresTravaillees:</strong>
+                            <input type="number" @bind="Pointage.HeuresTravaillees" class="form-control" />
+                        </div>
+                        <p><strong>Persontage:</strong>@Pointage.Persontage %</p>
+                        <div>
+                            <strong>Remarque:</strong>
+                            <textarea @bind="Pointage.Remarque" class="form-control" rows="4"></textarea>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p>No Pointage data available</p>
+                }
+            </div>
+            <div class="modal-footer">
+                    <button type="button" class="btn-c" @onclick="Hide_Popup_UpdatePointage">Annuler</button>
+                <button type="button" class="btn-p" @onclick="SaveChanges">Save Changes</button>
+            </div>
         </div>
     </div>
-</div>
+    </div>
+}
 
-
-
-
-
-<style>
-    .popup-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5); 
-        display: flex; 
-        justify-content: center; 
-        align-items: center; 
-        z-index: 1000; 
-    }
-
-        .popup-overlay.show {
-            display: flex; 
-        }
-
-    .popup-content {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        width: 80%;
-        max-width: 900px;
-        max-height: 700px;
-        overflow-y: auto;
-    }
-
-    .modal-header,
-    .modal-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-
-
-</style>
 

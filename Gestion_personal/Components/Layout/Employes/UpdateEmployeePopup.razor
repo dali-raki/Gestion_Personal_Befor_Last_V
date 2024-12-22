@@ -5,7 +5,7 @@
 @inject IFonctionService FonctionService
 
 @code {
-    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public bool IsVisibleUpdateEmploye { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
     [Parameter] public EventCallback<Employe> OnSave { get; set; }
     [Parameter] public Employe Employee { get; set; } = new Employe();
@@ -18,8 +18,7 @@
         fonctions = await FonctionService.GetAllAsync();
     }
 
-    private string DisplayStyle => IsVisible ? "display: flex;" : "display: none;";
-
+    
     private async Task HandleSubmit()
     {
         try
@@ -53,15 +52,22 @@
         }
     }
 
-    private void ClosePopup()
+    private void Hide_Popup_UpdateEmploye()
     {
         OnClose.InvokeAsync();
     }
 }
 
-<div class="popup-overlay" style="@DisplayStyle">
-    <div class="popup-content">
-        <h3>Edit Employe</h3>
+
+@if (IsVisibleUpdateEmploye)
+{
+    <div class="modal" tabindex="-1" style="display: block;">
+    <div class="modal-dialog" id="css-modal">
+        <div class="modal-content" id="css-modal">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Employe</h5>
+            </div>
+            <div class="modal-body">
         @if (!string.IsNullOrEmpty(errorMessage))
         {
             <div class="alert alert-danger">@errorMessage</div>
@@ -155,14 +161,17 @@
                 </div>
             </div>
 
-            <div class="button-group">
-                <button type="submit" class="btn btn-success">Edit</button>
-                <button type="button" class="btn btn-secondary" @onclick="ClosePopup">Cancel</button>
+            <div class="modal-footer">
+
+                            <button type="button" class="btn-c" @onclick="Hide_Popup_UpdateEmploye">Annuler</button>
+                            <button type="submit" class="btn-p">Sauvegarder</button>
             </div>
         </form>
     </div>
 </div>
-
+</div>
+</div>
+}
 <style>
     .popup-overlay {
         position: fixed;
@@ -259,6 +268,13 @@
 
     .upload-button:hover {
         color: #0056b3;
-        text-decoration: none;
+        text-decoration: none;}
+
+ 
+    #css-modal {
+        width: 750px;
+        max-width: none;
+    }
+
 
 </style> 

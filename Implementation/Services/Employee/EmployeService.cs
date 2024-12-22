@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GestionPersonnel.Models.Employe;
+using Infrastructures.Domains.Models.Dashboard;
 using Infrastructures.Storages.EmployeStorages;
 using Services.Interfaces;
 
@@ -23,7 +24,13 @@ namespace Services
 			return await _employeStorage.GetAll();
 		}
 
-		public async Task<Employe?> GetEmployeeByIdAsync(int id)
+        public async Task<List<Countfunction>> GetNumberOfEmployeesByFunction()
+        {
+            return await _employeStorage.GetNumberOfEmployeesByFunction();
+        }
+
+
+        public async Task<Employe?> GetEmployeeByIdAsync(int id)
 		{
 			return await _employeStorage.GetById(id);
 		}

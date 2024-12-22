@@ -1,0 +1,117 @@
+﻿@using GestionPersonnel.Models.Avances
+@using GestionPersonnel.Models.Dettes
+@using GestionPersonnel.Models.Employe
+@using GestionPersonnel.Services
+@inject IEmployeService EmployeService
+@inject IDetteService DetteService
+@inject IAvanceService AvanceService
+
+@if (IsVisibleFicheAvanceDette)
+{
+    <style>
+        .modal-dialog {
+            width: 750px;
+            max-width: none;
+        }
+
+        .modal-content{
+            max-width: none;
+        }
+    </style>
+    <div class="modal" tabindex="-1" style="display: block;">
+        <div class="modal-dialog" style="width:750px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Historique de Dette et Avance</h5>
+                  
+                </div>
+
+                <!-- Tables for Avance and Dette -->
+                <div class="modal-body d-flex justify-content-between gap-4">
+                    <!-- Left Table: Avance -->
+                    <div class="table-container left-table w-100">
+                        <h4 style="text-align:center">Avance</h4>
+                        @if (avances != null && avances.Count > 0)
+                        {
+                            var totalAvance = avances.Sum(a => a.Montant);
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Montant</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var avance in avances)
+                                    {
+                                        <tr>
+                                            <td>@avance.Date</td>
+                                            <td>@avance.Montant</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td><strong>Total</strong></td>
+                                        <td><strong>@totalAvance</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        }
+                        else
+                        {
+                            <p>Aucune avance disponible</p>
+                        }
+                    </div>
+
+                    <!-- Right Table: Dette -->
+                    <div class="table-container right-table w-100">
+                        <h4 style="text-align:center">Dette</h4>
+                        @if (dettes != null && dettes.Count > 0)
+                        {
+                            var totalDette = dettes.Sum(d => d.Montant);
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Montant</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var dette in dettes)
+                                    {
+                                        <tr>
+                                            <td>@dette.Date</td>
+                                            <td>@dette.Montant</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td><strong>Total</strong></td>
+                                        <td><strong>@totalDette</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        }
+                        else
+                        {
+                            <p>Aucune dette disponible</p>
+                        }
+                      
+                    </div>
+                  
+                </div>
+                <div class="modal-footer">
+                    <button type="button" @onclick="@Hide_Popup_FicheAvanceDette" class="btn-c" data-dismiss="modal" aria-label="Close"> Anuller </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;}
+    </style>
+}
