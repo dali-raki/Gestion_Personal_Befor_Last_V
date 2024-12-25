@@ -24,35 +24,35 @@
 
                     </div>
                     <div class="tab-employe">
-                        <table class="table" id="avancesTable">
-                            <thead>
-                                <tr>
-
-                                    <th>Nom Prenom</th>
-
-                                    <th>Valeur Avances</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (avances != null && avances.Any())
-                                {
-                                    @foreach (var avance in avances)
+                        <div style="overflow-y: auto; max-height: 200px;">
+                            <table class="table" id="avancesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Nom Prenom</th>
+                                        <th>Valeur Avances</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (avances != null && avances.Any())
+                                    {
+                                        @foreach (var avance in avances)
+                                        {
+                                            <tr>
+                                                <td>@avance.NomEmployee @avance.PrenomEmployee</td>
+                                                <td>@avance.Montant.ToString("0.00") DA</td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
                                     {
                                         <tr>
-
-                                            <td>@avance.NomEmployee @avance.PrenomEmployee</td>
-                                            <td>@avance.Montant.ToString("0.00") DA</td>
+                                            <td colspan="4" style="text-align:center">Aucune avance trouvée pour cette date</td>
                                         </tr>
                                     }
-                                }
-                                else
-                                {
-                                    <tr>
-                                        <td colspan="4" style="text-align:center">Aucune avance trouvée pour cette date</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
+
                         <div class="modal-footer">
                             <button type="button" @onclick="@Hide_Popup_FicheAvance" class="btn-c"> Annuler </button>
                             

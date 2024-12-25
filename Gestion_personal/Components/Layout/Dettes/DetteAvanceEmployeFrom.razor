@@ -34,7 +34,36 @@
                         @if (avances != null && avances.Count > 0)
                         {
                             var totalAvance = avances.Sum(a => a.Montant);
-                            <table class="table">
+                            <div style="overflow-y: auto; max-height: 200px;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Montant</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var avance in avances)
+                                        {
+                                            <tr>
+                                                <td>@avance.Date.ToString("yyyy-MM-dd")</td>
+                                                <td>@avance.Montant</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td><strong>Total</strong></td>
+                                            <td><strong>@totalAvance</strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                        }
+                        else
+                        {
+                              <table class="table">
                                 <thead>
                                     <tr>
                                         <th>Date</th>
@@ -42,25 +71,20 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var avance in avances)
-                                    {
+                                  
                                         <tr>
-                                            <td>@avance.Date.ToString("yyyy-MM-dd")</td>
-                                            <td>@avance.Montant</td>
+                                            <td>N/A</td>
+                                            <td>N/A</td>
                                         </tr>
-                                    }
+                                   
                                 </tbody>
                                 <tfoot>
                                     <tr>
                                         <td><strong>Total</strong></td>
-                                        <td><strong>@totalAvance</strong></td>
+                                        <td><strong>N/A</strong></td>
                                     </tr>
                                 </tfoot>
-                            </table>
-                        }
-                        else
-                        {
-                            <p>Aucune avance disponible</p>
+                              </table>
                         }
                     </div>
 
@@ -70,6 +94,34 @@
                         @if (dettes != null && dettes.Count > 0)
                         {
                             var totalDette = dettes.Sum(d => d.Montant);
+                            <div style="overflow-y: auto; max-height: 200px;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Montant</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var dette in dettes)
+                                        {
+                                            <tr>
+                                                <td>@dette.Date.ToString("yyyy-MM-dd")</td>
+                                                <td>@dette.Montant</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td><strong>Total</strong></td>
+                                            <td><strong>@totalDette</strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -78,25 +130,20 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var dette in dettes)
-                                    {
+                                  
                                         <tr>
-                                            <td>@dette.Date.ToString("yyyy-MM-dd")</td>
-                                            <td>@dette.Montant</td>
+                                            <td>N/A</td>
+                                            <td>N/A</td>
                                         </tr>
-                                    }
+                                   
                                 </tbody>
                                 <tfoot>
                                     <tr>
                                         <td><strong>Total</strong></td>
-                                        <td><strong>@totalDette</strong></td>
+                                        <td><strong>N/A</strong></td>
                                     </tr>
                                 </tfoot>
-                            </table>
-                        }
-                        else
-                        {
-                            <p>Aucune dette disponible</p>
+                              </table>
                         }
                       
                     </div>
@@ -110,6 +157,21 @@
         </div>
     </div>
     <style>
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .table thead, .table tfoot {
+                background-color: #f1f1f1; /* Optional for visibility */
+            }
+
+            .table th, .table td {
+                padding: 8px;
+                text-align: left;
+                border: 1px solid #ddd; /* Optional for better visibility */
+            }
+
         .modal-footer {
             display: flex;
             justify-content: flex-end;}
