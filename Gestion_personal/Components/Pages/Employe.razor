@@ -21,7 +21,7 @@
         <div class="btn-employe">
             <button class="btn-p" @onclick="Show_Popup_UpdateFunction">Modifier Fonction</button>
             <button class="btn-p" @onclick="Show_Popup_AddFunction">Ajouter Fonction</button>
-            <button class="btn-p" @onclick="Show_Popup_AddEmploye">Ajouter Employe</button>
+            @*<button class="btn-p" @onclick="Show_Popup_AddEmploye">Ajouter Employe</button>*@
         </div>
     </div>
     <div class="tab-employe">
@@ -74,12 +74,13 @@
     <NewEmployeePopup IsVisibleAddEmploye="@isPopupVisible" OnClose="@Hide_Popup_AddEmploye" OnSave="@HandleSave" />
     <AddFonctionPopup IsVisibleAddFunction="@isVisibleAddFunction" OnClose="@Hide_Popup_AddFunction" OnSave="@HandleFonctionSave" />
     <ModifierFonctionPopup IsVisibleUpdateFunction="@isVisibleUpdFunction" OnClose="@Hide_Popup_UpdateFunction" OnSave="@HandleModifyFonctionSave" />
-    <SuccessPopup IsVisible="@isSuccessPopupVisible" OnClose="@HideSuccessPopup" />
+    <SuccessPopup IsVisible="@isSuccessPopupVisible" OnClose="@HideSuccessPopup" data="@datapop"/>
     <UpdateEmployeePopup IsVisibleUpdateEmploye="@isEditPopupVisible" Employee="@selectedEmployee" OnClose="@Hide_Popup_UpdateEmploye" OnSave="@HandleEditSave" />
     <ConfirmationPopup IsVisibleConfirm="isConfirmVisible" OnClose="HandlePopupResponse" Title="Confirmation" />
 </div>
 
 @code {
+    public string datapop;
     private ModifierFonctionPopup modifierPopupRef;
     private List<GestionPersonnel.Models.Employe.Employe> employees;
     private List<GestionPersonnel.Models.Employe.Employe> filteredEmployees;
@@ -211,6 +212,7 @@
             await LoadEmployees();
             ShowSuccessPopup();
             Hide_Popup_UpdateEmploye();
+             datapop="Votre opération s'est terminée avec succès.";
         }
         catch (Exception ex)
         {
@@ -231,6 +233,7 @@
         {
             await EmployeService.DeleteEmployeAsync(employeeToDelete);
             employees = await EmployeService.GetEmployeesAsync();
+            filteredEmployees = employees;
             Console.WriteLine("action confirmed!");
         }
         else

@@ -81,7 +81,7 @@
 
 @code {
     private string searchQuery = string.Empty;
-    private DateTime? selectedDate = DateTime.Now;
+    private DateTime selectedDate;
     private List<ModelsPointage.Pointage> pointages;
     private List<ModelsPointage.Pointage> filteredPointages;
     private bool isVisiblePointage = false;
@@ -103,20 +103,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        pointages = await PointageService.GetByDate(DateTime.Now);
+        //pointages = await PointageService.GetAll_Pointage();
         filteredPointages = pointages;
     }
 
     private async Task GetPointageByDate()
     {
-        if (selectedDate.HasValue)
-        {
-            pointages = await PointageService.GetByDate(selectedDate.Value);
-        }
-        else
-        {
-            pointages = await PointageService.GetAll_Pointage();
-        }
+        pointages = await PointageService.GetByDate(selectedDate);
+     
         FilterPointages();
     }
 

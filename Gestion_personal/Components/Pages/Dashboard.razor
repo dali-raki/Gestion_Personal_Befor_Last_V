@@ -70,7 +70,15 @@
 
 </div>
 <script>
-    function renderCharts(totalEmploye, avanceDetteList, countfunctionEmployesList) {
+    function renderCharts(totalEmploye, avanceDetteList, countfunctionEmployesList) {  
+     if (!avanceDetteList) {
+        console.warn("avanceDetteList is null or undefined");
+        avanceDetteList = []; // Default to an empty array
+    }
+        if (!countfunctionEmployesList) {
+            console.warn("countfunctionEmployesList is null or undefined");
+            countfunctionEmployesList = [];
+        }
         const currentYear = new Date().getFullYear();
         console.log("Total Employees: ", totalEmploye);
     console.log("Avance & Dette List: ", avanceDetteList);

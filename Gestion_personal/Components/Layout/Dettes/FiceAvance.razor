@@ -4,6 +4,7 @@
 @inject IPdfService PdfService
 @inject IAvanceService AvanceService
 @inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
 @if (IsVisibleFicheAvance)
 {
     <div class="modal" tabindex="-1" style="display: block;">
@@ -74,7 +75,7 @@
     [Parameter] public EventCallback OnClose { get; set; }
 
 
-    private DateTime? selectedDate =  DateTime.Now;
+    private DateTime? selectedDate =  DateTime.Now.Date;
     private List<Avance> avances;
     private string media;
 
@@ -92,6 +93,8 @@
         if (selectedDate.HasValue)
         {
             avances = await AvanceService.GetAvancesWithEmployee(selectedDate.Value);
+            Console.WriteLine(selectedDate);
+            Console.WriteLine(avances);
         }
     }
 

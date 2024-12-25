@@ -9,19 +9,19 @@ namespace GestionPersonnel.Storages.Storages.PostesStorages
     {
         private readonly string _connectionString;
 
-		public PosteStorage(IConfiguration configuration)
-		{
-			_connectionString = configuration.GetConnectionString("DBConnection");
-		}
+        public PosteStorage(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("DBConnection");
+        }
 
 
-		public async Task InsererDonneesPoste(string idPoste, int idEquipe, DateTime date, List<int> idEmployes)
+        public async Task InsererDonneesPoste(string idPoste, int idEquipe, DateTime date, List<int> idEmployes)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
 
-                // Insert into PosteComplete and retrieve the generated ID
+                
                 string insertPosteCompleteQuery = @"
             INSERT INTO [db_aa9d4f_gestionpersonnel].[dbo].[PosteComplete] ([IdPoste], [IdEquipe], [Date])
             VALUES (@IdPoste, @IdEquipe, @Date);
@@ -37,7 +37,7 @@ namespace GestionPersonnel.Storages.Storages.PostesStorages
                     idPosteComplete = Convert.ToInt32(await command.ExecuteScalarAsync());
                 }
 
-                // Insert into EmployePoste for each employee
+               
                 string insertEmployePosteQuery = @"
             INSERT INTO [db_aa9d4f_gestionpersonnel].[dbo].[EmployePoste] ([IdEmploye], [Date])
             VALUES (@IdEmploye, @Date);";
@@ -52,7 +52,7 @@ namespace GestionPersonnel.Storages.Storages.PostesStorages
                     }
                 }
 
-                // Calculate and update the total posts for each employee
+                
                 string updateOrInsertTotalePostesQuery = @"
             MERGE [db_aa9d4f_gestionpersonnel].[dbo].[TotalePostes] AS target
             USING (
@@ -79,7 +79,5 @@ namespace GestionPersonnel.Storages.Storages.PostesStorages
                 }
             }
         }
-
-
     }
 }

@@ -33,7 +33,7 @@ namespace Gestion_personal.Components.Pages
              Total_Avance = await AvanceService.GetTotaleAsync(DateTime.Now);
              Dashboards = await DashboardService.GetDashboard();
              countfunction = await EmployeService.GetNumberOfEmployeesByFunction();
-
+             Debug.WriteLine($"Dashboards: {Dashboards != null}, Count: {Dashboards?.Count}");
             // Debugging: Log the fetched data
             Debug.WriteLine($"Total_Number_Employe: {Total_Number_Employe}");
             Debug.WriteLine($"Totale_Dargent: {Totale_Dargent}");
@@ -48,19 +48,18 @@ namespace Gestion_personal.Components.Pages
         {
             if (firstRender)
             {
-                var avanceDetteList = Dashboards?.Select(item => new object[] { item.Dette, item.Avance ,item.Year });
+                var avanceDetteList = Dashboards?.Select(item => new object[] { item.Dette, item.Avance })?.ToArray() ?? Array.Empty<object[]>();
 
                 var countfunctionEmployesList = countfunction?.Select(item => new object[] { item.Name, item.Total }).ToArray() ?? Array.Empty<object[]>();
 
                 // Debugging: Log the generated lists
-             
+                Debug.WriteLine($"avanceDetteList Count: {avanceDetteList.Length}");
                 Debug.WriteLine($"countfunctionEmployesList Count: {countfunctionEmployesList.Length}");
 
-                await JSRuntime.InvokeVoidAsync("renderCharts",Total_Number_Employe, avanceDetteList, countfunctionEmployesList);
-
+                await JSRuntime.InvokeVoidAsync("renderCharts", Total_Number_Employe, avanceDetteList, countfunctionEmployesList);
             }
-
         }
+
 
 
     }
