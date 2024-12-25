@@ -23,9 +23,14 @@ namespace GestionPersonnel.Storages.PointagesStorages
 
         private const string _selectByIdAndDateQuery = "SELECT * FROM Pointage WHERE EmployeID = @id AND Date = @date";
 
-        private const string _insertQuery = "INSERT INTO Pointage (EmployeID, Date, HeureEntree, HeureSortie, HeuresTravaillees) VALUES (@EmployeID, @Date, @HeureEntree, @HeureSortie, @HeuresTravaillees); SELECT SCOPE_IDENTITY();";
-        private const string _updateQuery = "UPDATE Pointage SET HeuresTravaillees = @HeuresTravaillees, Remarque = @Remarque WHERE PointageID = @PointageID;";
+        private const string _insertQuery =
+            "INSERT INTO Pointage (EmployeID, Date, HeureEntree, HeureSortie, HeuresTravaillees) VALUES (@EmployeID, @Date, @HeureEntree, @HeureSortie, @HeuresTravaillees); SELECT SCOPE_IDENTITY();";
+
+        private const string _updateQuery =
+            "UPDATE Pointage SET HeuresTravaillees = @HeuresTravaillees, Remarque = @Remarque WHERE PointageID = @PointageID;";
+
         private const string _deleteQuery = "DELETE FROM Pointage WHERE PointageID = @PointageID;";
+
         private const string _selectWithEmployeAndFonctionQuery = @"
             SELECT 
                 p.*,  
@@ -39,26 +44,31 @@ namespace GestionPersonnel.Storages.PointagesStorages
             JOIN 
                 [db_aa9d4f_gestionpersonnel].[dbo].[Fonctions] f ON e.FonctionID = f.FonctionID
         ";
+
         private const string _selectByDateQuery = @"
+            
             SELECT 
                 p.*,  
                 e.Nom AS EmployeNom, 
                 e.Prenom AS EmployePrenom, 
-                f.NomFonction AS FonctionNom
+                f.NomFonction AS FonctionNom,
+				c.JourneeCoefficient as JourneeCoefficient,
+				c.HeuresSupplementairesCoefficient as HeuresSupplementairesCoefficient
             FROM 
                 [db_aa9d4f_gestionpersonnel].[dbo].[Pointage] p
             JOIN 
                 [db_aa9d4f_gestionpersonnel].[dbo].[Employes] e ON p.EmployeID = e.EmployeID
             JOIN 
                 [db_aa9d4f_gestionpersonnel].[dbo].[Fonctions] f ON e.FonctionID = f.FonctionID
+			JOIN 
+			    [db_aa9d4f_gestionpersonnel].[dbo].[CoefficientsTravail] c On c.EmployeID = p.EmployeID
             WHERE 
-                p.Date = @Date";
+                p.Date =@Date";
 
         private static Pointage GetPointageFromDataRow(DataRow row)
         {
             return new Pointage
             {
-               
                 PointageID = row["PointageID"] == DBNull.Value ? 0 : (int)row["PointageID"],
                 EmployeID = row["EmployeID"] == DBNull.Value ? 0 : (int)row["EmployeID"],
                 Date = row["Date"] == DBNull.Value ? DateTime.MinValue : (DateTime)row["Date"],
@@ -66,8 +76,11 @@ namespace GestionPersonnel.Storages.PointagesStorages
                 HeureSortie = row["HeureSortie"] == DBNull.Value ? TimeSpan.Zero : (TimeSpan)row["HeureSortie"],
                 HeuresTravaillees = row["HeuresTravaillees"] == DBNull.Value ? 0m : (decimal)row["HeuresTravaillees"],
                 Remarque = row["Remarque"] == DBNull.Value ? null : (string)row["Remarque"],
-
-               
+                JourneeCoefficient =
+                    row["JourneeCoefficient"] == DBNull.Value ? 0m : (decimal)row["JourneeCoefficient"],
+                HeuresSupplementairesCoefficient = row["HeuresSupplementairesCoefficient"] == DBNull.Value
+                    ? 0m
+                    : (decimal)row["HeuresSupplementairesCoefficient"],
                 NomEmploye = row["EmployeNom"] == DBNull.Value ? null : (string)row["EmployeNom"],
                 PrenomEmploye = row["EmployePrenom"] == DBNull.Value ? null : (string)row["EmployePrenom"],
                 NomFonction = row["FonctionNom"] == DBNull.Value ? null : (string)row["FonctionNom"]
@@ -88,6 +101,7 @@ namespace GestionPersonnel.Storages.PointagesStorages
 
             return (from DataRow row in dataTable.Rows select GetPointageFromDataRow(row)).ToList();
         }
+
         public async Task<List<Pointage>> GetPointagesByDateAsync(DateTime date)
         {
             await using var connection = new SqlConnection(_connectionString);
@@ -121,7 +135,6 @@ namespace GestionPersonnel.Storages.PointagesStorages
         }
 
 
-
         public async Task Add(Pointage pointage)
         {
             await using var connection = new SqlConnection(_connectionString);
@@ -151,7 +164,6 @@ namespace GestionPersonnel.Storages.PointagesStorages
         }
 
 
-
         public async Task Delete(int id)
         {
             await using var connection = new SqlConnection(_connectionString);
@@ -163,9 +175,7 @@ namespace GestionPersonnel.Storages.PointagesStorages
         }
 
 
-
-
- private const string _selectWithCoefficientsQuery = @"
+        private const string _selectWithCoefficientsQuery = @"
             SELECT
                 pointage.PointageID,
                 pointage.EmployeID,
@@ -203,8 +213,11 @@ namespace GestionPersonnel.Storages.PointagesStorages
                 HeureSortie = row["HeureSortie"] == DBNull.Value ? TimeSpan.Zero : (TimeSpan)row["HeureSortie"],
                 HeuresTravaillees = row["HeuresTravaillees"] == DBNull.Value ? 0m : (decimal)row["HeuresTravaillees"],
                 Remarque = row["Remarque"] == DBNull.Value ? null : (string)row["Remarque"],
-                JourneeCoefficient = row["JourneeCoefficient"] == DBNull.Value ? 0m : (decimal)row["JourneeCoefficient"],
-                HeuresSupplementairesCoefficient = row["HeuresSupplementairesCoefficient"] == DBNull.Value ? 0m : (decimal)row["HeuresSupplementairesCoefficient"],
+                JourneeCoefficient =
+                    row["JourneeCoefficient"] == DBNull.Value ? 0m : (decimal)row["JourneeCoefficient"],
+                HeuresSupplementairesCoefficient = row["HeuresSupplementairesCoefficient"] == DBNull.Value
+                    ? 0m
+                    : (decimal)row["HeuresSupplementairesCoefficient"],
                 NomEmploye = row["EmployeNom"] == DBNull.Value ? null : (string)row["EmployeNom"],
                 PrenomEmploye = row["EmployePrenom"] == DBNull.Value ? null : (string)row["EmployePrenom"],
                 NomFonction = row["FonctionNom"] == DBNull.Value ? null : (string)row["FonctionNom"]
@@ -224,46 +237,5 @@ namespace GestionPersonnel.Storages.PointagesStorages
 
             return (from DataRow row in dataTable.Rows select GetPointageWithCoefficientsFromDataRow(row)).ToList();
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

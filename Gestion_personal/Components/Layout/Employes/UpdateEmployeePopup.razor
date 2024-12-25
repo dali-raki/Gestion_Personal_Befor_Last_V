@@ -15,19 +15,33 @@
 
     protected override async Task OnInitializedAsync()
     {
+        LoadFonction();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsVisibleUpdateEmploye)
+        {
+            await LoadFonction();
+        }
+    }
+
+    public async Task LoadFonction()
+    {
         fonctions = await FonctionService.GetAllAsync();
     }
 
-    
     private async Task HandleSubmit()
     {
         try
         {
             if (isSubmitting) return;
             isSubmitting = true;
+           
             await EmployeService.UpdateEmployeAsync(Employee);
             await OnSave.InvokeAsync(Employee);
             await OnClose.InvokeAsync();
+            Console.WriteLine("Update photo");
         }
         catch (Exception ex)
         {
@@ -39,16 +53,20 @@
         }
     }
 
-    private void HandleFileSelected(InputFileChangeEventArgs e)
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
         var file = e.File;
         if (file != null)
         {
             using (var stream = new MemoryStream())
             {
-                file.OpenReadStream().CopyTo(stream);
+                await file.OpenReadStream().CopyToAsync(stream);
                 Employee.Photo = stream.ToArray();
             }
+
+           
+            StateHasChanged(); 
         }
     }
 
@@ -56,121 +74,122 @@
     {
         OnClose.InvokeAsync();
     }
+
 }
 
 
 @if (IsVisibleUpdateEmploye)
 {
     <div class="modal" tabindex="-1" style="display: block;">
-    <div class="modal-dialog" id="css-modal">
-        <div class="modal-content" id="css-modal">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Employe</h5>
-            </div>
-            <div class="modal-body">
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div class="alert alert-danger">@errorMessage</div>
-        }
-        <form @onsubmit="HandleSubmit">
-            <div class="form-grid">
-                <div class="form-group" style="grid-area: nom;">
-                    <label for="Nom">Nom:</label>
-                    <input id="Nom" type="text" @bind="Employee.Nom" class="form-control" required />
+        <div class="modal-dialog" id="css-modal">
+            <div class="modal-content" id="css-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Employe</h5>
                 </div>
-                <div class="form-group" style="grid-area: prenom;">
-                    <label for="Prenom">Prenom:</label>
-                    <input id="Prenom" type="text" @bind="Employee.Prenom" class="form-control" required />
-                </div>
-                <div class="form-group photo-group" style="grid-area: photo;">
-                    <label>Photo:</label>
-                    <div class="photo-card">
-                        <InputFile id="file-upload" OnChange="HandleFileSelected" accept=".png, .jpg, .jpeg" style="display: none;" />
-                        @if (Employee.Photo != null && Employee.Photo.Length > 0)
-                        {
-                            <img src="data:image/jpeg;base64,@Convert.ToBase64String(Employee.Photo)" alt="Employee Photo" class="uploaded-photo" />
-                        }
-                        else
-                        {
-                            <img src="images/default-employee.png" alt="Default Employee Photo" class="uploaded-photo" />
-                        }
-                    </div>
-                    <label for="file-upload" class="upload-button">Choose Photo</label>
-                </div>
-                <div class="form-group">
-                    <label for="DateNaissance">Date de Naissance:</label>
-                    <input id="DateNaissance" type="date" @bind="Employee.DateDeNaissance" class="form-control" required />
-                </div>
-                <div class="form-group">
-                    <label for="DateEntree">Date Entree:</label>
-                    <input id="DateEntree" type="date" @bind="Employee.DateEntree" class="form-control" required />
-                </div>
-                <div class="form-group">
-                    <label for="NSecuriteSocial">N Sécurité Sociale:</label>
-                    <input id="NSecuriteSocial" type="text" @bind="Employee.NSecuriteSocial" class="form-control" required />
-                </div>
-                <div class="form-group">
-                    <label for="GroupSanguin">Group Sanguin:</label>
-                    <select id="GroupSanguin" @bind="Employee.GroupSanguin" class="form-control" required>
-                        <option value="">-- Select Blood Type --</option>
-                        <option value="O+">O+</option>
-                        <option value="O-">O-</option>
-                        <option value="A+">A+</option>
-                        <option value="A-">A-</option>
-                        <option value="B+">B+</option>
-                        <option value="B-">B-</option>
-                        <option value="AB+">AB+</option>
-                        <option value="AB-">AB-</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="FonctionID">Fonction:</label>
-                    <select id="FonctionID" @bind="Employee.FonctionID" class="form-control" required>
-                        <option value="">-- Select Fonction --</option>
-                        @if (fonctions != null && fonctions.Any())
-                        {
-                            @foreach (var fonction in fonctions)
-                            {
-                                <option value="@fonction.FonctionID">@fonction.NomFonction</option>
-                            }
-                        }
-                        else
-                        {
-                            <option value="">No functions available</option>
-                        }
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="Adresse">Adresse:</label>
-                    <input id="Adresse" type="text" @bind="Employee.Adresse" class="form-control" required />
-                </div>
-                <div class="form-group">
-                    <label for="NTelephone">N Telephone:</label>
-                    <input id="NTelephone" type="text" @bind="Employee.NTelephone" class="form-control" required />
-                </div>
-                <div class="form-group">
-                    <label for="SitiationFamiliale">Situation Familiale:</label>
-                    <select id="SitiationFamiliale" @bind="Employee.SitiationFamiliale" class="form-control" required>
-                        <option value="">-- Select Situation Type --</option>
-                        <option value="Célibataire">Célibataire</option>
-                        <option value="Marié">Marié</option>
-                        <option value="Divorcé">Divorcé</option>
-                        <option value="Veuf">Veuf</option>
+                <div class="modal-body">
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger">@errorMessage</div>
+                    }
+                    <form @onsubmit="HandleSubmit">
+                        <div class="form-grid">
+                            <div class="form-group" style="grid-area: nom;">
+                                <label for="Nom">Nom:</label>
+                                <input id="Nom" type="text" @bind="Employee.Nom" class="form-control" required/>
+                            </div>
+                            <div class="form-group" style="grid-area: prenom;">
+                                <label for="Prenom">Prenom:</label>
+                                <input id="Prenom" type="text" @bind="Employee.Prenom" class="form-control" required/>
+                            </div>
+                            <div class="form-group photo-group" style="grid-area: photo;">
+                                <label>Photo:</label>
+                                <div class="photo-card">
+                                    <InputFile id="file-upload" OnChange="HandleFileSelected" accept=".png, .jpg, .jpeg" style="display: none;"  size="10000000"/>
+                                    @if (Employee.Photo != null && Employee.Photo.Length > 0)
+                                    {
+                                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(Employee.Photo)" alt="Employee Photo" class="uploaded-photo"/>
+                                    }
+                                    else
+                                    {
+                                        <img src="images/default-employee.png" alt="Default Employee Photo" class="uploaded-photo"/>
+                                    }
+                                </div>
+                                <label for="file-upload" class="upload-button">Choose Photo</label>
+                            </div>
+                            <div class="form-group">
+                                <label for="DateNaissance">Date de Naissance:</label>
+                                <input id="DateNaissance" type="date" @bind="Employee.DateDeNaissance" class="form-control" required/>
+                            </div>
+                            <div class="form-group">
+                                <label for="DateEntree">Date Entree:</label>
+                                <input id="DateEntree" type="date" @bind="Employee.DateEntree" class="form-control" required/>
+                            </div>
+                            <div class="form-group">
+                                <label for="NSecuriteSocial">N Sécurité Sociale:</label>
+                                <input id="NSecuriteSocial" type="text" @bind="Employee.NSecuriteSocial" class="form-control" required/>
+                            </div>
+                            <div class="form-group">
+                                <label for="GroupSanguin">Group Sanguin:</label>
+                                <select id="GroupSanguin" @bind="Employee.GroupSanguin" class="form-control" required>
+                                    <option value="">-- Select Blood Type --</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="FonctionID">Fonction:</label>
+                                <select id="FonctionID" @bind="Employee.FonctionID" class="form-control" required>
+                                    <option value="">-- Select Fonction --</option>
+                                    @if (fonctions != null && fonctions.Any())
+                                    {
+                                        @foreach (var fonction in fonctions)
+                                        {
+                                            <option value="@fonction.FonctionID">@fonction.NomFonction</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option value="">No functions available</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="Adresse">Adresse:</label>
+                                <input id="Adresse" type="text" @bind="Employee.Adresse" class="form-control" required/>
+                            </div>
+                            <div class="form-group">
+                                <label for="NTelephone">N Telephone:</label>
+                                <input id="NTelephone" type="text" @bind="Employee.NTelephone" class="form-control" required/>
+                            </div>
+                            <div class="form-group">
+                                <label for="SitiationFamiliale">Situation Familiale:</label>
+                                <select id="SitiationFamiliale" @bind="Employee.SitiationFamiliale" class="form-control" required>
+                                    <option value="">-- Select Situation Type --</option>
+                                    <option value="Célibataire">Célibataire</option>
+                                    <option value="Marié">Marié</option>
+                                    <option value="Divorcé">Divorcé</option>
+                                    <option value="Veuf">Veuf</option>
 
-                    </select>
-                </div>
-            </div>
+                                </select>
+                            </div>
+                        </div>
 
-            <div class="modal-footer">
+                        <div class="modal-footer">
 
                             <button type="button" class="btn-c" @onclick="Hide_Popup_UpdateEmploye">Annuler</button>
                             <button type="submit" class="btn-p">Sauvegarder</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </form>
+        </div>
     </div>
-</div>
-</div>
-</div>
 }
 <style>
     .popup-overlay {
@@ -277,4 +296,4 @@
     }
 
 
-</style> 
+</style>

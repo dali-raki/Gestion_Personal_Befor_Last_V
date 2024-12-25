@@ -16,8 +16,9 @@
                     <label for="fonctionSelect">Selectionner la fonction</label>
             <select id="fonctionSelect" class="form-control" @bind="selectedFonctionId">
                         <option value="">-- Selectionner la fonction --</option>
-                @foreach (var fonction in fonctions)
+                @foreach (var fonction in fonctions.Skip(1))
                 {
+                   
                     <option value="@fonction.FonctionID">@fonction.NomFonction</option>
                 }
             </select>

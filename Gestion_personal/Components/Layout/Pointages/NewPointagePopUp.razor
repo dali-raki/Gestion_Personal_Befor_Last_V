@@ -1,7 +1,6 @@
-﻿@using GestionPersonnel.Models.Pointage
-@using GestionPersonnel.Services
+﻿@using GestionPersonnel.Models.Pointage;
+@using GestionPersonnel.Services;
 @inject IPointageService PointageService
-
 @if (IsVisiblePointage)
 {
     <div class="modal" tabindex="-1" style="display: block;">
@@ -10,37 +9,37 @@
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Pointage</h5>
                 </div>
-           
-            <div class="modal-body">
-                @if (Pointage != null)
-                {
-                    <div>
-                        <p><strong>Full name:</strong> @Pointage.NomEmploye  @Pointage.PrenomEmploye</p>
-                        <p><strong>Nom Fonction:</strong>@Pointage.NomFonction</p>
-                        <p><strong>Stat:</strong>@Pointage.Stat</p>
+
+                <div class="modal-body">
+                    @if (Pointage != null)
+                    {
                         <div>
-                            <strong>HeuresTravaillees:</strong>
-                            <input type="number" @bind="Pointage.HeuresTravaillees" class="form-control" />
+                            <p><strong>Full name:</strong> @Pointage.NomEmploye  @Pointage.PrenomEmploye</p>
+                            <p><strong>Nom Fonction:</strong>@Pointage.NomFonction</p>
+                            <p><strong>Stat:</strong>@Pointage.Stat</p>
+                            <p><strong>Pourcentage:</strong>@Pointage.JourneeCoefficient %</p>
+                            <p><strong>Supplementaires:</strong>@Pointage.HeuresSupplementairesCoefficient</p>
+                            <div>
+                                <strong>HeuresTravaillees:</strong>
+                                <input type="number" @bind="tempHeuresTravaillees" class="form-control" />
+                            </div>
+
+                            <div>
+                                <strong>Remarque:</strong>
+                                <textarea @bind="tempRemarque" class="form-control" rows="4"></textarea>
+                            </div>
                         </div>
-                        <p><strong>Persontage:</strong>@Pointage.Persontage %</p>
-                        <div>
-                            <strong>Remarque:</strong>
-                            <textarea @bind="Pointage.Remarque" class="form-control" rows="4"></textarea>
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    <p>No Pointage data available</p>
-                }
-            </div>
-            <div class="modal-footer">
-                    <button type="button" class="btn-c" @onclick="Hide_Popup_UpdatePointage">Annuler</button>
-                <button type="button" class="btn-p" @onclick="SaveChanges">Save Changes</button>
+                    }
+                    else
+                    {
+                        <p>No Pointage data available</p>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-c" @onclick="CancelChanges">Annuler</button>
+                    <button type="button" class="btn-p" @onclick="SaveChanges">Save Changes</button>
+                </div>
             </div>
         </div>
     </div>
-    </div>
 }
-
-

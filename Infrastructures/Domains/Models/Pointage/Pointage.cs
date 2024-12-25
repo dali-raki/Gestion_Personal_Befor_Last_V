@@ -32,8 +32,19 @@ namespace GestionPersonnel.Models.Pointage
         public string NomEmploye { get; set; }
         public string PrenomEmploye { get; set; }
         public string NomFonction { get; set; }
-        public decimal JourneeCoefficient { get; set; }
-        public decimal HeuresSupplementairesCoefficient { get; set; }
+        private decimal _journeeCoefficient;
+        private decimal _heuresSupplementairesCoefficient;
 
+        public decimal JourneeCoefficient
+        {
+            get =>(int)Math.Floor( _journeeCoefficient * 100);
+            set => _journeeCoefficient = value;
+        }
+
+        public decimal HeuresSupplementairesCoefficient
+        {
+            get =>(int)Math.Floor(_heuresSupplementairesCoefficient * 100) ;
+            set => _heuresSupplementairesCoefficient = value;
+        }
     }
 }
