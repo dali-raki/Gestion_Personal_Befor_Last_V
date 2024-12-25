@@ -12,9 +12,9 @@
     </div>
     <div class="option-employe">
         <div class="input-group w-50">
-            
-                <input type="text" class="form-control" placeholder="Search" @bind="searchQuery" @oninput="OnSearch" aria-label="Search">
-                <input type="date" class="form-control" @bind="selectedDate" />
+
+            <input type="text" class="form-control" placeholder="Search" @bind="searchTerm" @oninput="SearchPaiement">
+            <input type="date" class="form-control" @bind="selectedDate" />
                 <button class="btn-p" type="button" @onclick="GetSalariesByMonth">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
@@ -39,25 +39,35 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var salaire in filteredSalaries)
+                @if (filteredSalaries.Count == 0)
                 {
                     <tr>
-                        <td class="text-left align-middle">@salaire.NomEmploye @salaire.PrenomEmploye</td>
-                        <td class="text-center align-middle">@salaire.NomFonction</td>
-                        <td class="text-center align-middle">@salaire.TypePaiement</td>
-                        <td class="text-center align-middle">@salaire.Salaire</td>
-                        <td class="text-center align-middle">@salaire.Primes</td>
-                        <td class="text-center align-middle">@salaire.Avances</td>
-                        <td class="text-center align-middle">@salaire.Dettes</td>
-                        <td class="text-center align-middle">@salaire.SalaireNet</td>
-                        <td class="text-center align-middle">
-                            <button class="btn-d px-3 py-2" @onclick="() => GeneratePDF(salaire)">
-                                <i class="bi bi-filetype-pdf" style="font-weight:bold; font-size:18px;"></i>
-                            </button>
-                        </td>
+                        <td colspan="9" class="text-center">No found Paiement</td>
                     </tr>
+                }
+                else
+                {
+                    @foreach (var salaire in filteredSalaries)
+                    {
+                        <tr>
+                            <td class="text-left align-middle">@salaire.NomEmploye @salaire.PrenomEmploye</td>
+                            <td class="text-center align-middle">@salaire.NomFonction</td>
+                            <td class="text-center align-middle">@salaire.TypePaiement</td>
+                            <td class="text-center align-middle">@salaire.Salaire</td>
+                            <td class="text-center align-middle">@salaire.Primes</td>
+                            <td class="text-center align-middle">@salaire.Avances</td>
+                            <td class="text-center align-middle">@salaire.Dettes</td>
+                            <td class="text-center align-middle">@salaire.SalaireNet</td>
+                            <td class="text-center align-middle">
+                                <button class="btn-d px-3 py-2" @onclick="() => GeneratePDF(salaire)">
+                                    <i class="bi bi-filetype-pdf" style="font-weight:bold; font-size:18px;"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
 
                 }
+
             </tbody>
         </table>
     </div>
@@ -68,8 +78,8 @@
 @code {
     private List<SalaireDetail> salaireDetails = new List<SalaireDetail>();
     private List<SalaireDetail> filteredSalaries = new List<SalaireDetail>();
-    private string searchQuery = string.Empty;
-    private DateTime? selectedDate = DateTime.Now;
+    private string searchTerm;
+    private DateTime? selectedDate = DateTime.Now.Date;
     private bool IsPopupVisible = false;
 
     private void Show_Popup_Paiement()
@@ -86,7 +96,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        salaireDetails = await SalaireService.GetSalaireDetails();
+        salaireDetails = await SalaireService.GetSalariesByMonthAsync(selectedDate.Value);
         filteredSalaries = salaireDetails;
     }
 
@@ -96,30 +106,28 @@
         {
             salaireDetails = await SalaireService.GetSalariesByMonthAsync(selectedDate.Value);
         }
-        else
-        {
-            salaireDetails = await SalaireService.GetSalaireDetails();
-        }
+       
         FilterSalaries();
     }
 
-    private void OnSearch()
+    private void SearchPaiement(ChangeEventArgs e)
     {
+        searchTerm = e.Value.ToString();
         FilterSalaries();
     }
 
     private void FilterSalaries()
     {
-        if (!string.IsNullOrWhiteSpace(searchQuery))
+        if (string.IsNullOrWhiteSpace(searchTerm))
         {
-            filteredSalaries = salaireDetails.Where(s =>
-                !string.IsNullOrEmpty(s.NomEmploye) && s.NomEmploye.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
-                !string.IsNullOrEmpty(s.PrenomEmploye) && s.PrenomEmploye.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
-                !string.IsNullOrEmpty(s.NomFonction) && s.NomFonction.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+            filteredSalaries = salaireDetails;
         }
         else
         {
-            filteredSalaries = salaireDetails;
+            filteredSalaries = salaireDetails.Where(s =>
+               !string.IsNullOrEmpty(s.NomEmploye) && s.NomEmploye.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+               !string.IsNullOrEmpty(s.PrenomEmploye) && s.PrenomEmploye.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+               !string.IsNullOrEmpty(s.NomFonction) && s.NomFonction.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
         }
     }
 

@@ -12,8 +12,8 @@
     <div class="option-employe">
 
         <div class="input-group w-25">
-            <input type="text" class="form-control" placeholder="Search" @bind="searchQuery" />
-            <button class="btn-p" type="button" @onclick="OnSearch">
+            <input type="text" class="form-control" placeholder="Search" @bind-value="searchTerm" @oninput="Searchpointage" />
+            <button class="btn-p" type="button">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </button>
         </div>
@@ -41,7 +41,14 @@
                 </tr>
             </thead>
             <tbody>
-                @if (filteredPointages != null && filteredPointages.Any())
+                @if (filteredPointages.Count == 0 || selectedDate == null)
+                {
+                    <tr>
+                        <td colspan="9" class="text-center">No found Pointage</td>
+                    </tr>
+
+                }
+                else
                 {
                     @foreach (var pointage in filteredPointages)
                     {
@@ -63,12 +70,6 @@
 
                     }
                 }
-                else
-                {
-                    <tr>
-                        <td colspan="9" class="text-center">No found Pointage</td>
-                    </tr>
-                }
             </tbody>
         </table>
     </div>
@@ -80,8 +81,8 @@
 
 
 @code {
-    private string searchQuery = string.Empty;
-    private DateTime selectedDate;
+    private string searchTerm = string.Empty;
+    private DateTime? selectedDate = DateTime.Now.Date;
     private List<ModelsPointage.Pointage> pointages;
     private List<ModelsPointage.Pointage> filteredPointages;
     private bool isVisiblePointage = false;
@@ -103,34 +104,37 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //pointages = await PointageService.GetAll_Pointage();
+        pointages = await PointageService.GetByDate(selectedDate.Value);
         filteredPointages = pointages;
     }
 
     private async Task GetPointageByDate()
     {
-        pointages = await PointageService.GetByDate(selectedDate);
+        pointages = await PointageService.GetByDate(selectedDate.Value);
      
         FilterPointages();
     }
 
-    private void OnSearch()
+
+    private void Searchpointage(ChangeEventArgs changeEvent)
     {
+        searchTerm = changeEvent.Value.ToString();
         FilterPointages();
     }
 
-    private void FilterPointages()
+    private async void FilterPointages()
     {
-        if (!string.IsNullOrWhiteSpace(searchQuery))
+
+        if (string.IsNullOrWhiteSpace(searchTerm))
         {
-            filteredPointages = pointages.Where(p =>
-                !string.IsNullOrEmpty(p.NomEmploye) && p.NomEmploye.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
-                !string.IsNullOrEmpty(p.PrenomEmploye) && p.PrenomEmploye.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
-                !string.IsNullOrEmpty(p.NomFonction) && p.NomFonction.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+            filteredPointages = pointages;
         }
         else
         {
-            filteredPointages = pointages;
+            filteredPointages = pointages.Where(p =>
+               !string.IsNullOrEmpty(p.NomEmploye) && p.NomEmploye.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+               !string.IsNullOrEmpty(p.PrenomEmploye) && p.PrenomEmploye.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+               !string.IsNullOrEmpty(p.NomFonction) && p.NomFonction.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
         }
     }
 }

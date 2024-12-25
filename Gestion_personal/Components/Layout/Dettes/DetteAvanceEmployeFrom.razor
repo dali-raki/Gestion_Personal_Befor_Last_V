@@ -45,7 +45,7 @@
                                     @foreach (var avance in avances)
                                     {
                                         <tr>
-                                            <td>@avance.Date</td>
+                                            <td>@avance.Date.ToString("yyyy-MM-dd")</td>
                                             <td>@avance.Montant</td>
                                         </tr>
                                     }
@@ -81,7 +81,7 @@
                                     @foreach (var dette in dettes)
                                     {
                                         <tr>
-                                            <td>@dette.Date</td>
+                                            <td>@dette.Date.ToString("yyyy-MM-dd")</td>
                                             <td>@dette.Montant</td>
                                         </tr>
                                     }

@@ -10,7 +10,7 @@
 	<div class="option-employe">
 
 		<div class="input-group w-25">
-			<input type="text" class="form-control" placeholder="Search" z/>
+			<input type="text" class="form-control" placeholder="Search" @bind-value="searchTerm" @oninput="SearchDette"/>
 			<button class="btn-p" type="button">
 				<i class="fa-solid fa-magnifying-glass"></i>
 			</button>
@@ -36,9 +36,15 @@
 				</tr>
 			</thead>
 			<tbody>
-				@if (paimentsInfos != null && paimentsInfos.Any())
+				@if (filteredPaimentsInfos.Count == 0)
 				{
-					@foreach (var paiement in paimentsInfos)
+					<tr>
+						<td colspan="6" class="text-center">No found Dette</td>
+					</tr>
+				}
+				else
+				{
+					@foreach (var paiement in filteredPaimentsInfos)
 					{
 						<tr>
 							<td class="text-left align-middle">@paiement.Nom @paiement.Prenom</td>
@@ -57,12 +63,8 @@
 
 					}
 				}
-				else
-				{
-					<tr>
-						<td colspan="8" class="text-center">No data available</td>
-					</tr>
-				}
+				
+				
 			</tbody>
 
 		</table>

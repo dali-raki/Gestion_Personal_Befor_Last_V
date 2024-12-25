@@ -10,8 +10,9 @@
     </div>
     <div class="option-employe">
         <div class="input-group w-25">
-            <input type="text" class="form-control" placeholder="Search" @bind="searchTerm" />
-            <button class="btn-p" type="button" @onclick="SearchTeams">
+            <input type="text" class="form-control" placeholder="Search" @bind="searchTerm" @oninput="SearchTeams" />
+
+            <button class="btn-p" type="button">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </button>
         </div>
@@ -46,7 +47,7 @@
                 }
                 else
                 {
-                    <tr><td colspan="5">Loading teams...</td></tr>
+                    <tr><td colspan="5">No found Equipe</td></tr>
                 }
             </tbody>
         </table>
@@ -87,8 +88,11 @@
     private void Show_Popupd_AddPost() => isVisibleAddPost = true;
     private void Hide_Popupd_AddPost() => isVisibleAddPost = false;
 
-    private void SearchTeams()
+
+    private void SearchTeams(ChangeEventArgs changeEventArgs)
     {
+        searchTerm = changeEventArgs.Value.ToString();
+
         FilterTeams();
     }
 
