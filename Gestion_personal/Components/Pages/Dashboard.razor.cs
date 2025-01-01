@@ -56,7 +56,7 @@ namespace Gestion_personal.Components.Pages
                 Debug.WriteLine($"avanceDetteList Count: {avanceDetteList.Length}");
                 Debug.WriteLine($"countfunctionEmployesList Count: {countfunctionEmployesList.Length}");
 
-                await JSRuntime.InvokeVoidAsync("renderCharts", Total_Number_Employe, avanceDetteList, countfunctionEmployesList);
+               // await JSRuntime.InvokeVoidAsync("renderCharts", Total_Number_Employe, avanceDetteList, countfunctionEmployesList);
             }
         }
 

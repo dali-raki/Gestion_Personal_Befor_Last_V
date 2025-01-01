@@ -42,6 +42,7 @@ builder.Services.AddScoped<PosteStorage>();
 builder.Services.AddScoped<AvanceStorage>();
 builder.Services.AddScoped<DetteStorage>();
 builder.Services.AddScoped<DashboardStorage>();
+builder.Services.AddScoped<DetteRestantStorage>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ITypeDePaiementService, TypeDePaiementService>();
 builder.Services.AddScoped<IEmployeService, EmployeService>();
@@ -56,7 +57,7 @@ builder.Services.AddScoped<IPosteService, PosteService>();
 builder.Services.AddScoped<IAvanceService, AvanceService>();
 builder.Services.AddScoped<IDetteService, DetteService>();
 builder.Services.AddScoped<IPdfService,PdfService>();
-
+builder.Services.AddScoped<IDetteRestantService, DetteRestantService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -3,6 +3,8 @@
 @using GestionPersonnel.Services
 @inject IEmployeService EmployeService
 @inject IDetteService DetteService
+@inject IDetteRestantService DetteRestantService
+
 @if (IsVisibleDette)
 {
     <div class="modal" tabindex="-1" style="display: block;">
@@ -33,7 +35,7 @@
                         </div>
                         <div class="form-group">
                             <label>Valeur de Dette</label>
-                            <input type="number" class="form-control" @bind="montantDette" placeholder="00000.00DA" min="500" required />
+                            <input type="number" class="form-control" @bind="montantDette" placeholder="00000.00DA" min="500" required/>
                         </div>
                         <div class="modal-footer">
                             <button type="button" @onclick="@Hide_Popup_AddDette" class="btn-c">Anuller</button>
@@ -51,6 +53,7 @@
 @code {
     [Parameter] public bool IsVisibleDette { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnLoad { get; set; }
 
     private List<Employe> employes;
     private int selectedEmployeId;
@@ -62,7 +65,7 @@
     }
 
     private void Hide_Popup_AddDette()
-    {   
+    {
         OnClose.InvokeAsync();
     }
 
@@ -72,25 +75,34 @@
         if (selectedEmployeId > 0 && montantDette > 0)
         {
             var newDette = new Dette
-                {
-                    EmployeID = selectedEmployeId,
-                    Montant = montantDette,
-                    Date = DateTime.Now // Or any date you prefer
-                };
+            {
+                EmployeID = selectedEmployeId,
+                Montant = montantDette,
+                Date = DateTime.Now // Or any date you prefer
+            };
+            var newDettesRestants = new DetteRestant
+            {
+                EmployeId = selectedEmployeId,
+                DettesRestants = montantDette,
+                // Or any date you prefer
+            };
+          
+
 
             // Call the service to add the debt
             await DetteService.AddAsync(newDette);
+            await DetteRestantService.AjouterDetteRestanteAsync(newDettesRestants);
 
             // Reset form fields
             selectedEmployeId = 0;
             montantDette = 0;
 
- 
+            await OnLoad.InvokeAsync();
             // Close the modal after saving
             await OnClose.InvokeAsync();
             StateHasChanged();
         }
     }
 
- 
+
 }

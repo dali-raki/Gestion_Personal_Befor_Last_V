@@ -74,8 +74,8 @@
 </div>
 
 
-<ADDDette IsVisibleDette="@isVisibleADDDette" OnClose="@Hide_Popup_AddDette"/>
-<ADDAvance IsVisibleADDAvance="@isVisibleADDAvance" OnClose="@Hide_Popup_AddAvance"/>
+<ADDDette IsVisibleDette="@isVisibleADDDette" OnClose="@Hide_Popup_AddDette" OnLoad="@LoadDette"/>
+<ADDAvance IsVisibleADDAvance="@isVisibleADDAvance" OnClose="@Hide_Popup_AddAvance" OnLoad="@LoadDette"/>
 <FiceAvance IsVisibleFicheAvance="@isVisibleFicheAvance" OnClose="@Hide_Popup_FicheAvance" />
 <DetteAvanceEmployeFrom IsVisibleFicheAvanceDette="@isVisibleFicheAvanceDette" OnClose="@Hide_Popup_FicheAvanceDette" EmployeID="@SelectedEmployeID" />
 <MontantRetireeForm @ref="montantRetireForm" />

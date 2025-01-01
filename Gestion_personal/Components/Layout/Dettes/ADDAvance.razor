@@ -36,7 +36,7 @@
                         </div>
                         <div class="form-group">
                             <label>Valeur de Avance</label>
-                            <input type="number" class="form-control" @bind="avanceMontant" placeholder="00000.00DA" step="0.01" min="500" required />
+                            <input type="number" class="form-control" @bind="avanceMontant" placeholder="00000.00DA" step="0.01" min="500" required/>
                             <div class="modal-footer">
                                 <button type="button" @onclick="@Hide_Popup_AddAvance" class="btn-c">Annuler</button>
                                 <button type="submit " class="btn-p">Confirme</button>
@@ -52,11 +52,13 @@
 @code {
     [Parameter] public bool IsVisibleADDAvance { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
-
+    [Parameter] public EventCallback OnLoad { get; set; }
+    
     private List<Employe> employes;
     private int? selectedEmployeId;
     private decimal avanceMontant;
     private string media;
+
     protected override async Task OnInitializedAsync()
     {
         employes = await EmployeService.GetEmployeesAsync();
@@ -85,12 +87,12 @@
             // Optionally, clear the form
             selectedEmployeId = null;
             avanceMontant = 0;
-
+            await OnLoad.InvokeAsync();
             // Close the modal after adding
             await OnClose.InvokeAsync();
             StateHasChanged();
         }
     }
 
-    
+
 }
