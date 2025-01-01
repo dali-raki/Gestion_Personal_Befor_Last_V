@@ -1,0 +1,35 @@
+﻿@page "/"
+@rendermode InteractiveServer
+
+<Head>
+    <title>Login</title>
+</Head>
+
+<div class="login">
+    <div class="login-form">
+        <EditForm Model="loginModel" OnValidSubmit="login" FormName="login">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <h2>Login</h2>
+
+            <InputText @bind-Value="loginModel.Name" placeholder="Username" />
+            <InputText @bind-Value="loginModel.Password" type="password" placeholder="Password" />
+            @if (showLoginFailed)
+            {
+                <div class="mb-1" style="text-align:center; background-color:orangered; padding-top:5px;">
+                    <p style="color:white; font-weight:bold" >Login failed</p>
+                </div>
+                
+            }
+            <button type="submit">Login</button>
+        </EditForm>
+    </div>
+</div>
+
+
+<style>
+    .sidebar, .top-row[b-fxsxjq811k] {
+        display: none;
+    }
+</style>
+
