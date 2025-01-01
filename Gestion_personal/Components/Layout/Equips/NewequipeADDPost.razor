@@ -145,14 +145,21 @@
         {
             SelectedEmployeeIds.Add(employeeId); 
         }
+        Console.WriteLine(employeeId);
     }
 
     private async Task HandleSubmit()
     {
         if (!string.IsNullOrEmpty(IdPoste) && SelectedEquipeId.HasValue && SelectedEmployeeIds.Any())
         {
+            Console.WriteLine(SelectedEmployeeIds.Count);
             // Ensure DateFin is not null before calling the service
             await PosteService.InsererDonneesPoste(IdPoste, SelectedEquipeId.Value, DateFin ?? DateTime.MinValue, SelectedEmployeeIds);
+           IdPoste= "";
+           DateFin = DateTime.Now;
+           SelectedEquipeId = null;
+             SelectedEmployeeIds = new List<int>();
+            
             await OnSave.InvokeAsync();
             Hide_Popup_AddPost();
             
