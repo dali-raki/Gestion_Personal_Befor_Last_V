@@ -1,13 +1,14 @@
 ﻿@page "/"
+@using Gestion_personal.Components.Layout
 @rendermode InteractiveServer
-
+@layout EmptyLayout
 <Head>
     <title>Login</title>
 </Head>
 
 <div class="login">
     <div class="login-form">
-        <EditForm Model="loginModel" OnValidSubmit="login" FormName="login">
+        <EditForm Model="loginModel" OnValidSubmit="Login" FormName="login">
             <DataAnnotationsValidator />
             <ValidationSummary />
             <h2>Login</h2>

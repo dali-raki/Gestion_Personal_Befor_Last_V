@@ -1,0 +1,28 @@
+﻿@using Gestion_personal.Components.Models.Toast
+@rendermode InteractiveServer
+@if (IsVisible)
+{
+    <div class="toast-container @GetToastClass()" @onclick="CloseToast">
+        <div class="toast-content">
+            <div class="toast-icon">
+                @if (Type == ToastType.Success)
+                {
+                  <img src="Images/succes.png"/>
+                }
+                else if (Type == ToastType.Warning)
+                {
+                    <img src="Images/danger.png"/>
+                }
+                else if (Type == ToastType.Danger)
+                {
+                    <img src="Images/danger.png"/>
+                }
+            </div>
+            <div class="toast-text">
+                <h2 class="toast-title">@Title</h2>
+                <p class="toast-message">@Message</p>
+            </div>
+           
+        </div>
+    </div>
+}

@@ -1,9 +1,5 @@
 ﻿using GestionPersonnel.Models.Dettes;
-
-using GestionPersonnel.Models.Salaires;
 using GestionPersonnel.Storages.DettesStorages;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace GestionPersonnel.Services
 {

@@ -1,12 +1,10 @@
 ﻿using GestionPersonnel.Models.Employe;
 using GestionPersonnel.Models.Equipe;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
+using GestionPersonnel.Models.EquipePaiment;
+
 
 namespace GestionPersonnel.Storages.EquipeStorages
 {
@@ -35,6 +33,46 @@ namespace GestionPersonnel.Storages.EquipeStorages
         JOIN EmployeEquipes EE ON Emp.EmployeID = EE.EmployeID
         WHERE EE.EquipeID = @EquipeID";
         // Méthode pour mapper une DataRow à un objet Equipe
+        private const string selectEquipSalairesandPostesWorking =
+            @"DECLARE @EquipeID INT =1 -- Replace <Your_EquipeID> with the desired team ID
+
+SELECT 
+
+    CONCAT(emp.Nom, ' ', emp.Prenom) AS EmployeNomPrenom,
+    COUNT(DISTINCT ep.IdPosteComplete) AS TotalPostsEmploye -- Total posts worked by the employee
+FROM 
+    [db_aa9d4f_gestionpersonnel].[dbo].[Equipes] eq
+JOIN 
+    [db_aa9d4f_gestionpersonnel].[dbo].[EmployeEquipes] ee 
+    ON eq.EquipeID = ee.EquipeID
+JOIN 
+    [db_aa9d4f_gestionpersonnel].[dbo].[Employes] emp 
+    ON ee.EmployeID = emp.EmployeID
+LEFT JOIN 
+    [db_aa9d4f_gestionpersonnel].[dbo].[EmployePoste] ep 
+    ON emp.EmployeID = ep.IdEmploye
+LEFT JOIN 
+    [db_aa9d4f_gestionpersonnel].[dbo].[PosteComplete] pc 
+    ON ep.IdPosteComplete = pc.IdPosteComplete AND pc.IdEquipe = eq.EquipeID
+WHERE 
+    eq.EquipeID = @EquipeID
+GROUP BY 
+    eq.NomEquipe, emp.EmployeID, emp.Nom, emp.Prenom
+ORDER BY 
+    eq.NomEquipe, emp.EmployeID;
+	select 
+	eq.NomEquipe As NomEquipe,
+	count (*) As TotalePostes,
+	count (*)*10000  As SalaireTotale
+
+	from PosteComplete
+	JOIN 
+    [db_aa9d4f_gestionpersonnel].[dbo].[Equipes] eq
+    ON eq.EquipeID = @EquipeID
+
+	where IdEquipe=@EquipeID
+	GROUP BY 
+    eq.NomEquipe";
         private static Equipe GetEquipeFromDataRow(DataRow row)
         {
             return new Equipe
@@ -212,13 +250,52 @@ GROUP BY E.EquipeID, E.NomEquipe, Emp.Nom;";
                 Prenom = row["Prenom"].ToString()
             };
         }
+        public async Task<List<EquipePaiment>> SelectEquipePaimentandEquipe(int equipeID, DateTime date)
+        {
+            var result = new List<EquipePaiment>();
 
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                using (var command = new SqlCommand("[dbo].[GetEquipeSalairesAndPostes]", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@EquipeID", equipeID);
+                    command.Parameters.AddWithValue("@Date", date);
+
+                    await connection.OpenAsync();
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        // First result set: Employee details and their total posts
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(new EquipePaiment
+                            {
+                                Fullname = reader["EmployeNomPrenom"].ToString(),
+                                TotalPostEmploye = reader["TotalPostsEmploye"].ToString()
+                            });
+                        }
+
+                        // Move to the second result set
+                        if (await reader.NextResultAsync())
+                        {
+                            // Team details
+                            while (await reader.ReadAsync())
+                            {
+                                foreach (var item in result)
+                                {
+                                    item.NomEquipe = reader["NomEquipe"].ToString();
+                                    item.TotalPostEquipe = reader["TotalePostes"].ToString();
+                                    item.SailareTotale = reader["SalaireTotale"].ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
 
     }
-
-
-
-
-
-
 }

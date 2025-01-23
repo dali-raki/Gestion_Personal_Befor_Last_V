@@ -1,7 +1,5 @@
 ﻿using GestionPersonnel.Models.TypeDePaiment;
 using GestionPersonnel.Storages.TypeDePaimentStorages;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace GestionPersonnel.Services
 {

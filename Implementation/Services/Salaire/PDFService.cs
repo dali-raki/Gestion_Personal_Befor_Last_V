@@ -1,10 +1,6 @@
 ﻿using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using GestionPersonnel.Models.Salaires;
-using System.IO;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
-using System.Xml.Linq;
 
 namespace GestionPersonnel.Services
 {

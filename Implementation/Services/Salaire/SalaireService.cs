@@ -1,8 +1,5 @@
 ﻿using GestionPersonnel.Models.Salaires;
 using GestionPersonnel.Storages.SalairesStorages;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace GestionPersonnel.Services
 {

@@ -1,12 +1,7 @@
-﻿using GestionPersonnel.Models.Salaires;
-using GestionPersonnel.Models.Dettes;
+﻿using GestionPersonnel.Models.Dettes;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace GestionPersonnel.Storages.DettesStorages
 {

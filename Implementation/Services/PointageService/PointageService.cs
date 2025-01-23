@@ -1,8 +1,5 @@
 ﻿using GestionPersonnel.Models.Pointage;
 using GestionPersonnel.Storages.PointagesStorages;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace GestionPersonnel.Services
 {

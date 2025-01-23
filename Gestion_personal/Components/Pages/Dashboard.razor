@@ -1,9 +1,11 @@
 ﻿@page "/Dashboard"
+
 @rendermode InteractiveServer
 
 <div class="panel-employe">
     <div class="title">
         <h1>Dashborad</h1>
+     
     </div>
     <div class="cards">
 
@@ -34,11 +36,11 @@
             <div class="card-content">
 
                 <div class="number">
-                    <p>@Total_Number_Employe</p>
+                    <p>@Totale_Dargent</p>
                 </div>
 
                 <div class="titel">
-                    <p>Nombre D'post</p>
+                    <p>Totale Dargent</p>
                 </div>
 
             </div>
@@ -53,7 +55,7 @@
 
     </div>
 
-    <div class="chart_part">
+    @*<div class="chart_part">
 
         <div class="chart1">
             <div id="container"></div>
@@ -62,12 +64,13 @@
             <div id="container2"></div>
         </div>
 
-    </div>
+    </div>*@
 
     
+</div>
 
 
-
+@*
 </div>
 <script>
     function renderCharts(totalEmploye, avanceDetteList, countfunctionEmployesList) {  
@@ -134,3 +137,4 @@
         });
     }
 </script>
+*@

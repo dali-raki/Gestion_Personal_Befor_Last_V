@@ -1,5 +1,5 @@
-using Blazored.Modal;
 using Gestion_personal.Components;
+using Gestion_personal.Services;
 using GestionPersonnel.Services;
 using Services;
 using Services.Interfaces;
@@ -13,22 +13,34 @@ using Implementation.Services.SalaireBase;
 using GestionPersonnel.Storages.EquipeStorages;
 using GestionPersonnel.Services.EquipeServices;
 using GestionPersonnel.Storages.EmployeeEquipeStorages;
-using GestionPersonnel.Storages.Storages.PostesStorages;
 using GestionPersonnel.Storages.AvancesStorages;
 using GestionPersonnel.Storages.DettesStorages;
-using Gestion_personal.Components.Pages;
+using GestionPersonnel.Storages.Storages.PostesStorages;
 using Infrastructures.Storages.DashboardStorages;
 using Implementation.Services.Dashboard;
-
+using Implementation.Services.ReadUSB;
+using Infrastructures.Storages.ReadUSB;
+using Infrastructures.Storages.RecordStorages;
+using Infrastructures.Storages.TransferData;
+using Infrastructures.Storages.UserStorages;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+string connectionString =builder.Configuration.GetConnectionString("DBConnection");
 builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents();
+builder.Services.AddRazorComponents();
 builder.Services.AddSingleton<IConfiguration>(provider =>
 	new ConfigurationBuilder().AddJsonFile("appsettings.json").Build());
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+	options.IdleTimeout = TimeSpan.FromMinutes(30);
+	options.Cookie.HttpOnly = true;
+	options.Cookie.IsEssential = true;
+});
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddScoped<EmployeStorage>();
 builder.Services.AddScoped<FonctionStorage>();
@@ -38,11 +50,15 @@ builder.Services.AddScoped<TypeDePaiementStorage>();
 builder.Services.AddScoped<SalaireBaseStorage>();
 builder.Services.AddScoped<EquipeStorage>();
 builder.Services.AddScoped<EmployeeEquipeStorage> ();
-builder.Services.AddScoped<PosteStorage>();
 builder.Services.AddScoped<AvanceStorage>();
 builder.Services.AddScoped<DetteStorage>();
+builder.Services.AddScoped<PosteStorage>();
 builder.Services.AddScoped<DashboardStorage>();
 builder.Services.AddScoped<DetteRestantStorage>();
+builder.Services.AddScoped<IUserStorage,UserStorage>();
+builder.Services.AddScoped<ITransferDataStorage, TransferDataStorage>();
+builder.Services.AddScoped<ICheckInOutStorage, CheckInOutStorage>();
+
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ITypeDePaiementService, TypeDePaiementService>();
 builder.Services.AddScoped<IEmployeService, EmployeService>();
@@ -52,14 +68,22 @@ builder.Services.AddScoped<ISalaireService, SalaireService>();
 builder.Services.AddScoped<ISalaireBaseService, SalaireBaseService>();
 builder.Services.AddScoped<IPDFService, PDFService>();
 builder.Services.AddScoped<IEquipeService, EquipeService>();
+
 builder.Services.AddScoped<IEmployeeEquipeService, EmployeeEquipeService>();
-builder.Services.AddScoped<IPosteService, PosteService>();
+builder.Services.AddScoped<IPosteService,PosteService>();
 builder.Services.AddScoped<IAvanceService, AvanceService>();
 builder.Services.AddScoped<IDetteService, DetteService>();
 builder.Services.AddScoped<IPdfService,PdfService>();
 builder.Services.AddScoped<IDetteRestantService, DetteRestantService>();
-var app = builder.Build();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPostGeneratePDF,PostGeneratePDF>();
+builder.Services.AddSingleton<UserSessionStateService>();
+builder.Services.AddScoped<IFileProcessingService, FileProcessingService>();
 
+builder.Logging.SetMinimumLevel(LogLevel.Debug);
+builder.Services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
+var app = builder.Build();
+app.UseSession(); 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -67,6 +91,7 @@ if (!app.Environment.IsDevelopment())
 	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 	app.UseHsts();
 }
+
 
 app.UseHttpsRedirection();
 

@@ -1,8 +1,5 @@
 ﻿using GestionPersonnel.Models.Avances;
 using GestionPersonnel.Storages.AvancesStorages;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace GestionPersonnel.Services
 {

@@ -1,9 +1,9 @@
 ﻿@page "/pointage"
 @using ModelsPointage = GestionPersonnel.Models.Pointage
-@using GestionPersonnel.Models.Employe
 @using GestionPersonnel.Services
 @inject IPointageService PointageService
 @rendermode InteractiveServer
+
 
 <div class="panel-employe">
     <div class="title">
@@ -59,10 +59,10 @@
                             <td class="text-center align-middle">@pointage.Stat</td>
                             <td class="text-center align-middle">@pointage.HeuresTravaillees</td>
                             <td class="text-center align-middle">
-                                @pointage.JourneeCoefficient<span>%</span>
+                                @pointage.JourneeCoefficient
                             </td>
                             <td class="text-center align-middle">
-                                @pointage.HeuresSupplementairesCoefficient<span>%</span>
+                                @pointage.HeuresSupplementairesCoefficient
                             </td>
                             <td class="text-center align-middle">@pointage.Remarque</td>
                             <td class="text-center align-middle">
@@ -82,64 +82,3 @@
 <NewPointagePopUp IsVisiblePointage="@isVisiblePointage"
                   OnClose="Hide_Popup_UpdatePointage"
                   Pointage="selectedPointage" />
-
-
-@code {
-    private string searchTerm = string.Empty;
-    private DateTime? selectedDate = DateTime.Now.Date;
-    private List<ModelsPointage.Pointage> pointages;
-    private List<ModelsPointage.Pointage> filteredPointages;
-    private bool isVisiblePointage = false;
-    private ModelsPointage.Pointage selectedPointage;
-
-    private void Show_Popup_UpdatePointage(ModelsPointage.Pointage pointage)
-    {
-        if (pointage != null)
-        {
-            selectedPointage = pointage;
-            isVisiblePointage = true;
-        }
-    }
-
-    private void Hide_Popup_UpdatePointage()
-    {
-        isVisiblePointage = false;
-        
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        pointages = await PointageService.GetByDate(selectedDate.Value);
-        filteredPointages = pointages;
-    }
-
-    private async Task GetPointageByDate()
-    {
-        pointages = await PointageService.GetByDate(selectedDate.Value);
-     
-        FilterPointages();
-    }
-
-
-    private void Searchpointage(ChangeEventArgs changeEvent)
-    {
-        searchTerm = changeEvent.Value.ToString();
-        FilterPointages();
-    }
-
-    private async void FilterPointages()
-    {
-
-        if (string.IsNullOrWhiteSpace(searchTerm))
-        {
-            filteredPointages = pointages;
-        }
-        else
-        {
-            filteredPointages = pointages.Where(p =>
-               !string.IsNullOrEmpty(p.NomEmploye) && p.NomEmploye.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-               !string.IsNullOrEmpty(p.PrenomEmploye) && p.PrenomEmploye.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-               !string.IsNullOrEmpty(p.NomFonction) && p.NomFonction.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
-        }
-    }
-}

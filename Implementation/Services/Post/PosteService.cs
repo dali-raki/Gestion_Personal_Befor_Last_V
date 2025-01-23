@@ -1,13 +1,13 @@
 ﻿using GestionPersonnel.Storages.Storages.PostesStorages;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Infrastructures.Domains.Models.EquipePost;
+
 
 namespace GestionPersonnel.Services
 {
 	public class PosteService : IPosteService
 	{
 		private readonly PosteStorage _posteStorage;
+		
 
 		public PosteService(PosteStorage posteStorage)
 		{
@@ -18,5 +18,10 @@ namespace GestionPersonnel.Services
 		{
 			await _posteStorage.InsererDonneesPoste(idPoste, idEquipe, date, idEmployes);
 		}
+		public async Task<(List<EmployePosts> EmployePosts, EquipeSalaires EquipeSalaires)> GetEquipeSalairesAndPostes(int equipeId, DateTime date)
+		{
+			return await _posteStorage.SelectEquipeSalairesAndPostes(equipeId, date);
+		}
+		
 	}
 }

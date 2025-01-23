@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
+using Infrastructures.Domains.Models.EquipePost;
 
 namespace GestionPersonnel.Storages.Storages.PostesStorages
 {
@@ -78,6 +80,49 @@ namespace GestionPersonnel.Storages.Storages.PostesStorages
                     await command.ExecuteNonQueryAsync();
                 }
             }
+        }
+          public async Task<(List<EmployePosts> EmployePosts, EquipeSalaires EquipeSalaires)> SelectEquipeSalairesAndPostes(int equipeId, DateTime date)
+        {
+            var employePosts = new List<EmployePosts>();
+            EquipeSalaires equipeSalaires = null;
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (SqlCommand command = new SqlCommand("GetEquipeSalairesAndPostes", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@EquipeID", equipeId);
+                    command.Parameters.AddWithValue("@Date", date);
+
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                 
+                        while (await reader.ReadAsync())
+                        {
+                            employePosts.Add(new EmployePosts
+                            {
+                                EmployeNomPrenom = reader["EmployeNomPrenom"].ToString(),
+                                TotalPostsEmploye = Convert.ToInt32(reader["TotalPostsEmploye"])
+                            });
+                        }
+
+          
+                        if (await reader.NextResultAsync() && await reader.ReadAsync())
+                        {
+                            equipeSalaires = new EquipeSalaires
+                            {
+                                NomEquipe = reader["NomEquipe"].ToString(),
+                                TotalePostes = Convert.ToInt32(reader["TotalePostes"]),
+                                SalaireTotale = Convert.ToDecimal(reader["SalaireTotale"])
+                            };
+                        }
+                    }
+                }
+            }
+
+            return (employePosts, equipeSalaires);
         }
     }
 }

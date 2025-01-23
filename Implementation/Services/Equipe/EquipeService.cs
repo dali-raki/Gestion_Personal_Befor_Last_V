@@ -1,9 +1,7 @@
 ﻿using GestionPersonnel.Models.Employe;
 using GestionPersonnel.Models.Equipe;
 using GestionPersonnel.Storages.EquipeStorages;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+
 
 namespace GestionPersonnel.Services.EquipeServices
 {
@@ -57,5 +55,6 @@ namespace GestionPersonnel.Services.EquipeServices
         {
             return await _equipeStorage.GetEmployeesByEquipeIdAsync(equipeId);
         }
+       
     }
 }

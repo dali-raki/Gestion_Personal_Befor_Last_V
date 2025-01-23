@@ -1,11 +1,4 @@
-﻿using GestionPersonnel.Models.Employees;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GestionPersonnel.Models.Pointage
+﻿namespace GestionPersonnel.Models.Pointage
 {
 
     public class Pointage
@@ -37,14 +30,14 @@ namespace GestionPersonnel.Models.Pointage
 
         public decimal JourneeCoefficient
         {
-            get =>(int)Math.Floor( _journeeCoefficient * 100);
-            set => _journeeCoefficient = value;
+            get ;
+            set ;
         }
 
         public decimal HeuresSupplementairesCoefficient
         {
-            get =>(int)Math.Floor(_heuresSupplementairesCoefficient * 100) ;
-            set => _heuresSupplementairesCoefficient = value;
+            get  ;
+            set ;
         }
     }
 }

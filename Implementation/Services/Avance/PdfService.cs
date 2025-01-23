@@ -1,10 +1,6 @@
 ﻿using PdfSharp.Pdf;
 using PdfSharp.Drawing;
-using System.IO;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using GestionPersonnel.Models.Avances;
-using System;
 
 public interface IPdfService
 {

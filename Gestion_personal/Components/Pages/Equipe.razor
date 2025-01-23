@@ -1,5 +1,5 @@
 ﻿@page "/equipe"
-@using GestionPersonnel.Services.EquipeServices
+
 @rendermode InteractiveServer
 @using GestionPersonnel.Models.Equipe
 @inject IEquipeService EquipeService
@@ -35,22 +35,28 @@
                 </tr>
             </thead>
             <tbody>
-                @if (filteredEquipesinfo != null && filteredEquipesinfo.Any())
+            @if (filteredEquipesinfo != null && filteredEquipesinfo.Count != 0)
+            {
+                @foreach (var equipe in filteredEquipesinfo)
                 {
-                    @foreach (var equipe in filteredEquipesinfo)
-                    {
-                        <tr>
-                            <td class="a">@equipe.NomEquipe</td>
-                            <td class="a">@equipe.ChefEquipeNom</td>
-                            <td class="a">@equipe.NombreTotalDesPostes</td>
-                            <td><Button class="btn-d">PDF</Button></td> 
-                        </tr>
-                    }
+                    <tr>
+                        <td class="a">@equipe.NomEquipe</td>
+                        <td class="a">@equipe.ChefEquipeNom</td>
+                        <td class="a">@equipe.NombreTotalDesPostes</td>
+                        <td>
+                           <img src="Images/pdf.png" width="24" height="24" @onclick="() => DownloadPDF(equipe.EquipeID)"/>
+                        </td>
+                    </tr>
                 }
-                else
-                {
-                    <tr><td colspan="5">No found Equipe</td></tr>
-                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3">No data available.</td>
+                </tr>
+            }
+
+               
             </tbody>
         </table>
     </div>
@@ -60,56 +66,13 @@
 <NewequipeUPDEquipe IsVisiblUpdateEquipe="@isVisibleUpdateEquipe" OnClose="Hide_Popupd_UpdateEquipe"></NewequipeUPDEquipe>
 <NewequipeADDPost isVisibleAddPost="@isVisibleAddPost" OnClose="Hide_Popupd_AddPost" OnSave="@a"></NewequipeADDPost>
 
-@code {
-    private List<EquipesInfos> equipesinfo;
-    private List<EquipesInfos> filteredEquipesinfo;
-    private bool isVisibleAddEquipe = false;
-    private bool isVisibleUpdateEquipe = false;
-    private bool isVisibleAddPost = false;
-    private string searchTerm = string.Empty;
-
-    // Fetch Equipe data on page load
-    protected override async Task OnInitializedAsync()
-    {
-        equipesinfo = await EquipeService.GetEquipePostesInfoAsync();
-        filteredEquipesinfo = equipesinfo;
+<script>
+    function downloadFile(filename, contentType, base64Data) {
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = `data:${contentType};base64,${base64Data}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
-
-    public async Task a()
-    {
-        equipesinfo = await EquipeService.GetEquipePostesInfoAsync();
-        FilterTeams();
-    }
-
-    private void Show_Popupd_AddEquipe() => isVisibleAddEquipe = true;
-    private void Hide_Popupd_AddEquipe() => isVisibleAddEquipe = false;
-
-    private void Show_Popupd_UpdateEquipe() => isVisibleUpdateEquipe = true;
-    private void Hide_Popupd_UpdateEquipe() => isVisibleUpdateEquipe = false;
-
-    private void Show_Popupd_AddPost() => isVisibleAddPost = true;
-    private void Hide_Popupd_AddPost() => isVisibleAddPost = false;
-
-
-    private void SearchTeams(ChangeEventArgs changeEventArgs)
-    {
-        searchTerm = changeEventArgs.Value.ToString();
-
-        FilterTeams();
-    }
-
-    private void FilterTeams()
-    {
-        if (string.IsNullOrWhiteSpace(searchTerm))
-        {
-            filteredEquipesinfo = equipesinfo;
-        }
-        else
-        {
-            filteredEquipesinfo = equipesinfo
-                .Where(e => e.NomEquipe.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                            e.ChefEquipeNom.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-        }
-    }
-}
+</script>

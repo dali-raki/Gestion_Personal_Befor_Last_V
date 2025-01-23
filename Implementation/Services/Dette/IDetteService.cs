@@ -1,7 +1,4 @@
 ﻿using GestionPersonnel.Models.Dettes;
-using GestionPersonnel.Models.Avances;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace GestionPersonnel.Services
 {

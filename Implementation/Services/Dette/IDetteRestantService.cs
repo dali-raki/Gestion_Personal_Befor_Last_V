@@ -1,7 +1,4 @@
-﻿using GestionPersonnel.Models.Salaires;
-using GestionPersonnel.Models.Dettes;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using GestionPersonnel.Models.Dettes;
 
 namespace GestionPersonnel.Services
 {

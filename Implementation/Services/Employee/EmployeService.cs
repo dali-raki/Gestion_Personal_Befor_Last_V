@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GestionPersonnel.Models.Employe;
+﻿using GestionPersonnel.Models.Employe;
 using Infrastructures.Domains.Models.Dashboard;
 using Infrastructures.Storages.EmployeStorages;
 using Services.Interfaces;

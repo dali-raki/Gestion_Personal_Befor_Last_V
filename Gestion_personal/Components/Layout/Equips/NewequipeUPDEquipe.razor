@@ -84,7 +84,8 @@
 @rendermode InteractiveServer
 @using GestionPersonnel.Models.EmplyeeEquipe
 @using GestionPersonnel.Services
-@using GestionPersonnel.Services.EquipeServices
+@using global::Services.Interfaces
+
 @using Equipe = GestionPersonnel.Models.Equipe.Equipe
 @using Employe = GestionPersonnel.Models.Employe.Employe
 @inject IEmployeService EmployeService

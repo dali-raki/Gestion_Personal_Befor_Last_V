@@ -1,32 +1,52 @@
 using Gestion_personal.Components.Models.Login;
+using Gestion_personal.Services;
+using GestionPersonnel.Services;
+using Infrastructures.Domains.Models;
 using Microsoft.AspNetCore.Components;
-using Services;
+using UserSession = Infrastructures.Domains.Models.UserSession;
+
 
 namespace Gestion_personal.Components.Pages
 {
-	public partial class LoginPage
-	{
-		private LoginModel loginModel = new LoginModel();
-		private bool showLoginFailed = false;
-		private bool showLoginSuccess = false;
+    public partial class LoginPage
+    {
+        [Inject] private IUserService UserService { get; set; }
+        [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+        [Inject] private UserSessionStateService UserSessionStateService { get; set; } = default!;
 
-		[Inject]
-		private NavigationManager NavigationManager { get; set; } = default!;
+        private LoginModel loginModel = new LoginModel();
+        private bool showLoginFailed = false;
+        private bool showLoginSuccess = false;
 
-      
-        private void login()
-		{
-			if (loginModel.Name == "admin" && loginModel.Password == "admin")
-			{
-				
-				showLoginFailed = false;
-				NavigationManager.NavigateTo("/Dashboard");
-			}
-			else
-			{
-				
-				showLoginFailed = true;
-			}
-		}
-	}
+        private async Task Login()
+        {
+            var credentials = new LoginCredentials
+            {
+                Username = loginModel.Name,
+                Password = loginModel.Password
+            };
+
+            var loginStatus = await UserService.CanLogin(credentials);
+
+            if (loginStatus == LoginStatus.CanLogin)
+            {
+                // Simulate fetching user details
+                var userSession = new UserSession
+                {
+                    UserName = loginModel.Name,
+                    IsLogged = true 
+                };
+
+                UserSessionStateService.SetUserSession(userSession);
+                StateHasChanged();
+              
+                NavigationManager.NavigateTo("/Dashboard");
+            }
+            else
+            {
+                showLoginFailed = true;
+                showLoginSuccess = false;
+            }
+        }
+    }
 }

@@ -1,7 +1,5 @@
 ﻿using GestionPersonnel.Models.Employees;
 using GestionPersonnel.Models.EmplyeeEquipe;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace GestionPersonnel.Services
 {

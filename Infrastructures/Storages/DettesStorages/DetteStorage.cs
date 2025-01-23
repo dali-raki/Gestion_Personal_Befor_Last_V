@@ -1,14 +1,6 @@
 ﻿using GestionPersonnel.Models.Dettes;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
-using GestionPersonnel.Models.Dettes;
-using GestionPersonnel.Models.Avances;
-using GestionPersonnel.Storages.DettesStorages;
-using GestionPersonnel.Storages.AvancesStorages;
 using Microsoft.Extensions.Configuration;
 
 namespace GestionPersonnel.Storages.DettesStorages

@@ -1,0 +1,78 @@
+﻿@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@inject UserSessionStateService UserSessionStateService
+@implements IDisposable
+@rendermode InteractiveServer
+
+<div id="profileDropdown" class="profile-dropdown">
+    <div class="profile-icon" @onclick="ShowList" @onclick:stopPropagation>
+        <img src="Images/default-employee.png" alt="Profile Photo" class="profile-photo" />
+        @if (UserSessionStateService.session?.IsLogged == true)
+        {
+            <span>@UserSessionStateService.session.UserName</span>
+        }
+        <button class="arrow">&#9660;</button>
+    </div>
+    @if (isOpenList)
+    {
+        <div class="dropdown-menu">
+            <button class="logout-button" @onclick="Logout">Logout</button>
+        </div>
+    }
+</div>
+
+@code {
+    private bool isOpenList = false;
+    private DotNetObjectReference<ProfileDropdown>? dotNetRef;
+
+    private async Task ShowList()
+    {
+        isOpenList = !isOpenList;
+
+        if (isOpenList)
+        {
+            dotNetRef = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("initializeClickOutsideHandler", dotNetRef, "profileDropdown");
+        }
+    }
+
+    [JSInvokable]
+    public void HandleOutsideClick()
+    {
+        isOpenList = false;
+        StateHasChanged();
+    }
+
+    private void Logout()
+    {
+        UserSessionStateService.ClearUserSession();
+        NavigationManager.NavigateTo("/");
+    }
+
+    public void Dispose()
+    {
+        dotNetRef?.Dispose();
+    }
+}
+
+
+
+<script>
+    window.initializeClickOutsideHandler = (dotNetObjRef, elementId) => {
+        const element = document.getElementById(elementId);
+
+        if (!element) {
+            console.error(`Element with ID '${elementId}' not found.`);
+            return;
+        }
+
+        const outsideClickHandler = (event) => {
+            if (!element.contains(event.target)) {
+                dotNetObjRef.invokeMethodAsync("HandleOutsideClick");
+                document.removeEventListener("click", outsideClickHandler);
+            }
+        };
+
+        document.addEventListener("click", outsideClickHandler);
+    };
+</script>

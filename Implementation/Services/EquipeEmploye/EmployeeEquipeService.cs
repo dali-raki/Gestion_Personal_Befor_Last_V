@@ -1,8 +1,6 @@
 ﻿using GestionPersonnel.Models.Employees;
 using GestionPersonnel.Models.EmplyeeEquipe;
 using GestionPersonnel.Storages.EmployeeEquipeStorages;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace GestionPersonnel.Services
 {

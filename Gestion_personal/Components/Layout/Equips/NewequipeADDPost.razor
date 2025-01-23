@@ -1,8 +1,6 @@
-﻿@using GestionPersonnel.Models.Employe
-@using GestionPersonnel.Models.EmplyeeEquipe
-@using GestionPersonnel.Models.Equipe
-@using GestionPersonnel.Services
-@using GestionPersonnel.Services.EquipeServices
+﻿@using GestionPersonnel.Services
+@using global::Services.Interfaces
+
 @inject IPosteService PosteService
 @inject IEquipeService EquipeService
 @inject IEmployeService EmployeService
@@ -27,7 +25,7 @@
                         </div>
                         <div class="form-group">
                             <label>ID Post</label>
-                            <input type="text" class="form-control" @bind="IdPoste" required />
+                            <input type="text" class="form-control" @bind="numeroPoste" required />
                         </div>
                         <div class="form-group">
                             <label>Choisir L'Equipe</label>
@@ -76,104 +74,3 @@
         </div>
     </div>
 }
-
-@code {
-    [Parameter] public bool IsVisibleAddPost { get; set; }
-    [Parameter] public EventCallback OnClose { get; set; }
-    [Parameter] public EventCallback<EquipesInfos> OnSave { get; set; }
-
-    private List<Employe> employees;
-    private List<Equipe> equipes;
-    private List<EmployeeEquipe> employeeequipe;
-    private List<int> SelectedEmployeeIds { get; set; } = new List<int>();
-
-    private void Hide_Popup_AddPost() {
-        IsVisibleAddPost = false;
-        OnClose.InvokeAsync();
-    }
-
-  
-    private DateTime? DateFin { get; set; } = DateTime.Now;
-
-
-    private string IdPoste { get; set; }
-    private int? SelectedEquipeId { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        /*equipes = await EquipeService.GetAllEquipesAsync();
-        */
-        LoadEquipe();
-
-    }
-
-    public async  void LoadEquipe()
-    {
-        equipes = await EquipeService.GetAllEquipesAsync();
-
-
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-
-        if (IsVisibleAddPost)
-        {
-            equipes = await EquipeService.GetAllEquipesAsync();
-        }
-    }
-    private async Task OnEquipeChanged(ChangeEventArgs e)
-    {
-        
-        var selectedEquipeId = e.Value.ToString();
-        SelectedEquipeId = int.TryParse(selectedEquipeId, out var id) ? id : (int?)null;
-        Console.WriteLine(selectedEquipeId);
-       
-        if (SelectedEquipeId.HasValue)
-        {
-            employees = await EquipeService.GetEmployeesByEquipeIdAsync(SelectedEquipeId.Value);
-        }
-    }
-
-    private void ToggleEmployeeSelection(int employeeId)
-    {
-        if (SelectedEmployeeIds.Contains(employeeId))
-        {
-            SelectedEmployeeIds.Remove(employeeId); 
-        }
-        else
-        {
-            SelectedEmployeeIds.Add(employeeId); 
-        }
-        Console.WriteLine(employeeId);
-    }
-
-    private async Task HandleSubmit()
-    {
-        if (!string.IsNullOrEmpty(IdPoste) && SelectedEquipeId.HasValue && SelectedEmployeeIds.Any())
-        {
-            Console.WriteLine(SelectedEmployeeIds.Count);
-            // Ensure DateFin is not null before calling the service
-            await PosteService.InsererDonneesPoste(IdPoste, SelectedEquipeId.Value, DateFin ?? DateTime.MinValue, SelectedEmployeeIds);
-           IdPoste= "";
-           DateFin = DateTime.Now;
-           SelectedEquipeId = null;
-             SelectedEmployeeIds = new List<int>();
-            
-            await OnSave.InvokeAsync();
-            Hide_Popup_AddPost();
-            
-        }
-        else
-        {
-            // Handle form validation if necessary
-            Console.WriteLine("Please fill in all the fields.");
-            Hide_Popup_AddPost();
-        }
-       
-    }
-
-    
-}
-
-

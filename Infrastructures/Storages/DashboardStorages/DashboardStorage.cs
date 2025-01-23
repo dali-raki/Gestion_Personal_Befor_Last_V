@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System;
 using System.Data.SqlClient;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Infrastructures.Domains.Models.Dashboard;
 
 namespace Infrastructures.Storages.DashboardStorages

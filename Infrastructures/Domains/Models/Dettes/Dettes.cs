@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GestionPersonnel.Models.Dettes
+﻿namespace GestionPersonnel.Models.Dettes
 {
     public class Dette
     {

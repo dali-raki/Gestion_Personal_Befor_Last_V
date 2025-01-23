@@ -1,6 +1,4 @@
-using GestionPersonnel.Models.Employe;
 using Microsoft.AspNetCore.Components;
-using GestionPersonnel.Models.Dettes;
 using GestionPersonnel.Services;
 
 namespace Gestion_personal.Components.Layout.Dettes

@@ -1,9 +1,4 @@
 ﻿using GestionPersonnel.Models.Dettes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GestionPersonnel.Storages.DettesStorages
 {

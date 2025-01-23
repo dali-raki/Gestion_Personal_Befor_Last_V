@@ -1,12 +1,19 @@
 using GestionPersonnel.Models.Employe;
 using GestionPersonnel.Models.Equipe;
 using GestionPersonnel.Models.Fonctions;
+using GestionPersonnel.Services;
+using GestionPersonnel.Services.EquipeServices;
 using Microsoft.AspNetCore.Components;
+using Services.Interfaces;
 
 namespace Gestion_personal.Components.Layout.Equips
 {
     public partial class NewequipeADDEquipe
     {
+        [Inject] private IEmployeService EmployeService { get; set; }
+        [Inject] private IFonctionService FonctionService { get; set; }
+        [Inject] private IEquipeService EquipeService { get; set; }
+        [Inject] private IEmployeeEquipeService EmployeeEquipeService { get; set; }
         [Parameter] public bool IsVisibleAddEquipe { get; set; }
         [Parameter] public EventCallback OnClose { get; set; }
 
@@ -25,7 +32,6 @@ namespace Gestion_personal.Components.Layout.Equips
             employes = await EmployeService.GetEmployeesAsync();
             fonctions = await FonctionService.GetAllAsync();
             filteredEmployes = employes;
-
 
             employeeSelection = employes.ToDictionary(emp => emp.EmployeID, emp => false);
         }

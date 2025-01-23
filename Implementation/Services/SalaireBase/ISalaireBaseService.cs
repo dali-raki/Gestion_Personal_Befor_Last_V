@@ -1,6 +1,4 @@
 ﻿using GestionPersonnel.Models.SalairesBase;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Implementation.Services.SalaireBase
 {

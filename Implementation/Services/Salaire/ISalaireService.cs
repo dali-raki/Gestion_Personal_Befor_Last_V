@@ -1,7 +1,4 @@
 ﻿using GestionPersonnel.Models.Salaires;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace GestionPersonnel.Services
 {

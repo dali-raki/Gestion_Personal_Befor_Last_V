@@ -1,7 +1,6 @@
 ﻿using GestionPersonnel.Models.Employe;
 using GestionPersonnel.Models.Equipe;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+
 
 namespace GestionPersonnel.Services.EquipeServices
 {
@@ -15,5 +14,6 @@ namespace GestionPersonnel.Services.EquipeServices
         Task DeleteEquipeAsync(int equipeId);
         Task<List<EquipesInfos>> GetEquipePostesInfoAsync();
         Task<List<Employe>> GetEmployeesByEquipeIdAsync(int equipeId);
+    
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using GestionPersonnel.Models.Fonctions;
+﻿using GestionPersonnel.Models.Fonctions;
 using GestionPersonnel.Storages.FonctionsStorages;
 
 namespace GestionPersonnel.Services
