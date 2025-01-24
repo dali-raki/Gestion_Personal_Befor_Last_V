@@ -51,11 +51,13 @@ namespace Gestion_personal.Components.Pages
                 await FileProcessingService.ProcessFile(fileContent);
 
                 ShowToast("Succès", "Fichier téléchargé avec succès!", ToastType.Success);
+                selectedFile = null;
                 showFileInput = false;
             }
             catch (Exception ex)
             {
                 ShowToast("Erreur", $"Il y a une erreur de fichier.", ToastType.Danger);
+                selectedFile = null;
                 showFileInput = false;
                 
             }

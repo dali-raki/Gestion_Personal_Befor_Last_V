@@ -14,19 +14,7 @@ namespace GestionPersonnel.Services
             _userstorage = userStorage;
         }
 
-        /*public User GetUserAuth(string userName, string password)
-        {
-            var user = _userstorage.SelectUserByUsername(userName);
-
-            if (user == null)
-                return null;
-
-            bool isPassVerifyed = BCrypt.Net.BCrypt.Verify(password, user.Password);
-            if (isPassVerifyed == false)
-                return null;
-
-            return user;
-        }*/
+        
 
         public async Task<LoginStatus> CanLogin(LoginCredentials credentials)
         {

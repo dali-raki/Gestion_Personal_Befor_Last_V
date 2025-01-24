@@ -4,7 +4,8 @@ using GestionPersonnel.Services;
 using Infrastructures.Domains.Models;
 using Microsoft.AspNetCore.Components;
 using UserSession = Infrastructures.Domains.Models.UserSession;
-
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Gestion_personal.Components.Pages
 {

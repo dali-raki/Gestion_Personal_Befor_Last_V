@@ -79,7 +79,13 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPostGeneratePDF,PostGeneratePDF>();
 builder.Services.AddSingleton<UserSessionStateService>();
 builder.Services.AddScoped<IFileProcessingService, FileProcessingService>();
-
+builder.Services.AddAuthentication("Cookies")
+	.AddCookie("Cookies", options => {
+		options.LoginPath = "/";
+		options.AccessDeniedPath = "/";
+		options.ExpireTimeSpan=TimeSpan.FromHours(20);
+		options.Cookie.Name = "Fabelec";
+	});
 builder.Logging.SetMinimumLevel(LogLevel.Debug);
 builder.Services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
 var app = builder.Build();
