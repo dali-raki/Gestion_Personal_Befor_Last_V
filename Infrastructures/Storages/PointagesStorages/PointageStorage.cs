@@ -42,23 +42,24 @@ namespace GestionPersonnel.Storages.PointagesStorages
 
         private const string _selectByDateQuery = @"
             
-            SELECT 
-                p.*,  
-                e.Nom AS EmployeNom, 
-                e.Prenom AS EmployePrenom, 
-                f.NomFonction AS FonctionNom,
-				c.JourneeCoefficient as JourneeCoefficient,
-				c.HeuresSupplementairesCoefficient as HeuresSupplementairesCoefficient
-            FROM 
-                [db_aa9d4f_gestionpersonnel].[dbo].[Pointage] p
-            JOIN 
-                [db_aa9d4f_gestionpersonnel].[dbo].[Employes] e ON p.EmployeID = e.EmployeID
-            JOIN 
-                [db_aa9d4f_gestionpersonnel].[dbo].[Fonctions] f ON e.FonctionID = f.FonctionID
-			JOIN 
-			    [db_aa9d4f_gestionpersonnel].[dbo].[CoefficientsTravail] c On c.EmployeID = p.EmployeID
-            WHERE 
-                p.Date =@Date";
+           SELECT DISTINCT
+    p.*,  
+    e.Nom AS EmployeNom, 
+    e.Prenom AS EmployePrenom, 
+    ISNULL(f.NomFonction, 'Non défini') AS FonctionNom,
+    ISNULL(c.JourneeCoefficient, 0.0) AS JourneeCoefficient,
+    ISNULL(c.HeuresSupplementairesCoefficient, 0.0) AS HeuresSupplementairesCoefficient
+FROM 
+    [db_aa9d4f_gestionpersonnel].[dbo].[Pointage] p
+JOIN 
+    [db_aa9d4f_gestionpersonnel].[dbo].[Employes] e ON p.EmployeID = e.EmployeID
+LEFT JOIN 
+    [db_aa9d4f_gestionpersonnel].[dbo].[Fonctions] f ON e.FonctionID = f.FonctionID
+LEFT JOIN 
+    [db_aa9d4f_gestionpersonnel].[dbo].[CoefficientsTravail] c ON c.EmployeID = p.EmployeID AND c.Date = @Date
+WHERE 
+    p.Date = @Date;
+";
 
         private static Pointage GetPointageFromDataRow(DataRow row)
         {

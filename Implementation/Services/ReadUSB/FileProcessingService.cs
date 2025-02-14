@@ -53,8 +53,11 @@ namespace Infrastructures.Storages.ReadUSB
         {
             var records = ParseFileContent(fileContent);
             await _checkInOutStorage.InsertRecords(records);
+            await _transferDataStorage.TransfererEmployees();
             await _transferDataStorage.TransfererPointages();
             await _transferDataStorage.CalculeCofficient();
+            await _transferDataStorage.InsertOrUpdateRapportsPointage();
+            await _transferDataStorage.InsertOrUpdateSalaires();
         }
     }
 }
