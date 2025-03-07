@@ -26,6 +26,7 @@ public partial class DettePage
 	{
 		await LoadDette();
 		filteredPaimentsInfos = paimentsInfos;
+
 	}
 
 	private DetteAvanceEmployeFrom detteAvanceEmployeFrom;
@@ -47,6 +48,7 @@ public partial class DettePage
 	{
 		isVisibleADDDette = true;
 		StateHasChanged();
+
 	}
 
 	private void Hide_Popup_AddDette()

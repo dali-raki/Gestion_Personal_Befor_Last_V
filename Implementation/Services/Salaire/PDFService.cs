@@ -12,7 +12,7 @@ namespace GestionPersonnel.Services
             {
                 
                 PdfDocument document = new PdfDocument();
-                document.Info.Title = "Fiche de Paie";
+                document.Info.Title =$"Fiche de Paie {salaireDetail.NomEmploye } {salaireDetail.NomEmploye}";
 
                 
                 PdfPage page = document.AddPage();

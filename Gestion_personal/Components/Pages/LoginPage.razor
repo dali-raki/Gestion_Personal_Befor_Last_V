@@ -2,11 +2,16 @@
 @using Gestion_personal.Components.Layout
 @rendermode InteractiveServer
 @layout EmptyLayout
+
 <Head>
     <title>Login</title>
 </Head>
 
 <div class="login">
+    <div class="login-header">
+        <img src="Images/LOGO.jpg" alt="Login Image" class="login-image" />
+
+    </div>
     <div class="login-form">
         <EditForm Model="loginModel" OnValidSubmit="Login" FormName="login">
             <DataAnnotationsValidator />
@@ -18,19 +23,49 @@
             @if (showLoginFailed)
             {
                 <div class="mb-1" style="text-align:center; background-color:orangered; padding-top:5px;">
-                    <p style="color:white; font-weight:bold" >Login failed</p>
+                    <p style="color:white; font-weight:bold">Login failed</p>
                 </div>
-                
             }
             <button type="submit">Login</button>
         </EditForm>
     </div>
 </div>
 
-
 <style>
     .sidebar, .top-row[b-fxsxjq811k] {
         display: none;
     }
-</style>
 
+    .login {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        text-align: center;
+    }
+
+    .login-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .login-image {
+        width: 150px; /* Ajuste la taille de l'image */
+        height: 150px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+
+    .login-form {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+</style>

@@ -19,6 +19,7 @@ public partial class Paiement
         IsPopupVisible = true;
         StateHasChanged(); // Ensure the UI updates when showing the popup
     }
+    
 
     private void Hide_Popup_Paiement()
     {
@@ -47,6 +48,7 @@ public partial class Paiement
         searchTerm = e.Value.ToString();
         FilterSalaries();
     }
+    
 
     private void FilterSalaries()
     {
@@ -68,9 +70,10 @@ public partial class Paiement
 
     private async Task GeneratePDF(SalaireDetail salaire)
     {
+        
         var pdfBytes = await PDFService.GenerateSalairePDFAsync(salaire);
         var base64String = Convert.ToBase64String(pdfBytes);
-        var fileName = "FicheDePaie.pdf";
+        var fileName =$"FicheDePaie{salaire.NomEmploye }{salaire.PrenomEmploye}_{selectedDate.Value}.pdf";
 
         await JSRuntime.InvokeVoidAsync("downloadFile", $"data:application/pdf;base64,{base64String}", fileName);
     }
