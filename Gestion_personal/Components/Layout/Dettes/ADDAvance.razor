@@ -17,22 +17,21 @@
                     <form @onsubmit="HandleSubmit">
                         <div class="form-group">
                             <label>Employes</label>
-                            <select @bind="selectedEmployeId" class="form-control" required>
-                                <option value="">-- Choisir Employe --</option>
-                                @if (employes != null)
-                                {
-                                    @foreach (var employe in employes)
-                                    {
-                                        <option value="@employe.EmployeID">
-                                            @employe.Nom @employe.Prenom
-                                        </option>
-                                    }
-                                }
-                                else
-                                {
-                                    <option>-- Null --</option>
-                                }
-                            </select>
+                            <RadzenDropDownDataGrid Data="@employes"
+                                                    @bind-Value="selectedEmployeId"
+                                                    TextProperty="FullName"
+                                                    ValueProperty="EmployeID"
+                                                    Placeholder="-- Choisir Employe --"
+                                                    AllowFiltering="true"
+                                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                                    Style="width: 100%;"
+                                                    Required="true">
+                                <Columns>
+                                    <RadzenDropDownDataGridColumn Property="Nom" Title="Nom" />
+                                    <RadzenDropDownDataGridColumn Property="Prenom" Title="Prenom" />
+                                    <RadzenDropDownDataGridColumn Property="FonctionName" Title="Fonction" />
+                                </Columns>
+                            </RadzenDropDownDataGrid>
                         </div>
                         <div class="form-group">
                             <label>Valeur de Avance</label>

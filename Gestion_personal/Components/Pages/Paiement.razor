@@ -6,14 +6,14 @@
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
-<div class="btn-refresh">
-    <button class="btn-p" @onclick="TransferPointageSalaire">
-        <i class="fa-solid fa-rotate"></i>
-    </button>
-</div>
 <div class="panel-employe">
+    <div style="display:flex;align-items: flex-start;">
+        <button class="btn-p" @onclick="TransferPointageSalaire">
+            <i class="fa-solid fa-rotate"></i>
+        </button>
     <div class="title">
         <h1>Paiement</h1>
+    </div>
     </div>
     <div class="option-employe">
         <div class="input-group w-50">
@@ -29,52 +29,33 @@
     </div>
 
     <div class="tab-employe">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Nom et Prenom</th>
-                    <th>Fonction</th>
-                    <th>Type Paiement</th>
-                    <th>Salaire</th>
-                    <th>Primes</th>
-                    <th>Avances</th>
-                    <th>Dettes</th>
-                    <th>SalaireNet</th>
-                    <th>Option</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (filteredSalaries.Count == 0)
-                {
-                    <tr>
-                        <td colspan="9" class="text-center">No found Paiement</td>
-                    </tr>
-                }
-                else
-                {
-                    @foreach (var salaire in filteredSalaries)
-                    {
-                        <tr>
-                            <td class="text-left align-middle">@salaire.NomEmploye @salaire.PrenomEmploye</td>
-                            <td class="text-center align-middle">@salaire.NomFonction</td>
-                            <td class="text-center align-middle">@salaire.TypePaiement</td>
-                            <td class="text-center align-middle">@salaire.Salaire</td>
-                            <td class="text-center align-middle">@salaire.Primes</td>
-                            <td class="text-center align-middle">@salaire.Avances</td>
-                            <td class="text-center align-middle">@salaire.Dettes</td>
-                            <td class="text-center align-middle">@salaire.SalaireNet</td>
-                            <td class="text-center align-middle">
-                                <button class="btn-d px-3 py-2" @onclick="() => GeneratePDF(salaire)">
-                                   PDF
-                                </button>
-                            </td>
-                        </tr>
-                    }
-
-                }
-
-            </tbody>
-        </table>
+        <RadzenDataGrid TItem="SalaireDetail" Data="@filteredSalaries"
+                        AllowFiltering="true" AllowPaging="true" AllowSorting="true" PageSize="10">
+            <Columns>
+                <RadzenDataGridColumn TItem="SalaireDetail" Title="Nom et Prenom">
+                    <Template Context="salaire">
+                        @salaire.NomEmploye @salaire.PrenomEmploye
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SalaireDetail" Property="NomFonction" Title="Fonction" />
+                <RadzenDataGridColumn TItem="SalaireDetail" Property="TypePaiement" Title="Type Paiement" />
+                <RadzenDataGridColumn TItem="SalaireDetail" Property="Salaire" Title="Salaire" />
+                <RadzenDataGridColumn TItem="SalaireDetail" Property="Primes" Title="Primes" />
+                <RadzenDataGridColumn TItem="SalaireDetail" Property="Avances" Title="Avances" />
+                <RadzenDataGridColumn TItem="SalaireDetail" Property="Dettes" Title="Dettes" />
+                <RadzenDataGridColumn TItem="SalaireDetail" Property="SalaireNet" Title="SalaireNet" />
+                <RadzenDataGridColumn TItem="SalaireDetail" Title="Option">
+                    <Template Context="salaire">
+                        <button class="btn-d px-3 py-2" @onclick="() => GeneratePDF(salaire)">
+                            PDF
+                        </button>
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+            <EmptyTemplate>
+                <div class="text-center">No found Paiement</div>
+            </EmptyTemplate>
+        </RadzenDataGrid>
     </div>
 </div>
 

@@ -1,0 +1,98 @@
+﻿<div class="card">
+    <div class="card-content">
+        <div class="number">
+            <p>@Number</p>
+        </div>
+        <div class="titel">
+            <p>@Title</p>
+        </div>
+        @if (Show)
+        {
+            <div class="card-status">
+                <i class="fa-solid @ArrowIcon" style="color:@ArrowColor;"></i>
+                <span class="status-text">@StatusText</span>
+            </div>
+            
+        }
+       
+    </div>
+      
+            <div class="card-icon">
+                <i class="@Icon"></i>
+            </div>
+        
+</div>
+
+<style>
+    .card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: transform 0.2s ease;
+        margin: 10px 0;
+        min-width: 300px;
+        height:140px;
+    }
+
+        .card:hover {
+            transform: translateY(-3px);
+        }
+
+    .card-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    /* Number */
+    .number p {
+        font-size: 28px;
+        font-weight: 600;
+        margin: 0;
+        color: black;
+    }
+
+    /* Title */
+    .titel p {
+        font-size: 15px;
+        color: black;
+        margin-top: 5px;
+    }
+
+    /* Icon */
+    .card-icon i {
+        font-size: 36px;
+        color: #0479cc;
+    }
+
+    /* Status */
+    .card-status {
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+    }
+
+    .status-text {
+        margin-left: 5px;
+        color: #7f8c8d;
+    }
+</style>
+
+@code {
+    [Parameter] public string Title { get; set; }
+    [Parameter] public int Number { get; set; }
+    [Parameter] public string Icon { get; set; }
+    [Parameter] public double Difference { get; set; }
+    [Parameter] public bool Show { get; set; }
+
+    private string ArrowIcon => Difference > 1 ? "fa-arrow-up" : Difference < 1 ? "fa-arrow-down" : "fa-minus";
+    private string ArrowColor => Difference > 1 ? "green" : Difference < 1 ? "red" : "gray";
+    private string StatusText => Difference != 0 ? $"{Math.Abs(Difference):0.##}% Since last month" : "No change";
+
+
+}

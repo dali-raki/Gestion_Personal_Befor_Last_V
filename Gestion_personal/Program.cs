@@ -1,28 +1,29 @@
 using Gestion_personal.Components;
 using Gestion_personal.Services;
 using GestionPersonnel.Services;
-using Services;
-using Services.Interfaces;
-using GestionPersonnel.Storages.PointagesStorages;
-using GestionPersonnel.Storages.SalairesStorages;
-using GestionPersonnel.Storages.FonctionsStorages;
-using Infrastructures.Storages.EmployeStorages;
-using GestionPersonnel.Storages.TypeDePaimentStorages;
-using GestionPersonnel.Storages.SalairesBaseStorages;
-using Implementation.Services.SalaireBase;
-using GestionPersonnel.Storages.EquipeStorages;
 using GestionPersonnel.Services.EquipeServices;
-using GestionPersonnel.Storages.EmployeeEquipeStorages;
 using GestionPersonnel.Storages.AvancesStorages;
 using GestionPersonnel.Storages.DettesStorages;
+using GestionPersonnel.Storages.EmployeeEquipeStorages;
+using GestionPersonnel.Storages.EquipeStorages;
+using GestionPersonnel.Storages.FonctionsStorages;
+using GestionPersonnel.Storages.PointagesStorages;
+using GestionPersonnel.Storages.SalairesBaseStorages;
+using GestionPersonnel.Storages.SalairesStorages;
 using GestionPersonnel.Storages.Storages.PostesStorages;
-using Infrastructures.Storages.DashboardStorages;
+using GestionPersonnel.Storages.TypeDePaimentStorages;
 using Implementation.Services.Dashboard;
 using Implementation.Services.ReadUSB;
+using Implementation.Services.SalaireBase;
+using Infrastructures.Storages.DashboardStorages;
+using Infrastructures.Storages.EmployeStorages;
 using Infrastructures.Storages.ReadUSB;
 using Infrastructures.Storages.RecordStorages;
 using Infrastructures.Storages.TransferData;
 using Infrastructures.Storages.UserStorages;
+using Radzen;
+using Services;
+using Services.Interfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -79,6 +80,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPostGeneratePDF,PostGeneratePDF>();
 builder.Services.AddSingleton<UserSessionStateService>();
 builder.Services.AddScoped<IFileProcessingService, FileProcessingService>();
+builder.Services.AddRadzenComponents();
 builder.Services.AddAuthentication("Cookies")
 	.AddCookie("Cookies", options => {
 		options.LoginPath = "/";

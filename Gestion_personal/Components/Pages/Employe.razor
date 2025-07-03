@@ -7,14 +7,18 @@
 @rendermode InteractiveServer
 
 <div class="btn-refresh">
-    <button class="btn-p" @onclick="TransferEmploye">
-        <i class="fa-solid fa-rotate"></i>
-    </button>
+ 
 </div>
 <div class="panel-employe">
-    <div class="title">
-        <h1>Employe</h1>
+    <div style="display:flex;align-items: flex-start;">
+        <button class="btn-p" @onclick="TransferEmploye">
+            <i class="fa-solid fa-rotate"></i>
+        </button>
+        <div class="title">
+            <h1>Employe</h1>
+        </div>
     </div>
+   
     
     <div class="option-employe">
         <div class="input-group w-25">
@@ -32,50 +36,34 @@
         </div>
     </div>
     <div class="tab-employe">
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Nom et Prenom</th>
-                <th>N Securite Sociale</th>
-                <th>Fonction</th>
-                <th>Option</th>
-            </tr>
-            </thead>
-            <tbody>
-            @if (filteredEmployees == null)
-            {
-                <tr>
-                    <td colspan="6" class="text-center">Loading...</td>
-                </tr>
-            }
-            else if (filteredEmployees.Count == 0)
-            {
-                <tr>
-                    <td colspan="6" class="text-center">No employees found.</td>
-                </tr>
-            }
-            else
-            {
-                @foreach (var employee in filteredEmployees)
-                {
-                    <tr>
-                        <td class="text-left align-middle">@employee.Nom @employee.Prenom</td>
-                        <td class="text-center align-middle">@employee.NSecuriteSocial</td>
-                        <td class="text-center align-middle">@employee.FonctionName</td>
-                        <td class="text-center align-middle">
-                            <button class="btn-p px-3 py-2" @onclick="() => Show_Popup_UpdateEmploye(employee)">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                            <button class="btn-d px-3 py-2" @onclick="() => ConfirmDelete(employee.EmployeID)">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                }
-            }
-            </tbody>
-        </table>
+        <RadzenDataGrid TItem="GestionPersonnel.Models.Employe.Employe" Data="@filteredEmployees"
+                        AllowFiltering="true" AllowPaging="true" AllowSorting="true" PageSize="10">
+            <Columns>
+                <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Property="FullName" Title="Nom et Prenom">
+                    <Template Context="employee">
+                        @employee.Nom @employee.Prenom
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Property="NSecuriteSocial" Title="N Securite Sociale" />
+                <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Property="FonctionName" Title="Fonction" />
+                <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Title="Option">
+                    <Template Context="employee">
+                        <button class="btn-p px-3 py-2" @onclick="() => Show_Popup_UpdateEmploye(employee)">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn-d px-3 py-2" @onclick="() => ConfirmDelete(employee.EmployeID)">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+            <EmptyTemplate>
+                <div class="text-center">No employees found.</div>
+            </EmptyTemplate>
+            <LoadingTemplate>
+                <div class="text-center">Loading...</div>
+            </LoadingTemplate>
+        </RadzenDataGrid>
     </div>
 
     <NewEmployeePopup IsVisibleAddEmploye="@isPopupVisible" OnClose="@Hide_Popup_AddEmploye" OnSave="@HandleSave" />

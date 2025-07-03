@@ -1,141 +1,139 @@
 ﻿@page "/Dashboard"
 
 @rendermode InteractiveServer
-
+@using Infrastructures.Domains.Models.Dashboard
 <div class="panel-employe">
     <div class="title">
         <h1>Dashborad</h1>
-     
     </div>
     <div class="cards">
-
-
-        <div class="card" id="card-employes">
-
-            <div class="card-content">
-
-                <div class="number">
-                    <p>@Total_Number_Employe</p>
-                </div>
-
-                <div class="titel">
-                    <p>Nombre D'employe</p>
-                </div>
-
-            </div>
-
-            <div class="card-icon">
-                <i class="fa-solid fa-user"></i>
-            </div>
-
-        </div>
-
-
-        <div class="card" id="card-employes">
-
-            <div class="card-content">
-
-                <div class="number">
-                    <p>@Totale_Dargent</p>
-                </div>
-
-                <div class="titel">
-                    <p>Totale Dargent</p>
-                </div>
-
-            </div>
-
-            <div class="card-icon">
-
-                <i class="fa-solid fa-house-crack"></i>
-            </div>
-
-        </div>
-
-
-    </div>
-
-    @*<div class="chart_part">
-
-        <div class="chart1">
-            <div id="container"></div>
-        </div>
-        <div class="chart2">
-            <div id="container2"></div>
-        </div>
-
-    </div>*@
+  
+        <CardInfo Number="@Total_Number_Employe" Title="Nombre D'employe" Icon="fa-solid fa-user" Show="false" />
+        <CardInfo Number="@countEquipe" Title="Nombre D'equipe" Icon="fa-solid fa-users" Show="false" />
+        <CardInfo Number="@(absenceComparison?.PointageThisMonth ?? 0)" Title="Nombre d'absences" Icon="fa-solid fa-user-minus" Show="true" Difference="@absencePercentage" />
+        <CardInfo Number="@(presenceComparison?.PointageThisMonth ?? 0)" Title="Nombre de présences" Icon="fa-solid fa-user-check" Show="true" Difference="@presencePercentage" />
+  
 
     
+    </div>
+  @*sadasd*@
+
+    <div class="dashboard-content">
+        <div class="pointage-tab">
+            <RadzenCard Style="width:600px;height:100%;">
+                <div class="searchZone">
+                    <div class="search-controls">
+                        <div class="form-group">
+                            <label for="searchInput">Search</label>
+                            <input type="text" id="searchInput" @bind="searchTerm" @bind:event="oninput" placeholder="Name..." class="search-input" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dateInput">Date</label>
+                            <input type="date" id="dateInput" @bind="selectedDate" class="search-input" />
+                        </div>
+
+                        <div class="form-group">
+                            <button class="btn-p" @onclick="() => GetPointageByDate(selectedDate.Year, selectedDate.Month)">Search</button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <RadzenDataGrid @ref="grid" Data="@FilteredPointage" TItem="DashboardPointage"
+                                ShowPagingSummary="true" PageSize="11" AllowPaging="true" AllowSorting="true">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="DashboardPointage" Property="NomComplet" Title="Full Name" Width="200px" />
+                        <RadzenDataGridColumn TItem="DashboardPointage" Property="NombrePresences" Title="Presences" Width="100px" />
+                        <RadzenDataGridColumn TItem="DashboardPointage" Property="NombreAbsences" Title="Absences" Width="100px" />
+                        <RadzenDataGridColumn TItem="DashboardPointage" Property="NombreHeuresSupp" Title="Overtime Hours" Width="100px" />
+                    </Columns>
+                </RadzenDataGrid>
+
+            </RadzenCard>
+        </div>
+        <div class="graph">
+            <div class="graph1">
+                <RadzenCard>
+                    <h3 style="text-align:center;">Dette & Avance by Month - @SelectedYear</h3>
+                    <div>
+                        <RadzenChart Style="height:250px;">
+                            <RadzenCategoryAxis />
+                            <RadzenValueAxis>
+                                <RadzenGridLines Visible="true" />
+                            </RadzenValueAxis>
+                            <RadzenColumnSeries Data="@DashboardChartData" CategoryProperty="Label" ValueProperty="Dette" Title="Dette" />
+                            <RadzenColumnSeries Data="@DashboardChartData" CategoryProperty="Label" ValueProperty="Avance" Title="Avance" />
+                        </RadzenChart>
+                    </div>
+                </RadzenCard>
+            </div>
+
+            <div class="graph2">
+                <RadzenCard>
+                    <h3 style="text-align:center;">Employees by Function</h3>
+                    <div>
+                        <RadzenChart Style="height:250px;">
+                            <RadzenPieSeries Data="@countfunction" CategoryProperty="Name" ValueProperty="Total" Title="Employees by Function" />
+                        </RadzenChart>
+                    </div>
+                </RadzenCard>
+            </div>
+        </div>
+    </div>
 </div>
 
 
-@*
-</div>
-<script>
-    function renderCharts(totalEmploye, avanceDetteList, countfunctionEmployesList) {  
-     if (!avanceDetteList) {
-        console.warn("avanceDetteList is null or undefined");
-        avanceDetteList = []; // Default to an empty array
+
+@code {
+    public class TotalItem
+    {
+        public string Label { get; set; }
+        public decimal Value { get; set; }
     }
-        if (!countfunctionEmployesList) {
-            console.warn("countfunctionEmployesList is null or undefined");
-            countfunctionEmployesList = [];
+
+    List<TotalItem> totals => new()
+    {
+        new TotalItem { Label = "Dette", Value = Total_Dette },
+        new TotalItem { Label = "Avance", Value = Total_Avance }
+    };
+
+    // countfunction is populated in the code-behind and available here
+}
+<style>
+    .search-controls {
+        display: flex;
+        padding:10px;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 12px;
+        font-family: Arial, sans-serif;
+    }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #333;
         }
-        const currentYear = new Date().getFullYear();
-        console.log("Total Employees: ", totalEmploye);
-    console.log("Avance & Dette List: ", avanceDetteList);
-    console.log("Countfunction Employees List: ", countfunctionEmployesList);
-        // Pie Chart
-        Highcharts.chart('container', {
-            colors: ['#01BAF2', '#71BF45', '#FAA74B', '#B37CD2'],
-            chart: { type: 'pie' },
-            title: { text: 'Types of Employees' },
-            tooltip: { pointFormat: '<b>{point.name}:</b> {point.y}' },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    dataLabels: { enabled: true, format: '{point.name}: {y}' },
-                    showInLegend: true
-                }
-            },
-            series: [{
-                name: 'Resources',
-                colorByPoint: true,
-                data: countfunctionEmployesList.map(item => ({ name: item[0], y: item[1] }))
-            }]
-        });
 
-        // Column Chart (Dynamic Data)
-        Highcharts.chart('container2', {
-            chart: { type: 'column' },
-            title: { text: `Dettes & Avance of ${currentYear}` },
-            xAxis: {
-                categories: [
-                    'January', 'February', 'March', 'April', 'May', 'June',
-                    'July', 'August', 'September', 'October', 'November', 'December'
-                ]
-            },
-            yAxis: {
-                min: 0,
-                title: { text: 'Amount' }
-            },
-            tooltip: {
-                shared: true,
-                valueSuffix: ' units'
-            },
-            plotOptions: {
-                column: {
-                    dataLabels: { enabled: true }
-                }
-            },
-            series: [
-                { name: 'Avance', data: avanceDetteList.map(item => item[1]) },
-                { name: 'Dette', data: avanceDetteList.map(item => item[0]) }
-            ]
-        });
+    .search-input {
+        padding: 8px 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        outline: none;
+        transition: border-color 0.2s ease;
     }
-</script>
-*@
 
+        .search-input:focus {
+            border-color: #007bff;
+        }
+
+
+</style>

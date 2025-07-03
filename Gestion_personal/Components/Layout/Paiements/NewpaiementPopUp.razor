@@ -1,8 +1,12 @@
 ﻿@using GestionPersonnel.Models.SalairesBase
 @using GestionPersonnel.Models.TypeDePaiment
+@using GestionPersonnel.Models.Employe
 @using GestionPersonnel.Services
 @using global::Services.Interfaces
 @using Implementation.Services.SalaireBase
+@using Radzen
+@using Radzen.Blazor
+
 @if (IsVisible)
 {
     <div class="modal" tabindex="-1" style="display: block;">
@@ -10,26 +14,26 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Ajouter Employeur Paiement</h5>
-                  
                 </div>
                 <div class="modal-body">
                     <form @onsubmit="HandleFormSubmit">
                         <div class="form-group">
                             <label>Choisir Employe</label>
-                            <select @onchange="OnEmployeeChange" class="form-control">
-                                <option value="">-- Choisir Employe --</option>
-                                @if (employes != null)
-                                {
-                                    @foreach (var employe in employes)
-                                    {
-                                        <option value="@employe.EmployeID">@employe.Nom @employe.Prenom</option>
-                                    }
-                                }
-                                else
-                                {
-                                    <option>-- Null --</option>
-                                }
-                            </select>
+                            <RadzenDropDownDataGrid Data="@employes"
+                                                    @bind-Value="selectedEmployeId"
+                                                    TextProperty="FullName"
+                                                    ValueProperty="EmployeID"
+                                                    Placeholder="-- Choisir Employe --"
+                                                    AllowFiltering="true"
+                                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                                    Style="width: 100%;"
+                                                    Change="@(args => OnEmployeeChange(new ChangeEventArgs { Value = args }))">
+                                <Columns>
+                                    <RadzenDropDownDataGridColumn Property="Nom" Title="Nom" />
+                                    <RadzenDropDownDataGridColumn Property="Prenom" Title="Prenom" />
+                                    <RadzenDropDownDataGridColumn Property="FonctionName" Title="Fonction" />
+                                </Columns>
+                            </RadzenDropDownDataGrid>
                         </div>
 
                         <div class="form-group">
@@ -39,20 +43,18 @@
 
                         <div class="form-group">
                             <label>Choisir Type de Paiement</label>
-                            <select @bind="selectedTypePaiementId" class="form-control">
-                                <option value="">-- Choisir Type Paiement --</option>
-                                @if (typeDePaiements != null)
-                                {
-                                    @foreach (var typepaiment in typeDePaiements)
-                                    {
-                                        <option value="@typepaiment.TypePaiementID">@typepaiment.NomTypePaiement</option>
-                                    }
-                                }
-                                else
-                                {
-                                    <option>-- Null --</option>
-                                }
-                            </select>
+                            <RadzenDropDownDataGrid Data="@typeDePaiements"
+                                                    @bind-Value="selectedTypePaiementId"
+                                                    TextProperty="NomTypePaiement"
+                                                    ValueProperty="TypePaiementID"
+                                                    Placeholder="-- Choisir Type Paiement --"
+                                                    AllowFiltering="true"
+                                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                                    Style="width: 100%;">
+                                <Columns>
+                                    <RadzenDropDownDataGridColumn Property="NomTypePaiement" Title="Type de Paiement" />
+                                </Columns>
+                            </RadzenDropDownDataGrid>
                         </div>
 
                         <div class="form-group">
@@ -77,8 +79,8 @@
 
     private List<Employe> employes;
     private List<TypeDePaiement> typeDePaiements;
-    private string selectedEmployeId;
-    private string selectedTypePaiementId;
+    private int? selectedEmployeId;
+    private int? selectedTypePaiementId;
     private string salaire;
     private string fonction;
     private Employe selectedEmploye;
@@ -95,14 +97,14 @@
 
     private async Task HandleFormSubmit()
     {
-        if (!string.IsNullOrEmpty(selectedEmployeId) && !string.IsNullOrEmpty(selectedTypePaiementId) && !string.IsNullOrEmpty(salaire))
+        if (selectedEmployeId.HasValue && selectedTypePaiementId.HasValue && !string.IsNullOrEmpty(salaire))
         {
             var salairesBase = new SalairesBase
-                {
-                    EmplyeId = int.Parse(selectedEmployeId),
-                    TypePaiementID = int.Parse(selectedTypePaiementId),
-                    SalaireBase = decimal.Parse(salaire),
-                };
+            {
+                EmplyeId = selectedEmployeId.Value,
+                TypePaiementID = selectedTypePaiementId.Value,
+                SalaireBase = decimal.Parse(salaire),
+            };
 
             await SalairesBaseService.Add(salairesBase);
             ClosePopup();
@@ -111,16 +113,19 @@
 
     private async Task OnEmployeeChange(ChangeEventArgs e)
     {
-        selectedEmployeId = e.Value.ToString();
-
-        if (!string.IsNullOrEmpty(selectedEmployeId))
+        if (e.Value != null && int.TryParse(e.Value.ToString(), out var id))
         {
-            selectedEmploye = employes.FirstOrDefault(emp => emp.EmployeID.ToString() == selectedEmployeId);
+            selectedEmployeId = id;
+            selectedEmploye = employes.FirstOrDefault(emp => emp.EmployeID == id);
 
             if (selectedEmploye != null)
             {
                 fonction = selectedEmploye.FonctionName;
             }
+        }
+        else
+        {
+            fonction = string.Empty;
         }
     }
 

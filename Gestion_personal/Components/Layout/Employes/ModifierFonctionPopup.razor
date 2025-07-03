@@ -10,18 +10,21 @@
                 <h5 class="modal-title">Modifier la Fonction</h5>
              </div>
             <div class="modal-body">
-        
-        <div class="form-group">
-                    <label for="fonctionSelect">Selectionner la fonction</label>
-            <select id="fonctionSelect" class="form-control" @bind="selectedFonctionId">
-                        <option value="">-- Selectionner la fonction --</option>
-                @foreach (var fonction in fonctions.Skip(1))
-                {
-                   
-                    <option value="@fonction.FonctionID">@fonction.NomFonction</option>
-                }
-            </select>
-        </div>
+
+                    <div class="form-group">
+                        <label for="fonctionSelect">Selectionner la fonction</label>
+                        <RadzenDropDownDataGrid id="fonctionSelect"
+                                                class="form-control"
+                                                Data="@fonctions"
+                                                TextProperty="NomFonction"
+                                                ValueProperty="FonctionID"
+                                                @bind-Value="selectedFonctionId"
+                                                Placeholder="-- Selectionner la fonction --"
+                                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                                AllowFiltering="true"
+                                                AllowClear="true"
+                                                Style="width:100%;" />
+                    </div>
 
        
         <div class="form-group">

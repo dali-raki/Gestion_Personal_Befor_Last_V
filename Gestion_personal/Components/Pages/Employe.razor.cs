@@ -2,6 +2,7 @@
 using GestionPersonnel.Models.Fonctions;
 using Infrastructures.Storages.TransferData;
 using Microsoft.AspNetCore.Components;
+using Radzen.Blazor;
 
 namespace Gestion_personal.Components.Pages;
 
@@ -36,7 +37,26 @@ public partial class Employe
     {
         await LoadEmployees();
     }
+    RadzenDataGrid<IDictionary<string, object>> dataGrid;
+    IEnumerable<IDictionary<string, object>> data;
 
+    protected override void OnParametersSet()
+    {
+        if (filteredEmployees == null)
+        {
+            data = null;
+            return;
+        }
+
+        data = filteredEmployees.Select(e => new Dictionary<string, object>
+        {
+            { "NomPrenom", $"{e.Nom} {e.Prenom}" },
+            { "NSecuriteSocial", e.NSecuriteSocial },
+            { "FonctionName", e.FonctionName },
+            { "EmployeID", e.EmployeID },
+            { "EmployeeObject", e } // For passing the full object to your popup
+        }).ToList();
+    }
     private async Task LoadEmployees()
     {
         try

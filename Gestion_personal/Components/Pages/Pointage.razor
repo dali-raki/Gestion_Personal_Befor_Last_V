@@ -26,55 +26,35 @@
     </div>
 
 
+    @using Radzen
+
     <div class="tab-employe">
-        <table class="table">
-            <thead>
-                <tr>
-
-                    <th>Nom Prenom</th>
-                    <th>Fonction</th>
-                    <th>Status</th>
-                    <th>Heur</th>
-                    <th>Pourcentage</th>
-                    <th>Supplementaires</th>
-                    <th>Remarque</th>
-                    <th>Option</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (filteredPointages.Count == 0 || selectedDate == null || filteredPointages == null)
-                {
-                    <tr>
-                        <td colspan="9" class="text-center">No found Pointage</td>
-                    </tr>
-
-                }
-                else
-                {
-                    @foreach (var pointage in filteredPointages)
-                    {
-                        <tr>
-                            <td class="text-left align-middle">@pointage.NomEmploye @pointage.PrenomEmploye</td>
-                            <td class="text-center align-middle">@pointage.NomFonction</td>
-                            <td class="text-center align-middle">@pointage.Stat</td>
-                            <td class="text-center align-middle">@pointage.HeuresTravaillees</td>
-                            <td class="text-center align-middle">
-                                @pointage.JourneeCoefficient
-                            </td>
-                            <td class="text-center align-middle">
-                                @pointage.HeuresSupplementairesCoefficient
-                            </td>
-                            <td class="text-center align-middle">@pointage.Remarque</td>
-                            <td class="text-center align-middle">
-                                <button class="btn-p px-3 py-2" @onclick="() => Show_Popup_UpdatePointage(pointage)">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    }
-                }
-            </tbody>
-        </table>
+        <RadzenDataGrid TItem="ModelsPointage.Pointage" Data="@filteredPointages"
+                        AllowFiltering="true" AllowPaging="true" AllowSorting="true" PageSize="10">
+            <Columns>
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Title="Nom Prenom">
+                    <Template Context="pointage">
+                        @pointage.NomEmploye @pointage.PrenomEmploye
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="NomFonction" Title="Fonction" />
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="Stat" Title="Status" />
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="HeuresTravaillees" Title="Heur" />
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="JourneeCoefficient" Title="Pourcentage" />
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="HeuresSupplementairesCoefficient" Title="Supplementaires" />
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="Remarque" Title="Remarque" />
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Title="Option">
+                    <Template Context="pointage">
+                        <button class="btn-p px-3 py-2" @onclick="() => Show_Popup_UpdatePointage(pointage)">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+            <EmptyTemplate>
+                <div class="text-center">No found Pointage</div>
+            </EmptyTemplate>
+        </RadzenDataGrid>
     </div>
 </div>
 
