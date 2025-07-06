@@ -7,55 +7,47 @@
         <h1>Dashborad</h1>
     </div>
     <div class="cards">
-  
         <CardInfo Number="@Total_Number_Employe" Title="Nombre D'employe" Icon="fa-solid fa-user" Show="false" />
         <CardInfo Number="@countEquipe" Title="Nombre D'equipe" Icon="fa-solid fa-users" Show="false" />
         <CardInfo Number="@(absenceComparison?.PointageThisMonth ?? 0)" Title="Nombre d'absences" Icon="fa-solid fa-user-minus" Show="true" Difference="@absencePercentage" />
         <CardInfo Number="@(presenceComparison?.PointageThisMonth ?? 0)" Title="Nombre de présences" Icon="fa-solid fa-user-check" Show="true" Difference="@presencePercentage" />
-  
-
-    
     </div>
-  @*sadasd*@
 
     <div class="dashboard-content">
         <div class="pointage-tab">
-            <RadzenCard Style="width:600px;height:100%;">
+            <RadzenCard Style="height:100%;">
+                <h3 style="text-align:center;">Presences et absences des employés durant le mois </h3>
                 <div class="searchZone">
                     <div class="search-controls">
-                        <div class="form-group">
+                        <div class="form-group" id="search">
                             <label for="searchInput">Search</label>
                             <input type="text" id="searchInput" @bind="searchTerm" @bind:event="oninput" placeholder="Name..." class="search-input" />
                         </div>
-
                         <div class="form-group">
                             <label for="dateInput">Date</label>
                             <input type="date" id="dateInput" @bind="selectedDate" class="search-input" />
                         </div>
-
                         <div class="form-group">
+                            <label for="searchInput"></label>
                             <button class="btn-p" @onclick="() => GetPointageByDate(selectedDate.Year, selectedDate.Month)">Search</button>
                         </div>
                     </div>
                 </div>
-
-
                 <RadzenDataGrid @ref="grid" Data="@FilteredPointage" TItem="DashboardPointage"
                                 ShowPagingSummary="true" PageSize="11" AllowPaging="true" AllowSorting="true">
                     <Columns>
                         <RadzenDataGridColumn TItem="DashboardPointage" Property="NomComplet" Title="Full Name" Width="200px" />
                         <RadzenDataGridColumn TItem="DashboardPointage" Property="NombrePresences" Title="Presences" Width="100px" />
                         <RadzenDataGridColumn TItem="DashboardPointage" Property="NombreAbsences" Title="Absences" Width="100px" />
-                        <RadzenDataGridColumn TItem="DashboardPointage" Property="NombreHeuresSupp" Title="Overtime Hours" Width="100px" />
+                        <RadzenDataGridColumn TItem="DashboardPointage" Property="NombreHeuresSupp" Title="Overtime" Width="100px" />
                     </Columns>
                 </RadzenDataGrid>
-
             </RadzenCard>
         </div>
         <div class="graph">
             <div class="graph1">
                 <RadzenCard>
-                    <h3 style="text-align:center;">Dette & Avance by Month - @SelectedYear</h3>
+                    <h3 style="text-align:center;">Dette et avance par mois - @SelectedYear</h3>
                     <div>
                         <RadzenChart Style="height:250px;">
                             <RadzenCategoryAxis />
@@ -68,13 +60,26 @@
                     </div>
                 </RadzenCard>
             </div>
-
             <div class="graph2">
                 <RadzenCard>
-                    <h3 style="text-align:center;">Employees by Function</h3>
+                    <h3 style="text-align:center;">Employes par fonction</h3>
                     <div>
-                        <RadzenChart Style="height:250px;">
-                            <RadzenPieSeries Data="@countfunction" CategoryProperty="Name" ValueProperty="Total" Title="Employees by Function" />
+                      
+                            <RadzenStack Gap="0.5rem" Wrap="FlexWrap.Wrap" >
+                            <div style="display:flex;gap:10px;flex-direction: row-reverse;padding:15px;font-size:1.2rem;">
+                                    <div>
+                                    <RadzenCheckBox @bind-Value="@showDataLabels" Name="dataLabels"></RadzenCheckBox>
+                                    </div>
+                                    <div>
+                                    <RadzenLabel Text="Show Data Labels" Component="dataLabels" />
+                                    </div>
+                                </div>
+                            </RadzenStack>
+                      
+                        <RadzenChart>
+                            <RadzenPieSeries Data="@countfunction" CategoryProperty="Name" ValueProperty="Total" Title="Employees by Function">
+                                <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                            </RadzenPieSeries>
                         </RadzenChart>
                     </div>
                 </RadzenCard>
@@ -83,15 +88,13 @@
     </div>
 </div>
 
-
-
 @code {
     public class TotalItem
     {
         public string Label { get; set; }
         public decimal Value { get; set; }
     }
-
+    private bool showDataLabels { get; set; } = true;
     List<TotalItem> totals => new()
     {
         new TotalItem { Label = "Dette", Value = Total_Dette },
@@ -99,19 +102,27 @@
     };
 
     // countfunction is populated in the code-behind and available here
+    // Make sure you have:
+    // bool showDataLabels { get; set; } = true;
 }
+
 <style>
+    #search {
+        width: 100%;
+    }
+
     .search-controls {
         display: flex;
-        padding:10px;
-        justify-content: space-between;
-        align-items: center;
+        padding: 10px;
+        justify-content: flex-end;
+        align-items: baseline;
+        gap: 10px;
+        margin: 10px 0px;
     }
 
     .form-group {
         display: flex;
         flex-direction: column;
-        margin-bottom: 12px;
         font-family: Arial, sans-serif;
     }
 
@@ -135,5 +146,12 @@
             border-color: #007bff;
         }
 
+    .rz-grid-table thead th .rz-column-title {
+        font-size: 15px !important;
+        font-weight: bolder !important;
+    }
 
+    .rz-cell-data {
+        font-size: 20px !important;
+    }
 </style>

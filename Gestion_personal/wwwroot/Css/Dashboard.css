@@ -1,9 +1,9 @@
 ﻿.cards {
+    width: 100%;
     display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
-    gap: 20px; /* Consistent spacing between cards */
-    margin: 20px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
 .card {
@@ -185,18 +185,21 @@
 
 /**/
 .dashboard-content {
+    width: 100%;
     display: flex;
     flex-direction: row-reverse;
     justify-content: space-between;
+    gap: 20px;
+    padding-bottom:10px;
+    margin:20px 0px;
 }
 .graph {
-    width: 750px;
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
 .pointage-tab {
-    margin-bottom: 20px;
-  
+    width: 100%;
 }
