@@ -20,7 +20,7 @@ namespace Infrastructures.Storages.EmployeStorages
         private const string _selectAllQuery = @"
             SELECT E.EmployeID, E.Nom, E.Prenom, E.DateDeNaissance, E.NSecuriteSocial, E.Adresse, E.GroupSanguin, 
                    E.NTelephone, E.FonctionID, E.DateEntree, E.DateSortie, E.SitiationFamiliale, 
-                   E.Photo, F.NomFonction
+                   E.Photo,E.Journee, F.NomFonction
             FROM Employes E
             INNER JOIN Fonctions F ON E.FonctionID = F.FonctionID
             WHERE E.status = 1";
@@ -37,7 +37,7 @@ namespace Infrastructures.Storages.EmployeStorages
             "INSERT INTO Employes (Nom, Prenom, DateDeNaissance, NSecuriteSocial, Adresse, GroupSanguin, NTelephone, FonctionID, DateEntree, DateSortie, SitiationFamiliale, Photo) VALUES (@Nom, @Prenom, @DateDeNaissance, @NSecuriteSocial, @Adresse, @GroupSanguin, @NTelephone, @FonctionID, @DateEntree, @DateSortie, @SitiationFamiliale, @Photo); SELECT SCOPE_IDENTITY();";
 
         private const string _updateQuery =
-            "UPDATE Employes SET Nom = @Nom, Prenom = @Prenom, DateDeNaissance = @DateDeNaissance, NSecuriteSocial = @NSecuriteSocial, Adresse = @Adresse, GroupSanguin = @GroupSanguin, NTelephone = @NTelephone, FonctionID = @FonctionID, DateEntree = @DateEntree, DateSortie = @DateSortie, SitiationFamiliale = @SitiationFamiliale, Photo = @Photo WHERE EmployeID = @EmployeID;";
+            "UPDATE Employes SET Nom = @Nom, Prenom = @Prenom, DateDeNaissance = @DateDeNaissance, NSecuriteSocial = @NSecuriteSocial, Adresse = @Adresse, GroupSanguin = @GroupSanguin, NTelephone = @NTelephone, FonctionID = @FonctionID,Journee =@Journee, DateEntree = @DateEntree, DateSortie = @DateSortie, SitiationFamiliale = @SitiationFamiliale, Photo = @Photo WHERE EmployeID = @EmployeID;";
 
         private const string _deleteQuery =
             "UPDATE Employes SET status = 0, DateSortie = @DateSortie WHERE EmployeID = @EmployeID;";
@@ -122,7 +122,8 @@ ORDER BY
                 DateSortie = row["DateSortie"] != DBNull.Value ? (DateTime)row["DateSortie"] : (DateTime?)null,
                 SitiationFamiliale = (string)row["SitiationFamiliale"],
                 Photo = row["Photo"] as byte[],
-                FonctionName = row["NomFonction"].ToString()
+                FonctionName = row["NomFonction"].ToString(),
+                Journee = row["Journee"] != DBNull.Value ? (int)row["Journee"] : 0,
             };
         }
 
@@ -195,6 +196,7 @@ ORDER BY
             cmd.Parameters.AddWithValue("@SitiationFamiliale", employe.SitiationFamiliale);
             cmd.Parameters.AddWithValue("@Photo", employe.Photo ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@EmployeID", employe.EmployeID);
+            cmd.Parameters.AddWithValue("@Journee", employe.Journee);
 
             await connection.OpenAsync();
             await cmd.ExecuteNonQueryAsync();

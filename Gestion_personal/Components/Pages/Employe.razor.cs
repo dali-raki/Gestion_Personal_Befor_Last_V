@@ -143,7 +143,8 @@ public partial class Employe
             Adresse = employee.Adresse,
             NTelephone = employee.NTelephone,
             SitiationFamiliale = employee.SitiationFamiliale,
-            Photo = employee.Photo
+            Photo = employee.Photo,
+            Journee = employee.Journee
         };
         isEditPopupVisible = true;
     }

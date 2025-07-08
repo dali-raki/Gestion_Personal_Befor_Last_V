@@ -29,7 +29,7 @@
     @using Radzen
 
     <div class="tab-employe">
-        <RadzenDataGrid TItem="ModelsPointage.Pointage" Data="@filteredPointages"
+        <RadzenDataGrid @ref=grid TItem="ModelsPointage.Pointage" Data="@filteredPointages"
                         AllowFiltering="true" AllowPaging="true" AllowSorting="true" PageSize="10">
             <Columns>
                 <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Title="Nom Prenom">
@@ -42,6 +42,7 @@
                 <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="HeuresTravaillees" Title="Heur" />
                 <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="JourneeCoefficient" Title="Pourcentage" />
                 <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="HeuresSupplementairesCoefficient" Title="Supplementaires" />
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="journee" Title="journee" />
                 <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="Remarque" Title="Remarque" />
                 <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Title="Option">
                     <Template Context="pointage">

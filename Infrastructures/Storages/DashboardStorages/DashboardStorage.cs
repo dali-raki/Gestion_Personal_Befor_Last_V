@@ -188,7 +188,10 @@ FROM [db_aa9d4f_gestionpersonnel].[dbo].[Equipes];";
                                 NomComplet = reader.GetString(reader.GetOrdinal("NomComplet")),
                                 NombrePresences = reader.GetInt32(reader.GetOrdinal("NombrePresences")),
                                 NombreAbsences = reader.GetInt32(reader.GetOrdinal("NombreAbsences")),
-                                NombreHeuresSupp = reader.GetInt32(reader.GetOrdinal("NumberHeuresSup8"))
+                                NombreHeuresSupp = reader.GetInt32(reader.GetOrdinal("NumberHeuresSup8")),
+                                EntryHeure = reader.IsDBNull(reader.GetOrdinal("FirstHeureEntree")) ? (TimeSpan?)null : reader.GetTimeSpan(reader.GetOrdinal("FirstHeureEntree")),
+                                ExitHeure = reader.IsDBNull(reader.GetOrdinal("FirstHeureSortie")) ? (TimeSpan?)null : reader.GetTimeSpan(reader.GetOrdinal("FirstHeureSortie"))
+
                             };
                             result.Add(pointage);
                         }

@@ -42,13 +42,14 @@ namespace GestionPersonnel.Storages.PointagesStorages
 
         private const string _selectByDateQuery = @"
             
-           SELECT DISTINCT
+         SELECT DISTINCT
     p.*,  
     e.Nom AS EmployeNom, 
     e.Prenom AS EmployePrenom, 
     ISNULL(f.NomFonction, 'Non défini') AS FonctionNom,
     ISNULL(c.JourneeCoefficient, 0.0) AS JourneeCoefficient,
-    ISNULL(c.HeuresSupplementairesCoefficient, 0.0) AS HeuresSupplementairesCoefficient
+    ISNULL(c.HeuresSupplementairesCoefficient, 0.0) AS HeuresSupplementairesCoefficient,
+    CAST(ISNULL((e.journee / 8.0) * p.HeuresTravaillees, 0.0) AS FLOAT) AS journee
 FROM 
     [db_aa9d4f_gestionpersonnel].[dbo].[Pointage] p
 JOIN 
@@ -59,6 +60,7 @@ LEFT JOIN
     [db_aa9d4f_gestionpersonnel].[dbo].[CoefficientsTravail] c ON c.EmployeID = p.EmployeID AND c.Date = @Date
 WHERE 
     p.Date = @Date;
+
 ";
 
         private static Pointage GetPointageFromDataRow(DataRow row)
@@ -79,7 +81,9 @@ WHERE
                     : (decimal)row["HeuresSupplementairesCoefficient"],
                 NomEmploye = row["EmployeNom"] == DBNull.Value ? null : (string)row["EmployeNom"],
                 PrenomEmploye = row["EmployePrenom"] == DBNull.Value ? null : (string)row["EmployePrenom"],
-                NomFonction = row["FonctionNom"] == DBNull.Value ? null : (string)row["FonctionNom"]
+                NomFonction = row["FonctionNom"] == DBNull.Value ? null : (string)row["FonctionNom"],
+                journee = row["journee"] == DBNull.Value ? 0 : (int)row["journee"]
+
             };
         }
 

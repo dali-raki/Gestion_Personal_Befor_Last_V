@@ -9,6 +9,8 @@
         public TimeSpan HeureEntree { get; set; }
         public TimeSpan HeureSortie { get; set; }
         public decimal HeuresTravaillees { get; set; }
+
+        public int journee { get; set; }
         public string Remarque { get; set; }
         public string Stat
         {

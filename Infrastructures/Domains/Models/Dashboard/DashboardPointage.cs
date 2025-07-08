@@ -13,6 +13,8 @@ namespace Infrastructures.Domains.Models.Dashboard
         public int NombrePresences { get; set; }
         public int NombreAbsences { get; set; }
         public int NombreHeuresSupp { get; set; }
+        public TimeSpan? EntryHeure { get; set; }
+        public TimeSpan? ExitHeure { get; set; }
 
     }
 }

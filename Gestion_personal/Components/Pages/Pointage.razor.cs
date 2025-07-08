@@ -1,5 +1,6 @@
 ﻿using Infrastructures.Storages.TransferData;
 using Microsoft.AspNetCore.Components;
+using Radzen.Blazor;
 
 namespace Gestion_personal.Components.Pages;
 
@@ -12,6 +13,8 @@ public partial class Pointage
     private List<GestionPersonnel.Models.Pointage.Pointage> filteredPointages;
     private bool isVisiblePointage = false;
     private GestionPersonnel.Models.Pointage.Pointage selectedPointage;
+    private RadzenDataGrid<GestionPersonnel.Models.Pointage.Pointage> grid;
+
 
     private void Show_Popup_UpdatePointage(GestionPersonnel.Models.Pointage.Pointage pointage)
     {
@@ -22,9 +25,12 @@ public partial class Pointage
         }
     }
 
-    private void Hide_Popup_UpdatePointage()
+    private async Task Hide_Popup_UpdatePointage()
     {
         isVisiblePointage = false;
+        await GetPointageByDate();
+        await grid.Reload(); 
+        StateHasChanged();
     }
 
     protected override async Task OnInitializedAsync()

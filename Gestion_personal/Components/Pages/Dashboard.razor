@@ -34,12 +34,16 @@
                     </div>
                 </div>
                 <RadzenDataGrid @ref="grid" Data="@FilteredPointage" TItem="DashboardPointage"
-                                ShowPagingSummary="true" PageSize="11" AllowPaging="true" AllowSorting="true">
+                                ShowPagingSummary="true" PageSize="13" AllowPaging="true" AllowSorting="true">
                     <Columns>
+                        <RadzenDataGridColumn TItem="DashboardPointage" Property="EmployeID" Title="Id" Width="50px" />
                         <RadzenDataGridColumn TItem="DashboardPointage" Property="NomComplet" Title="Full Name" Width="200px" />
-                        <RadzenDataGridColumn TItem="DashboardPointage" Property="NombrePresences" Title="Presences" Width="100px" />
-                        <RadzenDataGridColumn TItem="DashboardPointage" Property="NombreAbsences" Title="Absences" Width="100px" />
+                        <RadzenDataGridColumn TItem="DashboardPointage" Property="NombrePresences" Title="Presences" Width="110px" />
+                        <RadzenDataGridColumn TItem="DashboardPointage" Property="NombreAbsences" Title="Absences" Width="110px" />
                         <RadzenDataGridColumn TItem="DashboardPointage" Property="NombreHeuresSupp" Title="Overtime" Width="100px" />
+                        <RadzenDataGridColumn TItem="DashboardPointage" Property="EntryHeure" Title="Entree" />
+                        <RadzenDataGridColumn TItem="DashboardPointage" Property="ExitHeure" Title="Sortie" />
+                      
                     </Columns>
                 </RadzenDataGrid>
             </RadzenCard>
@@ -147,11 +151,11 @@
         }
 
     .rz-grid-table thead th .rz-column-title {
-        font-size: 15px !important;
+        font-size: 12px !important;
         font-weight: bolder !important;
     }
 
     .rz-cell-data {
-        font-size: 20px !important;
+        font-size: 15px !important;
     }
 </style>
