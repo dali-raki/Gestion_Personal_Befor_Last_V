@@ -67,13 +67,14 @@ public partial class Pointage
         else
         {
             filteredPointages = pointages.Where(p =>
-                (!string.IsNullOrEmpty(p.NomEmploye) &&
-                 p.NomEmploye.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                (!string.IsNullOrEmpty(p.PrenomEmploye) &&
-                 p.PrenomEmploye.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                (!string.IsNullOrEmpty(p.NomFonction) &&
-                 p.NomFonction.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-            ).ToList();
+       (!string.IsNullOrEmpty(p.NomEmploye) &&
+        p.NomEmploye.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+       (!string.IsNullOrEmpty(p.PrenomEmploye) &&
+        p.PrenomEmploye.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+       (!string.IsNullOrEmpty(p.NomFonction) &&
+        p.NomFonction.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+       p.EmployeID.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+   ).ToList();
         }
     }
 

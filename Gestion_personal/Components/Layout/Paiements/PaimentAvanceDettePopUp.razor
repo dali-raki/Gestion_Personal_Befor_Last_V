@@ -1,0 +1,54 @@
+﻿@using GestionPersonnel.Models.Salaires
+@if (display)
+{
+    <div class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajouter une avance ou une dette</h5>  
+                </div>
+
+                <div class="modal-body">
+                  <div class="mb-3">
+    <label class="form-label">Type de transaction</label>
+    <div>
+         <div class="form-check form-check-inline">
+             <input class="form-check-input" type="radio" name="typeTransaction" id="avance">
+             <label class="form-check-label" for="avance">Avance</label>
+         </div>
+         <div class="form-check form-check-inline">
+           <input class="form-check-input" type="radio" name="typeTransaction" id="dette">
+           <label class="form-check-label" for="dette">Dette</label>
+        </div>
+    </div>
+</div>
+
+                    <div class="mb-3">
+                        <label for="montant" class="form-label">Montant (DA)</label>
+                        <input type="number" class="form-control" id="montant" placeholder="0.00" @bind="SalaireDetail.amount">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description (optionnel)</label>
+                        <textarea class="form-control" id="description" placeholder="Ajouter une description..." rows="2" style="resize: none;" @bind="SalaireDetail.Description"></textarea>
+                    </div>
+
+                    <div class="p-2 bg-light rounded">
+                        <p class="mb-1"><strong>Employé:</strong><span style="color:gray;font-weight:500; margin-left:5px;">@SalaireDetail.NomEmploye  @SalaireDetail.PrenomEmploye</span> </p>
+                        <p class="mb-1"><strong>Fonction:</strong><span style="color:gray;font-weight:500; margin-left:5px;">@SalaireDetail.NomFonction </span></p>
+                        <p class="mb-0"><strong>Salaire actuel:</strong><span style="color:gray;font-weight:700; margin-left:5px;">@SalaireDetail.Salaire DA</span></p>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Hide">Annuler</button>
+                    <button type="button" class="btn btn-primary" @onclick="ADDAvanceorDatte">Ajouter Avance</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+

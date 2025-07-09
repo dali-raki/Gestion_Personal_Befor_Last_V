@@ -16,8 +16,8 @@ namespace GestionPersonnel.Storages.DettesStorages
 
         private const string SelectAllQuery = "SELECT * FROM Dettes";
         private const string SelectByIdQuery = "SELECT * FROM Dettes WHERE DetteID = @id";
-        private const string InsertQuery = "INSERT INTO Dettes (EmployeID, Montant, Date) " +
-                                           "VALUES (@EmployeID, @Montant, @Date); SELECT SCOPE_IDENTITY();";
+        private const string InsertQuery = "INSERT INTO Dettes (EmployeID, Montant, Date,Description) " +
+                                           "VALUES (@EmployeID, @Montant, @Date, @Description); SELECT SCOPE_IDENTITY();";
         private const string UpdateQuery = "UPDATE Dettes SET EmployeID = @EmployeID, Montant = @Montant, " +
                                            "Date = @Date WHERE DetteID = @DetteID;";
         private const string DeleteQuery = "DELETE FROM Dettes WHERE DetteID = @DetteID;";
@@ -29,7 +29,8 @@ namespace GestionPersonnel.Storages.DettesStorages
                 DetteID = (int)row["DetteID"],
                 EmployeID = (int)row["EmployeID"],
                 Montant = (decimal)row["Montant"],
-                Date = (DateTime)row["Date"]
+                Date = (DateTime)row["Date"],
+                Description = (string)row["Description"]
             };
         }
 
@@ -82,7 +83,9 @@ namespace GestionPersonnel.Storages.DettesStorages
             cmd.Parameters.AddWithValue("@EmployeID", dette.EmployeID);
             cmd.Parameters.AddWithValue("@Montant", dette.Montant);
             cmd.Parameters.AddWithValue("@Date", dette.Date);
-         
+            cmd.Parameters.AddWithValue("@Description", dette.Description);
+            
+
 
             await connection.OpenAsync();
             var id = await cmd.ExecuteScalarAsync();

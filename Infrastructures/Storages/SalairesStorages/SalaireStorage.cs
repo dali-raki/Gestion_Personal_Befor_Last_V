@@ -165,38 +165,34 @@ namespace GestionPersonnel.Storages.SalairesStorages
 
             return salaireDetailsList;
         }
-        public async Task<List<SalaireDetail>> GetSalariesByMonth(DateTime mois)
+        public async Task<List<SalaireDetail>> SelectSalariesByMonth(DateTime mois)
         {
-            List<SalaireDetail> salaires = new List<SalaireDetail>();
+            var salaires = new List<SalaireDetail>();
 
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
+            using (var command = new SqlCommand("GetSalariesByMonth", connection))
             {
-                using (SqlCommand command = new SqlCommand("GetSalariesByMonth", connection))
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@Mois", mois);
+
+                await connection.OpenAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
                 {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@Mois", mois);
-
-                    await connection.OpenAsync();
-
-                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    while (await reader.ReadAsync())
                     {
-                        while (reader.Read())
+                        salaires.Add(new SalaireDetail
                         {
-                            SalaireDetail salaireDetails = new SalaireDetail
-                            {
-                                NomEmploye = reader["NomEmploye"].ToString(),
-                                PrenomEmploye = reader["PrenomEmploye"].ToString(),
-                                NomFonction = reader["NomFonction"].ToString(),
-                                Salaire = Convert.ToDecimal(reader["Salaire"]),
-                                Primes = Convert.ToDecimal(reader["Primes"]),
-                                Avances = Convert.ToDecimal(reader["Avances"]),
-                                Dettes = Convert.ToDecimal(reader["Dettes"]),
-                                SalaireNet = Convert.ToDecimal(reader["SalaireNet"]),
-                                TypePaiement = reader["TypePaiement"].ToString()
-                            };
-
-                            salaires.Add(salaireDetails);
-                        }
+                            NomEmploye = reader["Nom"].ToString(),
+                            PrenomEmploye = reader["Prenom"].ToString(),
+                            NomFonction = reader["NomFonction"].ToString(),
+                            Salaire = reader["TotalJournee"] != DBNull.Value ? Convert.ToDecimal(reader["TotalJournee"]) : 0,
+                            Primes = reader["Primes"] != DBNull.Value ? Convert.ToDecimal(reader["Primes"]) : 0,
+                            Avances = reader["Avances"] != DBNull.Value ? Convert.ToDecimal(reader["Avances"]) : 0,
+                            Dettes = reader["Dettes"] != DBNull.Value ? Convert.ToDecimal(reader["Dettes"]) : 0,
+                            SalaireNet = reader["SalaireNet"] != DBNull.Value ? Convert.ToDecimal(reader["SalaireNet"]) : 0,
+                            
+                        });
                     }
                 }
             }
@@ -213,6 +209,24 @@ namespace GestionPersonnel.Storages.SalairesStorages
             cmd.Parameters.AddWithValue("@Mois", mois);
             connection.Open();
             await cmd.ExecuteNonQueryAsync();
+        }
+        //this func get 1st day on this month and check if he exist in BD he dont insert else he ensert the salaires 
+        public async Task<int> InsertMonthlySalaries()
+        {
+            await using var connection = new SqlConnection(_connectionString);
+            await using var command = new SqlCommand("InsertMonthlySalaries", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // The stored procedure uses RETURN to indicate status, so capture it
+            var returnParameter = command.Parameters.Add("@ReturnVal", SqlDbType.Int);
+            returnParameter.Direction = ParameterDirection.ReturnValue;
+
+            await connection.OpenAsync();
+            await command.ExecuteNonQueryAsync();
+
+            return (int)returnParameter.Value;
         }
 
     }

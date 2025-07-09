@@ -29,26 +29,49 @@
     @using Radzen
 
     <div class="tab-employe">
-        <RadzenDataGrid @ref=grid TItem="ModelsPointage.Pointage" Data="@filteredPointages"
+        <RadzenDataGrid @ref="grid" TItem="ModelsPointage.Pointage" Data="@filteredPointages"
                         AllowFiltering="true" AllowPaging="true" AllowSorting="true" PageSize="10">
             <Columns>
-                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Title="Nom Prenom">
+                <!-- Full Name -->
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Title="Nom Complet">
                     <Template Context="pointage">
-                        @pointage.NomEmploye @pointage.PrenomEmploye
+                        @($"{pointage.NomEmploye} {pointage.PrenomEmploye}")
                     </Template>
                 </RadzenDataGridColumn>
+                <!-- Function Name -->
                 <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="NomFonction" Title="Fonction" />
-                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="Stat" Title="Status" />
-                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="HeuresTravaillees" Title="Heur" />
-                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="JourneeCoefficient" Title="Pourcentage" />
-                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="HeuresSupplementairesCoefficient" Title="Supplementaires" />
-                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="journee" Title="journee" />
-                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="Remarque" Title="Remarque" />
-                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Title="Option">
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Title="Entrée / Sortie" Width="180px">
                     <Template Context="pointage">
-                        <button class="btn-p px-3 py-2" @onclick="() => Show_Popup_UpdatePointage(pointage)">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </button>
+                        <span title="Heure d'entrée">
+                            <i class="fa-solid fa-sign-in-alt" style="color: green;"></i>
+                            <span style="color: green; margin-right: 10px;">
+                                @pointage.HeureEntree
+                            </span>
+                        </span>
+                        <span title="Heure de sortie">
+                            <i class="fa-solid fa-sign-out-alt" style="color: red;"></i>
+                            <span style="color: red;">
+                                @pointage.HeureSortie
+                            </span>
+                        </span>
+                    </Template>
+                </RadzenDataGridColumn>
+                <!-- Day -->
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="HeuresTravaillees" Title="Heures Travaillees" Width="200px" />
+                <!-- Day -->
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="journee" Title="Journée" Width="120px" />
+                <!-- Remarks -->
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="Remarque" Title="Remarque" />
+                <!-- Option (Edit Button) -->
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Title="Option" Width="100px">
+                    <Template Context="pointage">
+                        <div style="display:flex;justify-content:center;">
+                            <button class="btn-p px-3 py-2" @onclick="() => Show_Popup_UpdatePointage(pointage)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+
+                        </div>
+                       
                     </Template>
                 </RadzenDataGridColumn>
             </Columns>

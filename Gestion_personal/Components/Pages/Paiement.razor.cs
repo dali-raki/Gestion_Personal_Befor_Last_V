@@ -1,4 +1,5 @@
-﻿using GestionPersonnel.Models.Salaires;
+﻿using Gestion_personal.Components.Layout.Paiements;
+using GestionPersonnel.Models.Salaires;
 using Infrastructures.Storages.TransferData;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -13,13 +14,10 @@ public partial class Paiement
     private string searchTerm;
     private DateTime? selectedDate = DateTime.Now.Date;
     private bool IsPopupVisible = false;
+    private PaimentAvanceDettePopUp paimentAvanceDettePopUp;
 
-    private void Show_Popup_Paiement()
-    {
-        IsPopupVisible = true;
-        StateHasChanged(); // Ensure the UI updates when showing the popup
-    }
-    
+
+
 
     private void Hide_Popup_Paiement()
     {
@@ -29,6 +27,8 @@ public partial class Paiement
 
     protected override async Task OnInitializedAsync()
     {
+        
+            await SalaireService.SetMonthlySalariesAsync();
         salaireDetails = await SalaireService.GetSalariesByMonthAsync(selectedDate.Value);
         filteredSalaries = salaireDetails;
     }

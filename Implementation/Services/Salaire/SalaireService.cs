@@ -43,7 +43,7 @@ namespace GestionPersonnel.Services
 
         public async Task<List<SalaireDetail>> GetSalariesByMonthAsync(DateTime mois)
         {
-            return await _salaireStorage.GetSalariesByMonth(mois);
+            return await _salaireStorage.SelectSalariesByMonth(mois);
         }
 
         public async Task UpdateDetteAsync(int employeeid, decimal dette, DateTime mois)
@@ -51,6 +51,8 @@ namespace GestionPersonnel.Services
             await _salaireStorage.UpdateDette(employeeid, dette, mois);
         }
      
-
+        public async Task<int> SetMonthlySalariesAsync(){
+            return await _salaireStorage.InsertMonthlySalaries();
+        }
     }
 }

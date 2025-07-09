@@ -6,6 +6,7 @@
         public int EmployeID { get; set; }
         public string NomEmployee { get; set; }
         public string PrenomEmployee { get; set; }
+        public string Description { get; set; }
         public decimal Montant { get; set; }
         public DateTime Date { get; set; }
         

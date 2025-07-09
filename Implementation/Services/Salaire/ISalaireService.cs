@@ -12,5 +12,6 @@ namespace GestionPersonnel.Services
         Task DeleteAsync(int id);
         Task<List<SalaireDetail>> GetSalariesByMonthAsync(DateTime mois);
         Task UpdateDetteAsync(int employeeid, decimal dette, DateTime mois);
+        Task<int> SetMonthlySalariesAsync();
     }
 }

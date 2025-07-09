@@ -16,8 +16,8 @@ namespace GestionPersonnel.Storages.AvancesStorages
 
         private const string SelectAllQuery = "SELECT * FROM Avances";
         private const string SelectByIdQuery = "SELECT * FROM Avances WHERE AvanceID = @id";
-        private const string InsertQuery = "INSERT INTO Avances (EmployeID, Montant, Date) " +
-                                           "VALUES (@EmployeID, @Montant, @Date); SELECT SCOPE_IDENTITY();";
+        private const string InsertQuery = "INSERT INTO Avances (EmployeID, Montant, Date, Description) " +
+                                           "VALUES (@EmployeID, @Montant, @Date, @Description); SELECT SCOPE_IDENTITY();";
         private const string UpdateQuery = "UPDATE Avances SET EmployeID = @EmployeID, Montant = @Montant, " +
                                            "Date = @Date WHERE AvanceID = @AvanceID;";
         private const string DeleteQuery = "DELETE FROM Avances WHERE AvanceID = @AvanceID;";
@@ -97,7 +97,7 @@ namespace GestionPersonnel.Storages.AvancesStorages
             cmd.Parameters.AddWithValue("@EmployeID", avance.EmployeID);
             cmd.Parameters.AddWithValue("@Montant", avance.Montant);
             cmd.Parameters.AddWithValue("@Date", avance.Date);
-
+            cmd.Parameters.AddWithValue("@Description", avance.Description);
             await connection.OpenAsync();
             var id = await cmd.ExecuteScalarAsync();
             return Convert.ToInt32(id);
