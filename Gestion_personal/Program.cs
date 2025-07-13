@@ -13,12 +13,17 @@ using GestionPersonnel.Storages.SalairesStorages;
 using GestionPersonnel.Storages.Storages.PostesStorages;
 using GestionPersonnel.Storages.TypeDePaimentStorages;
 using Implementation.Services.Dashboard;
+using Implementation.Services.Prime;
 using Implementation.Services.ReadUSB;
+using Implementation.Services.Remboursement;
 using Implementation.Services.SalaireBase;
+using Infrastructures.Domains.Models.Remboursements;
 using Infrastructures.Storages.DashboardStorages;
 using Infrastructures.Storages.EmployeStorages;
+using Infrastructures.Storages.PrimesStorages;
 using Infrastructures.Storages.ReadUSB;
 using Infrastructures.Storages.RecordStorages;
+using Infrastructures.Storages.RemboursementsStorages;
 using Infrastructures.Storages.TransferData;
 using Infrastructures.Storages.UserStorages;
 using Radzen;
@@ -56,9 +61,16 @@ builder.Services.AddScoped<DetteStorage>();
 builder.Services.AddScoped<PosteStorage>();
 builder.Services.AddScoped<DashboardStorage>();
 builder.Services.AddScoped<DetteRestantStorage>();
+builder.Services.AddScoped<RemboursementStorage>();
+builder.Services.AddScoped<PrimeStorage>();
+
+
+
 builder.Services.AddScoped<IUserStorage,UserStorage>();
 builder.Services.AddScoped<ITransferDataStorage, TransferDataStorage>();
 builder.Services.AddScoped<ICheckInOutStorage, CheckInOutStorage>();
+
+
 
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ITypeDePaiementService, TypeDePaiementService>();
@@ -80,6 +92,15 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPostGeneratePDF,PostGeneratePDF>();
 builder.Services.AddSingleton<UserSessionStateService>();
 builder.Services.AddScoped<IFileProcessingService, FileProcessingService>();
+
+
+builder.Services.AddScoped<IRemboursementStorage, RemboursementStorage>();
+builder.Services.AddScoped<IPrimeStorage, PrimeStorage>();
+
+builder.Services.AddScoped<IRemboursementService,RemboursementService>();
+builder.Services.AddScoped<IPrimeService,PrimeService>();
+
+
 builder.Services.AddRadzenComponents();
 builder.Services.AddAuthentication("Cookies")
 	.AddCookie("Cookies", options => {

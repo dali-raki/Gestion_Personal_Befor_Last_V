@@ -183,6 +183,7 @@ namespace GestionPersonnel.Storages.SalairesStorages
                     {
                         salaires.Add(new SalaireDetail
                         {
+                            EmployeId = Convert.ToInt32(reader["EmployeId"]),
                             NomEmploye = reader["Nom"].ToString(),
                             PrenomEmploye = reader["Prenom"].ToString(),
                             NomFonction = reader["NomFonction"].ToString(),

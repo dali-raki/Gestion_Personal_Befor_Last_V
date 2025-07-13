@@ -101,8 +101,8 @@
                             <button class="btn btn-danger btn-sm" @onclick="() => GeneratePDF(s)">
                                 <i class="bi bi-file-earmark-pdf"></i> PDF
                             </button>
-                            <button class="btn btn-primary btn-sm" @onclick="() => paimentAvanceDettePopUp.Show(s)">
-                                <i class="fa fa-plus"></i> Avance/Dette
+                            <button class="btn btn-primary btn-sm" @onclick="() => paimentAvanceDettePopUp.Show(s)" disabled="@(!statusTransaction)">
+                                <i class="fa fa-plus"></i> Transaction
                             </button>
                         </div>
                     </Template>

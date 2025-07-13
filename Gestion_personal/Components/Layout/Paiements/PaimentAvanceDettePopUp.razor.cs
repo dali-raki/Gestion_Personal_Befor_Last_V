@@ -1,26 +1,37 @@
 using GestionPersonnel.Models.Avances;
 using GestionPersonnel.Models.Dettes;
+using GestionPersonnel.Models.Primes;
 using GestionPersonnel.Models.Salaires;
 using GestionPersonnel.Services;
+using Implementation.Services.Prime;
+using Implementation.Services.Remboursement;
+using Infrastructures.Domains.Models.Remboursements;
 using Microsoft.AspNetCore.Components;
 
 namespace Gestion_personal.Components.Layout.Paiements
 {
     public partial class PaimentAvanceDettePopUp
     {
+       
+        public SalaireDetail SalaireDetail { get; set; }
 
         [Inject] public IDetteService DetteService { get; set; }
         [Inject] IAvanceService AvanceService { get; set; }
-        public SalaireDetail SalaireDetail { get; set; } = new SalaireDetail();
+        [Inject] IPrimeService primeService { get; set; }
+        [Inject] IRemboursementService remboursement { get; set; }
 
         private bool display = false;
         private Dette newDette;
         private Avance newAvance;
+        private RemboursementType newRemboursement;
+        private PrimeType newPrime;
+        private int type;
+        
         private string SelectedType { get; set; }
 
-        public void Show(SalaireDetail salaireDetail)
+        public void Show(SalaireDetail s)
         {
-            SalaireDetail = salaireDetail;
+            SalaireDetail = s;
             display = true;
             StateHasChanged();
         }
@@ -30,28 +41,86 @@ namespace Gestion_personal.Components.Layout.Paiements
             display = false;
             StateHasChanged();
         }
-        public async Task ADDAvanceorDatte()
+        private async Task ADDAvanceorDatte(SalaireDetail SalaireDetail)
         {
-            newDette = new Dette
+            if (type == 1)
             {
-                EmployeID = SalaireDetail.EmployeId,
-                Montant = SalaireDetail.amount,
-                Date = DateTime.Now,
-                Description = SalaireDetail.Description,
-            };
-            await DetteService.AddAsync(newDette);
 
-            newAvance = new Avance
+                newAvance = new Avance
+                {
+                    EmployeID = SalaireDetail.EmployeId,
+                    Montant = SalaireDetail.amount,
+                    Date = DateTime.Now,
+                    Description = SalaireDetail.Description,
+                };
+                await AvanceService.AddAsync(newAvance);
+
+               
+            }
+            if (type == 2)
             {
-                EmployeID = SalaireDetail.EmployeId,
-                Montant = SalaireDetail.amount,
-                Date = DateTime.Now,
-                Description = SalaireDetail.Description,
-            };
-            await AvanceService.AddAsync(newAvance);
+                newDette = new Dette
+                {
+                    EmployeID = SalaireDetail.EmployeId,
+                    Montant = SalaireDetail.amount,
+                    Date = DateTime.Now,
+                    Description = SalaireDetail.Description,
+                };
+                await DetteService.AddAsync(newDette);
+            }
+            if (type == 3)
+            {
+                newRemboursement = new RemboursementType
+                {
+                    EmployeID = SalaireDetail.EmployeId,
+                    Montant = SalaireDetail.amount,
+                    Date = DateTime.Now,
+                    Description = SalaireDetail.Description,
+                };
+                await remboursement.AddAsync(newRemboursement);
+            }
+            if (type == 4)
+            {
+                newPrime = new PrimeType
+                {
+                    EmployeID = SalaireDetail.EmployeId,
+                    Montant = SalaireDetail.amount,
+                    Date = DateTime.Now,
+                    Description = SalaireDetail.Description,
+                };
+                await primeService.AddAsync(newPrime);
+            }
 
             display = false;
             StateHasChanged();
+
+
+        }
+
+       
+
+        private string GetButtonText()
+        {
+            return type switch
+            {
+                1 => "Ajouter Avance",
+                2 => "Ajouter Dette",
+                3 => "Ajouter Remboursement",
+                4 => "Ajouter Prime",
+                _ => "Ajouter",
+            };
+        }
+
+        private string GetButtonClass()
+        {
+            return type switch
+            {
+                1 => "btn btn-primary",   // Avance: Bleu
+                2 => "btn btn-danger",    // Dette: Rouge
+                3 => "btn btn-success",   // Remboursement: Vert
+                4 => "btn btn-warning text-white",  // Prime: Jaune
+                _ => "btn btn-primary",
+            };
         }
     }
 }
