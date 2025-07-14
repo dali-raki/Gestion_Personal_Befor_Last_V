@@ -12,6 +12,9 @@
         public decimal Primes { get; set; }
         public decimal Avances { get; set; }
         public decimal Dettes { get; set; }
+        public int Absence { get;set;}
+
+        public int Presence { get; set; }
         public decimal SalaireNet { get; set; }
         public string TypePaiement { get; set; }
 

@@ -80,6 +80,16 @@
                     </Template>
                 </RadzenDataGridColumn>
 
+                <RadzenDataGridColumn TItem="SalaireDetail" Title="présence" Width="130px">
+                    <Template Context="s">
+                        <div style="display: flex;justify-content: space-evenly;align-items: baseline;">
+                            <span class="text-success fw-bold" style="background-color: #c8ffdf;padding: 3px 8px; border-radius: 5px;">@s.Presence.ToString("N0")</span>
+                        <span class="text-danger fw-bold" style="background-color: #ffc8c8;padding: 3px 8px; border-radius: 5px;">@s.Absence.ToString("N0")</span> 
+                          
+                        </div>
+                    </Template>
+                </RadzenDataGridColumn>
+
                @*  <!-- Statut -->
                 <RadzenDataGridColumn TItem="SalaireDetail" Title="Statut">
                     <Template Context="s">

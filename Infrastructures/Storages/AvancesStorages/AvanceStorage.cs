@@ -189,8 +189,8 @@ namespace GestionPersonnel.Storages.AvancesStorages
             [db_aa9d4f_gestionpersonnel].[dbo].[Employes] e
         ON 
             a.EmployeID = e.EmployeID
-        WHERE 
-            a.Date = @Date
+       WHERE 
+    YEAR(a.Date) = YEAR(@Date) AND MONTH(a.Date) = MONTH(@Date)
         ORDER BY 
             a.Date DESC;"; // Filter by specific date and order by date descending
 

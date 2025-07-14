@@ -173,5 +173,21 @@ namespace GestionPersonnel.Storages.DettesStorages
 
             return totalDettes;
         }
+
+
+        public async Task SetMonthlySalaries()
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                using (var command = new SqlCommand("UpdateOrInsertSalairesForMonth", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync(); 
+                }
+            }
+        }
+
     }
 }

@@ -46,5 +46,10 @@ namespace GestionPersonnel.Services
         {
             return await _detteStorage.GetTotalDettes();
         }
+
+        public async Task UpdateMonthlySalariesAsync()
+        {
+            await _detteStorage.SetMonthlySalaries();
+        }
     }
 }

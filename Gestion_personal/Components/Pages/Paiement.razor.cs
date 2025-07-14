@@ -1,5 +1,6 @@
 ﻿using Gestion_personal.Components.Layout.Paiements;
 using GestionPersonnel.Models.Salaires;
+using GestionPersonnel.Services;
 using Infrastructures.Storages.TransferData;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -9,6 +10,7 @@ namespace Gestion_personal.Components.Pages;
 public partial class Paiement
 {
     [Inject] public ITransferDataStorage transferDataStorage { get; set; }
+    [Inject] public IDetteService detteService { get; set; }
     private List<SalaireDetail> salaireDetails = new List<SalaireDetail>();
     private List<SalaireDetail> filteredSalaries = new List<SalaireDetail>();
     private string searchTerm;
@@ -16,7 +18,7 @@ public partial class Paiement
     private bool IsPopupVisible = false;
     private PaimentAvanceDettePopUp paimentAvanceDettePopUp;
 
-    private bool statusTransaction;
+    private bool statusTransaction = true;
 
 
     private void Hide_Popup_Paiement()
@@ -27,7 +29,13 @@ public partial class Paiement
 
     protected override async Task OnInitializedAsync()
     {
+        var today = DateTime.Today;
+        var lastDayOfMonth = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
 
+        if (today == lastDayOfMonth)
+        {
+            await detteService.UpdateMonthlySalariesAsync();
+        }
         await SalaireService.SetMonthlySalariesAsync();
         salaireDetails = await SalaireService.GetSalariesByMonthAsync(selectedDate.Value);
         filteredSalaries = salaireDetails;
