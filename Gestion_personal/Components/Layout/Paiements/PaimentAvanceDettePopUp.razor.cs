@@ -7,12 +7,13 @@ using Implementation.Services.Prime;
 using Implementation.Services.Remboursement;
 using Infrastructures.Domains.Models.Remboursements;
 using Microsoft.AspNetCore.Components;
+using static MudBlazor.CategoryTypes;
 
 namespace Gestion_personal.Components.Layout.Paiements
 {
     public partial class PaimentAvanceDettePopUp
     {
-       
+        [Parameter] public EventCallback OnSaved { get; set; }
         public SalaireDetail SalaireDetail { get; set; }
 
         [Inject] public IDetteService DetteService { get; set; }
@@ -26,6 +27,7 @@ namespace Gestion_personal.Components.Layout.Paiements
         private RemboursementType newRemboursement;
         private PrimeType newPrime;
         private int type;
+     
         
         private string SelectedType { get; set; }
 
@@ -92,6 +94,10 @@ namespace Gestion_personal.Components.Layout.Paiements
             }
 
             display = false;
+            if (OnSaved.HasDelegate)
+            {
+                await OnSaved.InvokeAsync();
+            }
             StateHasChanged();
 
 

@@ -200,6 +200,7 @@ public partial class Employe
                 emp.Nom.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                 emp.Prenom.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                 emp.NSecuriteSocial.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                emp.EmployeID.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                 emp.FonctionName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
         }
     }

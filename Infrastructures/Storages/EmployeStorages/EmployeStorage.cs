@@ -24,6 +24,13 @@ namespace Infrastructures.Storages.EmployeStorages
             FROM Employes E
             INNER JOIN Fonctions F ON E.FonctionID = F.FonctionID
             WHERE E.status = 1";
+        private const string _selectAllStatus0Query = @"
+            SELECT E.EmployeID, E.Nom, E.Prenom, E.DateDeNaissance, E.NSecuriteSocial, E.Adresse, E.GroupSanguin, 
+                   E.NTelephone, E.FonctionID, E.DateEntree, E.DateSortie, E.SitiationFamiliale, 
+                   E.Photo,E.Journee, F.NomFonction
+            FROM Employes E
+            INNER JOIN Fonctions F ON E.FonctionID = F.FonctionID
+            WHERE E.status = 0";
 
         private const string _selectByIdQuery = @"
             SELECT E.EmployeID, E.Nom, E.Prenom, E.DateDeNaissance, E.NSecuriteSocial, E.Adresse, E.GroupSanguin, 
@@ -41,6 +48,9 @@ namespace Infrastructures.Storages.EmployeStorages
 
         private const string _deleteQuery =
             "UPDATE Employes SET status = 0, DateSortie = @DateSortie WHERE EmployeID = @EmployeID;";
+
+        private const string _returnQuery =
+        "UPDATE Employes SET status = 1, DateEntree = @DateEntree  WHERE EmployeID = @EmployeID;";
 
         private const string _selectByFunctionIdQuery = @"
             SELECT E.EmployeID, E.Nom, E.Prenom, E.DateDeNaissance, E.NSecuriteSocial, E.Adresse, E.GroupSanguin, 
@@ -141,6 +151,20 @@ ORDER BY
             return (from DataRow row in dataTable.Rows select GetEmployeFromDataRow(row)).ToList();
         }
 
+        public async Task<List<Employe>> GetAllStatus0()
+        {
+            await using var connection = new SqlConnection(_connectionString);
+            SqlCommand cmd = new(_selectAllStatus0Query, connection);
+
+            DataTable dataTable = new();
+            SqlDataAdapter da = new(cmd);
+
+            await connection.OpenAsync();
+            da.Fill(dataTable);
+
+            return (from DataRow row in dataTable.Rows select GetEmployeFromDataRow(row)).ToList();
+        }
+
         public async Task<Employe?> GetById(int id)
         {
             await using var connection = new SqlConnection(_connectionString);
@@ -212,6 +236,18 @@ ORDER BY
             await connection.OpenAsync();
             await cmd.ExecuteNonQueryAsync();
         }
+
+        public async Task Return(int id)
+        {
+            await using var connection = new SqlConnection(_connectionString);
+            SqlCommand cmd = new(_returnQuery, connection);
+            cmd.Parameters.AddWithValue("@EmployeID", id);
+            cmd.Parameters.AddWithValue("@DateEntree ", DateTime.Now);
+
+            await connection.OpenAsync();
+            await cmd.ExecuteNonQueryAsync();
+        }
+
 
         public async Task<int> GetTotalNumberOfEmployees()
         {

@@ -28,6 +28,7 @@ namespace Gestion_personal.Components.Pages
         public decimal Total_Dette;
         public decimal Total_Avance;
         private string searchTerm = string.Empty;
+        private string searchTerm2 = string.Empty;
         private DateTime selectedDate = DateTime.Today;
         private RadzenDataGrid<DashboardPointage> grid;
         DifferenceofPointage presenceComparison;
@@ -35,9 +36,14 @@ namespace Gestion_personal.Components.Pages
         double presencePercentage;
         double absencePercentage;
         int countEquipe;
+        private bool isConfirmVisible = false;
+        private int employeeToReturn;
         public List<Infrastructures.Domains.Models.Dashboard.Dashboard> Dashboards { get; set; }
         public List<Infrastructures.Domains.Models.Dashboard.Countfunction> countfunction { get; set; }
-
+        private List<GestionPersonnel.Models.Employe.Employe> employees;
+        private List<GestionPersonnel.Models.Employe.Employe> filteredEmployees;
+        private GestionPersonnel.Models.Employe.Employe selectedEmployee = new GestionPersonnel.Models.Employe.Employe();
+        private bool isEditPopupVisible = false;
         public List<DashboardPointage> ListPointage { get; set; } = new();
 
         // Add a private backing field for filtered pointage
@@ -49,6 +55,26 @@ namespace Gestion_personal.Components.Pages
                     (p.NomComplet?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
                     p.EmployeID.ToString().Contains(searchTerm)
                 );
+        private void Show_Popup_UpdateEmploye(GestionPersonnel.Models.Employe.Employe employee)
+        {
+            selectedEmployee = new GestionPersonnel.Models.Employe.Employe
+            {
+                EmployeID = employee.EmployeID,
+                Nom = employee.Nom,
+                Prenom = employee.Prenom,
+                NSecuriteSocial = employee.NSecuriteSocial,
+                FonctionID = employee.FonctionID,
+                DateDeNaissance = employee.DateDeNaissance,
+                DateEntree = employee.DateEntree,
+                GroupSanguin = employee.GroupSanguin,
+                Adresse = employee.Adresse,
+                NTelephone = employee.NTelephone,
+                SitiationFamiliale = employee.SitiationFamiliale,
+                Photo = employee.Photo,
+                Journee = employee.Journee
+            };
+            isEditPopupVisible = true;
+        }
 
         protected override async Task OnInitializedAsync()
         {
@@ -65,6 +91,8 @@ namespace Gestion_personal.Components.Pages
             presencePercentage = (presenceComparison.Difference * 100) / (Total_Number_Employe * 26);
             absencePercentage = (absenceComparison.Difference * 100) / (Total_Number_Employe * 26);
             countEquipe = await DashboardService.GetCountEquipesAsync();
+            employees = await EmployeService.GetEmployeesStatus0Async();
+            filteredEmployees = employees;
 
 
         }
@@ -102,6 +130,42 @@ namespace Gestion_personal.Components.Pages
         {
             filteredPointage = await DashboardService.GetPointageOfDashboardAsync(year, month);
             await grid.Reload();
+        }
+
+        private void ConfirmReturn(int employeID)
+        {
+            isConfirmVisible = true;
+            employeeToReturn = employeID;
+        }
+        private async Task HandlePopupResponse(bool confirmed)
+        {
+            isConfirmVisible = false;
+            if (confirmed)
+            {
+                await EmployeService.ReturnEmployeAsync(employeeToReturn);
+                employees = await EmployeService.GetEmployeesAsync();
+                filteredEmployees = employees;
+            
+            }
+           
+        }
+
+        private void SearchEmployees(ChangeEventArgs e)
+        {
+            searchTerm2 = e.Value.ToString();
+            if (string.IsNullOrWhiteSpace(searchTerm2))
+            {
+                filteredEmployees = employees;
+            }
+            else
+            {
+                filteredEmployees = employees.Where(emp =>
+                    emp.Nom.Contains(searchTerm2, StringComparison.OrdinalIgnoreCase) ||
+                    emp.Prenom.Contains(searchTerm2, StringComparison.OrdinalIgnoreCase) ||
+                    emp.NSecuriteSocial.Contains(searchTerm2, StringComparison.OrdinalIgnoreCase) ||
+                    emp.EmployeID.ToString().Contains(searchTerm2, StringComparison.OrdinalIgnoreCase) ||
+                    emp.FonctionName.Contains(searchTerm2, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
         }
     }
 }

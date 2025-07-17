@@ -191,6 +191,7 @@ namespace GestionPersonnel.Storages.SalairesStorages
                             Primes = reader["Primes"] != DBNull.Value ? Convert.ToDecimal(reader["Primes"]) : 0,
                             Avances = reader["Avances"] != DBNull.Value ? Convert.ToDecimal(reader["Avances"]) : 0,
                             Dettes = reader["Dettes"] != DBNull.Value ? Convert.ToDecimal(reader["Dettes"]) : 0,
+                            Refund = reader["Remboursements"] != DBNull.Value ? Convert.ToDecimal(reader["Remboursements"]) : 0,
                             SalaireNet = reader["SalaireNet"] != DBNull.Value ? Convert.ToDecimal(reader["SalaireNet"]) : 0,
                             Absence = reader["NbAbsence"] != DBNull.Value ? Convert.ToInt32(reader["NbAbsence"]) : 0,
                             Presence = reader["NbPresence"] != DBNull.Value ? Convert.ToInt32(reader["NbPresence"]) : 0,

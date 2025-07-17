@@ -6,11 +6,12 @@ namespace GestionPersonnel.Services
 {
     public class PDFService : IPDFService
     {
-        public async Task<byte[]> GenerateSalairePDFAsync(SalaireDetail salaireDetail)
+        public async Task<byte[]> GenerateSalairePDFAsync(SalaireDetail salaireDetail,DateOnly selectedDate)
         {
             using (var stream = new MemoryStream())
             {
-                
+
+                var formattedDate = selectedDate.ToString("dd-MM-yyyy");
                 PdfDocument document = new PdfDocument();
                 document.Info.Title =$"Fiche de Paie {salaireDetail.NomEmploye } {salaireDetail.NomEmploye}";
 
@@ -34,7 +35,7 @@ namespace GestionPersonnel.Services
                 yPoint += 40;*/
 
                 
-                gfx.DrawString($"Date de génération: {DateTime.Now:dd/MM/yyyy}", regularFont, XBrushes.Black,
+                gfx.DrawString($"Date de génération: {formattedDate:dd/MM/yyyy}", regularFont, XBrushes.Black,
                     new XRect(0, yPoint, page.Width - margin, page.Height),
                     XStringFormats.TopRight);
                 yPoint += 30;

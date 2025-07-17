@@ -25,12 +25,12 @@
                 </button>
         
         </div>
-
+        <button class="btn-p" @onclick="Show_Popup_FicheAvance">Fiche des Avances</button>
     </div>
 
     <div class="tab-employe">
-        <RadzenDataGrid TItem="SalaireDetail" Data="@filteredSalaries"
-                        AllowFiltering="true" AllowPaging="true" AllowSorting="true" PageSize="10">
+        <RadzenDataGrid @ref="grid" TItem="SalaireDetail" Data="@filteredSalaries"
+                        AllowFiltering="true" AllowPaging="true" AllowSorting="true" PageSize="10" @bind-PageIndex="currentPage">
             <Columns>
 
                 <!-- Employé -->
@@ -73,6 +73,13 @@
                     </Template>
                 </RadzenDataGridColumn>
 
+                <!-- Rembourcement -->
+                <RadzenDataGridColumn TItem="SalaireDetail" Title="Remboursements">
+                    <Template Context="s">
+                        <span class="text-success fw-bold">@s.Refund.ToString("N0") DA</span>
+                    </Template>
+                </RadzenDataGridColumn>
+
                 <!-- Net à payer -->
                 <RadzenDataGridColumn TItem="SalaireDetail" Title="Net à payer">
                     <Template Context="s">
@@ -108,7 +115,8 @@
                 <RadzenDataGridColumn TItem="SalaireDetail" Title="Actions">
                     <Template Context="s">
                         <div class="d-flex gap-1">
-                            <button class="btn btn-danger btn-sm" @onclick="() => GeneratePDF(s)">
+                            <button class="btn btn-danger btn-sm"
+                                    @onclick="() => GeneratePDF(s, DateOnly.FromDateTime(selectedDate.Value))">
                                 <i class="bi bi-file-earmark-pdf"></i> PDF
                             </button>
                             <button class="btn btn-primary btn-sm" @onclick="() => paimentAvanceDettePopUp.Show(s)" disabled="@(!statusTransaction)">
@@ -127,7 +135,8 @@
 
     </div>
 </div>
-<PaimentAvanceDettePopUp @ref="paimentAvanceDettePopUp" />
+<PaimentAvanceDettePopUp @ref="paimentAvanceDettePopUp" OnSaved="RefreshGrid" />
+<FiceAvance IsVisibleFicheAvance="@isVisibleFicheAvance" OnClose="@Hide_Popup_FicheAvance" />
 
 <style>
     .badge-circle {

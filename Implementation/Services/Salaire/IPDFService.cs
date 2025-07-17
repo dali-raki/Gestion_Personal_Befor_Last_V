@@ -4,6 +4,6 @@ namespace GestionPersonnel.Services
 {
     public interface IPDFService
     {
-        Task<byte[]> GenerateSalairePDFAsync(SalaireDetail salaireDetail);
+        Task<byte[]> GenerateSalairePDFAsync(SalaireDetail salaireDetail, DateOnly selectedDate);
     }
 }

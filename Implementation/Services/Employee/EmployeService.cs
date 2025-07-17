@@ -19,6 +19,13 @@ namespace Services
 			return await _employeStorage.GetAll();
 		}
 
+		public async Task<List<Employe>> GetEmployeesStatus0Async()
+		{
+			return await _employeStorage.GetAllStatus0();
+
+        }
+		
+
         public async Task<List<Countfunction>> GetNumberOfEmployeesByFunction()
         {
             return await _employeStorage.GetNumberOfEmployeesByFunction();
@@ -43,6 +50,10 @@ namespace Services
 		public async Task DeleteEmployeAsync(int id)
 		{
 			await _employeStorage.Delete(id);
+		}
+		public async Task ReturnEmployeAsync(int id)
+		{
+			await _employeStorage.Return(id);
 		}
 
 		public async Task<int> GetTotaleNumberOfEmployeAsync()

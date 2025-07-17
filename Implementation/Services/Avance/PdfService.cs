@@ -11,50 +11,54 @@ public class PdfService : IPdfService
 {
     public async Task<byte[]> GenerateAvancePdfAsync(List<Avance> avances, DateTime date)
     {
-        // Create a new PDF document
         PdfDocument document = new PdfDocument();
-        document.Info.Title = $"Avances Report - {date:yyyy-MM-dd}";
+        document.Info.Title = $"Rapport des Avances - {date:yyyy-MM-dd}";
 
-        // Create a page
         PdfPage page = document.AddPage();
         XGraphics gfx = XGraphics.FromPdfPage(page);
         XFont font = new XFont("Arial", 10);
         XFont headerFont = new XFont("Arial", 12, XFontStyleEx.Bold);
 
-        // Set starting position and table width
         double xPosition = 20;
         double yPosition = 40;
-        double tableWidth = page.Width - 40;
-        double[] columnWidths = { 50, 120, 120, 100 }; // Define column widths
-        double rowHeight = 16; // Increased row height for better readability
+        double[] columnWidths = { 40, 120, 120, 120, 120};
+        double rowHeight = 16;
 
-        // Draw the title
-        gfx.DrawString($"Avances Report for {date:yyyy-MM-dd}", headerFont, XBrushes.Black, new XPoint(xPosition, yPosition));
-        yPosition += 30;
+        // Title
+        gfx.DrawString($"Rapport des Avances - {date:yyyy-MM-dd}", headerFont, XBrushes.Black, new XPoint(xPosition, yPosition));
+        yPosition += 20;
 
-        // Draw the table header with improved design (centered text and alternating colors)
-        DrawTableCell(gfx, xPosition, yPosition, columnWidths[0], "N", headerFont, XBrushes.White, XBrushes.DarkBlue, XBrushes.Black, true);
-        DrawTableCell(gfx, xPosition + columnWidths[0], yPosition, columnWidths[1], "Nom", headerFont, XBrushes.White, XBrushes.DarkBlue, XBrushes.Black, true);
-        DrawTableCell(gfx, xPosition + columnWidths[0] + columnWidths[1], yPosition, columnWidths[2], "Prénom", headerFont, XBrushes.White, XBrushes.DarkBlue, XBrushes.Black, true);
-        DrawTableCell(gfx, xPosition + columnWidths[0] + columnWidths[1] + columnWidths[2], yPosition, columnWidths[3], "Valeur Avances", headerFont, XBrushes.White, XBrushes.DarkBlue, XBrushes.Black, true);
+        // Summary line
+        int totalCount = avances.Count;
+        double totalAmount = (double)avances.Sum(a => a.Montant);
+        gfx.DrawString($"Total: {totalCount} enregistrements | Montant total: {totalAmount:N0} DA", font, XBrushes.Black, new XPoint(xPosition, yPosition));
+        yPosition += 20;
+
+        // Headers
+        DrawTableCell(gfx, xPosition, yPosition, columnWidths[0], "N°", headerFont, XBrushes.Black, XBrushes.White, XBrushes.LightGray, true);
+        DrawTableCell(gfx, xPosition + columnWidths[0], yPosition, columnWidths[1], "Nom", headerFont, XBrushes.Black, XBrushes.White, XBrushes.LightGray, true);
+        DrawTableCell(gfx, xPosition + columnWidths[0] + columnWidths[1], yPosition, columnWidths[2], "Prénom", headerFont, XBrushes.Black, XBrushes.White, XBrushes.LightGray, true);
+        DrawTableCell(gfx, xPosition + columnWidths[0] + columnWidths[1] + columnWidths[2], yPosition, columnWidths[3], "Valeur Avances", headerFont, XBrushes.Black, XBrushes.White, XBrushes.LightGray, true);
+        DrawTableCell(gfx, xPosition + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3], yPosition, columnWidths[4], "Date", headerFont, XBrushes.Black, XBrushes.White, XBrushes.LightGray, true);
 
         yPosition += rowHeight;
 
-        // Draw the table rows with alternating colors for readability
+        // Rows
         bool isAlternate = false;
         foreach (var avance in avances)
         {
-            XBrush backgroundBrush = isAlternate ? XBrushes.LightGray : XBrushes.White;
+            XBrush backgroundBrush = isAlternate ? new XSolidBrush(XColors.WhiteSmoke) : XBrushes.White;
             isAlternate = !isAlternate;
 
-            DrawTableCell(gfx, xPosition, yPosition, columnWidths[0], avance.AvanceID.ToString(), font, XBrushes.Black, backgroundBrush, XBrushes.Black);
-            DrawTableCell(gfx, xPosition + columnWidths[0], yPosition, columnWidths[1], avance.NomEmployee, font, XBrushes.Black, backgroundBrush, XBrushes.Black);
-            DrawTableCell(gfx, xPosition + columnWidths[0] + columnWidths[1], yPosition, columnWidths[2], avance.PrenomEmployee, font, XBrushes.Black, backgroundBrush, XBrushes.Black);
-            DrawTableCell(gfx, xPosition + columnWidths[0] + columnWidths[1] + columnWidths[2], yPosition, columnWidths[3], $"{avance.Montant:0.00} DA", font, XBrushes.Black, backgroundBrush, XBrushes.Black);
+            DrawTableCell(gfx, xPosition, yPosition, columnWidths[0], avance.AvanceID.ToString(), font, XBrushes.Black, backgroundBrush, XBrushes.LightGray);
+            DrawTableCell(gfx, xPosition + columnWidths[0], yPosition, columnWidths[1], avance.NomEmployee, font, XBrushes.Black, backgroundBrush, XBrushes.LightGray);
+            DrawTableCell(gfx, xPosition + columnWidths[0] + columnWidths[1], yPosition, columnWidths[2], avance.PrenomEmployee, font, XBrushes.Black, backgroundBrush, XBrushes.LightGray);
+            DrawTableCell(gfx, xPosition + columnWidths[0] + columnWidths[1] + columnWidths[2], yPosition, columnWidths[3], $"{avance.Montant:0.00} DA", font, XBrushes.Black, backgroundBrush, XBrushes.LightGray);
+            DrawTableCell(gfx, xPosition + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3], yPosition, columnWidths[4], avance.Date.ToString("dd/MM/yyyy"), font, XBrushes.Black, backgroundBrush, XBrushes.LightGray);
 
             yPosition += rowHeight;
 
-            // Add a new page if needed
+            // Page break
             if (yPosition > page.Height - 40)
             {
                 page = document.AddPage();
@@ -63,7 +67,6 @@ public class PdfService : IPdfService
             }
         }
 
-        // Save the document to a byte array
         using (MemoryStream memoryStream = new MemoryStream())
         {
             document.Save(memoryStream, false);
@@ -73,24 +76,25 @@ public class PdfService : IPdfService
 
     private void DrawTableCell(XGraphics gfx, double xPosition, double yPosition, double width, string text, XFont font, XBrush textBrush, XBrush backgroundBrush, XBrush borderBrush, bool isHeader = false, double padding = 5)
     {
-        // Draw background for the cell
-        gfx.DrawRectangle(backgroundBrush, xPosition, yPosition, width, 16);
+        double height = 16;
 
-        // Draw the border around the cell
-        gfx.DrawRectangle(new XPen(XColors.Black, 0.8), xPosition, yPosition, width, 16);
+        // Background
+        gfx.DrawRectangle(backgroundBrush, xPosition, yPosition, width, height);
 
-        // Measure text size to center it horizontally
-        XSize textSize = gfx.MeasureString(text, font);
-        double textX = xPosition + (width - textSize.Width) / 2;
-        double textY = yPosition + (28 - textSize.Height) -5; // Position text near the bottom
+        // Border
+        gfx.DrawRectangle(new XPen(((XSolidBrush)borderBrush).Color, 0.6), xPosition, yPosition, width, height);
 
-        // Adjust padding if the cell is a header
-        if (isHeader)
+        // Text alignment
+        double textX = xPosition + padding;
+
+        if (!isHeader && text.Contains("DA"))
         {
-            textX = xPosition + padding; // Left align text for headers
+            XSize textSize = gfx.MeasureString(text, font);
+            textX = xPosition + width - textSize.Width - padding;
         }
 
-        // Draw the text inside the cell with padding
+        double textY = yPosition + height - 5;
+
         gfx.DrawString(text, font, textBrush, new XPoint(textX, textY));
     }
 }

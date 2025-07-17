@@ -19,6 +19,11 @@ public partial class UpdateEmployeePopup
     {
         LoadFonction();
     }
+    decimal SalaireMensuel
+    {
+        get => Employee.Journee * 26;
+        set => Employee.Journee = (int)Math.Floor(value / 26);
+    }
 
     protected override async Task OnParametersSetAsync()
     {

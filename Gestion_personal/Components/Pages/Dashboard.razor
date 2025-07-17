@@ -7,10 +7,10 @@
         <h1>Dashborad</h1>
     </div>
     <div class="cards">
-        <CardInfo Number="@Total_Number_Employe" Title="Nombre D'employe" Icon="fa-solid fa-user" Show="false" />
-        <CardInfo Number="@countEquipe" Title="Nombre D'equipe" Icon="fa-solid fa-users" Show="false" />
-        <CardInfo Number="@(absenceComparison?.PointageThisMonth ?? 0)" Title="Nombre d'absences" Icon="fa-solid fa-user-minus" Show="true" Difference="@absencePercentage" />
-        <CardInfo Number="@(presenceComparison?.PointageThisMonth ?? 0)" Title="Nombre de présences" Icon="fa-solid fa-user-check" Show="true" Difference="@presencePercentage" />
+        <CardInfo Number="@Total_Number_Employe" Title="N° d'employés" Icon="fa-solid fa-user" Show="false" />
+        <CardInfo Number="@countEquipe" Title="N° D'equipes" Icon="fa-solid fa-users" Show="false" />
+        <CardInfo Number="@(absenceComparison?.PointageThisMonth ?? 0)" Title="N° d'absences" Icon="fa-solid fa-user-minus" Show="true" Difference="@absencePercentage" />
+        <CardInfo Number="@(presenceComparison?.PointageThisMonth ?? 0)" Title="N° de présences" Icon="fa-solid fa-user-check" Show="true" Difference="@presencePercentage" />
     </div>
 
     <div class="dashboard-content">
@@ -90,7 +90,48 @@
             </div>
         </div>
     </div>
+    <div class="option-employe">
+        <div class="input-group w-25">
+            <input type="text" class="form-control" placeholder="Search" @bind-value="searchTerm2" @oninput="SearchEmployees" />
+            <button class="btn-p" type="button">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </div>
+    </div>
+    <div class="tab-employe">
+        <RadzenDataGrid TItem="GestionPersonnel.Models.Employe.Employe" Data="@filteredEmployees"
+                        AllowFiltering="true" AllowPaging="true" AllowSorting="true" PageSize="10">
+            <Columns>
+                <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Property="FullName" Title="Nom et Prenom">
+                    <Template Context="employee">
+                        @employee.Nom @employee.Prenom
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Property="NSecuriteSocial" Title="N Securite Sociale" />
+                <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Property="FonctionName" Title="Fonction" />
+                <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Title="Option">
+                    <Template Context="employee">
+                        <button class="btn-p px-3 py-2" @onclick="() => Show_Popup_UpdateEmploye(employee)">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn-d px-3 py-2" @onclick="() => ConfirmReturn(employee.EmployeID)">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+            <EmptyTemplate>
+                <div class="text-center">No employees found.</div>
+            </EmptyTemplate>
+            <LoadingTemplate>
+                <div class="text-center">Loading...</div>
+            </LoadingTemplate>
+        </RadzenDataGrid>
+    </div>
+    <UpdateEmployeePopup IsVisibleUpdateEmploye="@isEditPopupVisible" Employee="@selectedEmployee" OnClose="@Hide_Popup_UpdateEmploye" />
+    <ConfirmationPopup IsVisibleConfirm="isConfirmVisible" OnClose="HandlePopupResponse" Title="Confirmation" />
 </div>
+
 
 @code {
     public class TotalItem
@@ -104,7 +145,7 @@
         new TotalItem { Label = "Dette", Value = Total_Dette },
         new TotalItem { Label = "Avance", Value = Total_Avance }
     };
-
+    private void Hide_Popup_UpdateEmploye() => isEditPopupVisible = false;
     // countfunction is populated in the code-behind and available here
     // Make sure you have:
     // bool showDataLabels { get; set; } = true;

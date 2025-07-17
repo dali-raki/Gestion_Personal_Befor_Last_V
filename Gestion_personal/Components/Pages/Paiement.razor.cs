@@ -4,6 +4,7 @@ using GestionPersonnel.Services;
 using Infrastructures.Storages.TransferData;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Radzen.Blazor;
 
 namespace Gestion_personal.Components.Pages;
 
@@ -13,13 +14,36 @@ public partial class Paiement
     [Inject] public IDetteService detteService { get; set; }
     private List<SalaireDetail> salaireDetails = new List<SalaireDetail>();
     private List<SalaireDetail> filteredSalaries = new List<SalaireDetail>();
+    private RadzenDataGrid<SalaireDetail> grid;
     private string searchTerm;
     private DateTime? selectedDate = DateTime.Now.Date;
     private bool IsPopupVisible = false;
     private PaimentAvanceDettePopUp paimentAvanceDettePopUp;
-
+    private bool isVisibleFicheAvance = false;
     private bool statusTransaction = true;
-
+    private int currentPage = 0;
+    private async Task RefreshGrid()
+    {
+        var pageToReturn = currentPage;
+        salaireDetails = await SalaireService.GetSalariesByMonthAsync(selectedDate.Value);
+        filteredSalaries = salaireDetails;
+        await grid.Reload();
+        await InvokeAsync(() =>
+        {
+            currentPage = pageToReturn;  
+            StateHasChanged();           
+        });
+    }
+    private void Hide_Popup_FicheAvance()
+    {
+        isVisibleFicheAvance = false;
+        StateHasChanged();
+    }
+    private void Show_Popup_FicheAvance()
+    {
+        isVisibleFicheAvance = true;
+        StateHasChanged();
+    }
 
     private void Hide_Popup_Paiement()
     {
@@ -85,12 +109,12 @@ public partial class Paiement
         }
     }
 
-    private async Task GeneratePDF(SalaireDetail salaire)
+    private async Task GeneratePDF(SalaireDetail salaire, DateOnly selectedDate)
     {
 
-        var pdfBytes = await PDFService.GenerateSalairePDFAsync(salaire);
+        var pdfBytes = await PDFService.GenerateSalairePDFAsync(salaire, selectedDate);
         var base64String = Convert.ToBase64String(pdfBytes);
-        var fileName = $"FicheDePaie{salaire.NomEmploye}{salaire.PrenomEmploye}_{selectedDate.Value}.pdf";
+        var fileName = $"FicheDePaie{salaire.NomEmploye}{salaire.PrenomEmploye}_{selectedDate}.pdf";
 
         await JSRuntime.InvokeVoidAsync("downloadFile", $"data:application/pdf;base64,{base64String}", fileName);
     }

@@ -7,15 +7,18 @@ namespace Services.Interfaces
 	{
 		Task<List<Employe>> GetEmployeesAsync();
 
-		Task<Employe?> GetEmployeeByIdAsync(int id);
+		Task<List<Employe>> GetEmployeesStatus0Async();
+
+        Task<Employe?> GetEmployeeByIdAsync(int id);
 
 		Task AddEmployeAsync(Employe employee);
 
 		Task UpdateEmployeAsync(Employe employee);
 
 		Task DeleteEmployeAsync(int id);
+		Task ReturnEmployeAsync(int id);
 
-		Task<int> GetTotaleNumberOfEmployeAsync();
+        Task<int> GetTotaleNumberOfEmployeAsync();
 
 		Task<decimal> GetTotaleSalaryForMonthAsync(DateTime month);
 

@@ -1,5 +1,9 @@
-﻿using Infrastructures.Storages.TransferData;
+﻿using Gestion_personal.Components.Models.Toast;
+using Implementation.Services.ReadUSB;
+using Infrastructures.Storages.ReadUSB;
+using Infrastructures.Storages.TransferData;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Radzen.Blazor;
 
 namespace Gestion_personal.Components.Pages;
@@ -14,8 +18,71 @@ public partial class Pointage
     private bool isVisiblePointage = false;
     private GestionPersonnel.Models.Pointage.Pointage selectedPointage;
     private RadzenDataGrid<GestionPersonnel.Models.Pointage.Pointage> grid;
+    private bool showFileInput = false;
+    private EditContext editContext = default!;
+    private IBrowserFile? selectedFile;
+    private ToastType toastType = ToastType.Success;
+    private string toastTitle = string.Empty;
+    private string toastMessage = string.Empty;
+    private bool isToastVisible = false;
+    [Inject]
+    private IFileProcessingService FileProcessingService { get; set; } = default!;
+    private void CloseModal()
+    {
+        showFileInput = false;
+    }
 
+    private void OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+    private async Task UploadRecord()
+    {
+        if (selectedFile == null)
+        {
+            ShowToast("Avertissement", "Aucun fichier sélectionné.", ToastType.Warning);
+            showFileInput = false;
+            return;
+        }
 
+        try
+        {
+            using var stream = selectedFile.OpenReadStream();
+            using var reader = new StreamReader(stream);
+            var fileContent = await reader.ReadToEndAsync();
+
+            await FileProcessingService.ProcessFile(fileContent);
+
+            ShowToast("Succès", "Fichier téléchargé avec succès!", ToastType.Success);
+            selectedFile = null;
+            showFileInput = false;
+        }
+        catch (Exception ex)
+        {
+            ShowToast("Erreur", $"Il y a une erreur de fichier.", ToastType.Danger);
+            selectedFile = null;
+            showFileInput = false;
+
+        }
+    }
+
+    private void ShowToast(string title, string message, ToastType type)
+    {
+        toastTitle = title;
+        toastMessage = message;
+        toastType = type;
+        isToastVisible = true;
+    }
+
+    private void CloseToast()
+    {
+        isToastVisible = false;
+    }
+    
+    private void ShowFileInput()
+    {
+        showFileInput = true;
+    }
     private void Show_Popup_UpdatePointage(GestionPersonnel.Models.Pointage.Pointage pointage)
     {
         if (pointage != null)
@@ -35,6 +102,7 @@ public partial class Pointage
 
     protected override async Task OnInitializedAsync()
     {
+        editContext = new EditContext(new object());
         pointages = await PointageService.GetByDate(selectedDate.Value);
         filteredPointages = pointages ?? new List<GestionPersonnel.Models.Pointage.Pointage>();
     }

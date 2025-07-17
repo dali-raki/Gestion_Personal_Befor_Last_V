@@ -23,6 +23,10 @@
             <input type="date" class="form-control" @bind="selectedDate" />
             <button class="btn-p" @onclick="GetPointageByDate">Get</button>
         </div>
+        <button class="btn-p" @onclick="ShowFileInput">
+            sélectionner le fichier
+        </button>
+
     </div>
 
 
@@ -85,3 +89,32 @@
 <NewPointagePopUp IsVisiblePointage="@isVisiblePointage"
                   OnClose="Hide_Popup_UpdatePointage"
                   Pointage="selectedPointage" />
+
+
+@if (showFileInput)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Télécharger Pointage</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <EditForm EditContext="editContext" OnValidSubmit="UploadRecord" FormName="FileUploadForm">
+                        <InputFile OnChange="OnInputFileChange" accept=".data,.datafile" class="form-control" />
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CloseModal">Annuler</button>
+                            <button type="submit" class="btn-p" form="FileUploadForm" @onclick="UploadRecord">Télécharger</button>                          
+                        </div>
+
+                    </EditForm>
+                </div>
+
+             
+            </div>
+        </div>
+    </div>
+}

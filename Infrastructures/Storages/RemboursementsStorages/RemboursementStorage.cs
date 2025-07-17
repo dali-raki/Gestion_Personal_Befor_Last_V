@@ -30,7 +30,7 @@ namespace Infrastructures.Storages.RemboursementsStorages
             cmd.Parameters.AddWithValue("@EmployeID", remboursement.EmployeID);
             cmd.Parameters.AddWithValue("@Montant", remboursement.Montant);
             cmd.Parameters.AddWithValue("@Date", remboursement.Date);
-            cmd.Parameters.AddWithValue("@Description", remboursement.Description);
+            cmd.Parameters.AddWithValue("@Description", string.IsNullOrWhiteSpace(remboursement.Description) ? "No Comment" : remboursement.Description);
             await connection.OpenAsync();
             var id = await cmd.ExecuteScalarAsync();
 

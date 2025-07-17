@@ -118,25 +118,31 @@
 
                         <!-- Professional Info -->
                             <h5 class="section-title" id="seperation"><i class="fas fa-briefcase"></i> Informations Professionnelles</h5>
-                        <div class="form-sections">
                             <div class="form-group">
                                 <label for="FonctionID">Fonction</label>
-                                <select id="FonctionID" @bind="Employee.FonctionID" class="form-control" required>
-                                    <option value="">-- Sélectionner Fonction --</option>
-                                    @if (fonctions != null)
-                                    {
-                                        @foreach (var f in fonctions)
-                                        {
-                                            <option value="@f.FonctionID">@f.NomFonction</option>
-                                        }
-                                    }
-                                </select>
+                                <RadzenDropDown id="FonctionID"
+                                                Data="@fonctions"
+                                                TextProperty="NomFonction"
+                                                ValueProperty="FonctionID"
+                                                @bind-Value="Employee.FonctionID"
+                                                Placeholder="-- Sélectionner Fonction --"
+                                                Style="width:100%"
+                                                Class="form-control"
+                                                Name="FonctionID"
+                                                AllowClear="true"
+                                                Required="true" 
+                                                AllowFiltering="true" />
                             </div>
+                        <div class="form-sections">
+                                <div class="form-group">
+                                    <label for="SalaireMensuel">Salaire Mensuel (DA)</label>
+                                    <input id="SalaireMensuel" type="number" @bind="SalaireMensuel" class="form-control" required />
+                                </div>
 
-                            <div class="form-group">
-                                <label for="Salaire">Salaire Journalier (DA)</label>
-                                <input id="Salaire" type="number" @bind="Employee.Journee" class="form-control" required />
-                            </div>
+                                <div class="form-group">
+                                    <label for="SalaireJournalier">Salaire Journalier (DA)</label>
+                                    <input id="SalaireJournalier" type="number" @bind="Employee.Journee" class="form-control" required />
+                                </div>
                         </div>
 
                         <!-- Footer Buttons -->
