@@ -1,4 +1,5 @@
 ﻿using GestionPersonnel.Models.Avances;
+using GestionPersonnel.Models.Dettes;
 using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -97,7 +98,8 @@ namespace GestionPersonnel.Storages.AvancesStorages
             cmd.Parameters.AddWithValue("@EmployeID", avance.EmployeID);
             cmd.Parameters.AddWithValue("@Montant", avance.Montant);
             cmd.Parameters.AddWithValue("@Date", avance.Date);
-            cmd.Parameters.AddWithValue("@Description", avance.Description);
+            cmd.Parameters.Add(new SqlParameter("@Description", avance.Description ?? "No Comment"));
+
             await connection.OpenAsync();
             var id = await cmd.ExecuteScalarAsync();
             return Convert.ToInt32(id);

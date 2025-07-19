@@ -31,7 +31,8 @@ namespace Infrastructures.Storages.PrimesStorages
             cmd.Parameters.AddWithValue("@EmployeId", prime.EmployeID);
             cmd.Parameters.AddWithValue("@Montant", prime.Montant);
             cmd.Parameters.AddWithValue("@Date", prime.Date);
-            cmd.Parameters.AddWithValue("@Description", prime.Description);
+            cmd.Parameters.AddWithValue("@Description", prime.Description ?? "no comment");
+
 
             await connection.OpenAsync();
             await cmd.ExecuteNonQueryAsync(); 

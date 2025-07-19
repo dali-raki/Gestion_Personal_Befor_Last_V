@@ -83,8 +83,10 @@ namespace GestionPersonnel.Storages.DettesStorages
             cmd.Parameters.AddWithValue("@EmployeID", dette.EmployeID);
             cmd.Parameters.AddWithValue("@Montant", dette.Montant);
             cmd.Parameters.AddWithValue("@Date", dette.Date);
-            cmd.Parameters.AddWithValue("@Description", dette.Description);
-            
+            cmd.Parameters.AddWithValue("@Description", dette.Description ?? "No Comment");
+
+
+
 
 
             await connection.OpenAsync();

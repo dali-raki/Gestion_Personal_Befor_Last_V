@@ -88,8 +88,23 @@ namespace Gestion_personal.Components.Pages
             absenceComparison = await DashboardService.GetAbsenceComparisonAsync();
             ListPointage = await DashboardService.GetPointageOfDashboardAsync(selectedDate.Year, selectedDate.Month);
             filteredPointage = ListPointage;
-            presencePercentage = (presenceComparison.Difference * 100) / (Total_Number_Employe * 26);
-            absencePercentage = (absenceComparison.Difference * 100) / (Total_Number_Employe * 26);
+            if (presenceComparison != null && Total_Number_Employe > 0)
+            {
+                presencePercentage = (presenceComparison.Difference * 100) / (Total_Number_Employe * 26);
+            }
+            else
+            {
+                presencePercentage = 0; 
+            }
+            if (absenceComparison != null && Total_Number_Employe > 0)
+            {
+                absencePercentage = (absenceComparison.Difference * 100) / (Total_Number_Employe * 26);
+            }
+            else
+            {
+                absencePercentage = 0; 
+            }
+
             countEquipe = await DashboardService.GetCountEquipesAsync();
             employees = await EmployeService.GetEmployeesStatus0Async();
             filteredEmployees = employees;
