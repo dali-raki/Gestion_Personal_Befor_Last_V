@@ -12,7 +12,7 @@ namespace GestionPersonnel.Services.EquipeServices
         Task UpdateEquipeAsync(Equipe equipe);
         Task UpdateChefEquipeByIdAsync(int equipeId, int chefEquipeId);
         Task DeleteEquipeAsync(int equipeId);
-        Task<List<EquipesInfos>> GetEquipePostesInfoAsync();
+        Task<List<EquipesInfos>> GetEquipePostesInfoAsync(DateTime selectedDate);
         Task<List<Employe>> GetEmployeesByEquipeIdAsync(int equipeId);
     
     }

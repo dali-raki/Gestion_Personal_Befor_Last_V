@@ -27,22 +27,17 @@
                             <label>ID Post</label>
                             <input type="text" class="form-control" @bind="numeroPoste" required />
                         </div>
-                        <div class="form-group">
-                            <label>Choisir L'Equipe</label>
-                            <select @onchange="OnEquipeChanged" class="form-control">
-                                <option value="">-- Choisir L'Equipe --</option>
-                                @if (equipes != null && equipes.Any())
-                                {
-                                    @foreach (var equipe in equipes)
-                                    {
-                                        <option value="@equipe.EquipeID">@equipe.NomEquipe</option>
-                                    }
-                                }
-                                else
-                                {
-                                    <option>-- Aucune Equipe Disponible --</option>
-                                }
-                            </select>
+                              <div class="form-group">
+                            <label>Choisir L'Équipe</label>
+                        <RadzenDropDown @bind-Value="SelectedEquipeId"
+                                        Data="@equipes"
+                                        TextProperty="NomEquipe"
+                                        ValueProperty="EquipeID"
+                                        Style="width: 100%;"
+                                        Placeholder="-- Choisir L'Équipe --"
+                                        AllowClear="true"
+                                        AllowFiltering="true"
+                                        Change="OnEquipeChanged" />
                         </div>
                         <div class="form-group">
                             <label>Choisir Les Membres Qui Finissent Le Post</label>

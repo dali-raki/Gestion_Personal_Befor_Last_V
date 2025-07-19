@@ -11,8 +11,9 @@
     <div class="option-employe">
         <div class="input-group w-25">
             <input type="text" class="form-control" placeholder="Search" @bind="searchTerm" @oninput="SearchTeams" />
+            <input type="date" class="form-control" @bind="selectedDate" />
 
-            <button class="btn-p" type="button">
+            <button class="btn-p" type="button" @onclick="updatetab">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </button>
         </div>

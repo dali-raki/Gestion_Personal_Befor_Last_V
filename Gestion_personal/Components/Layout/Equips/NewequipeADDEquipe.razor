@@ -17,44 +17,34 @@
                 <input type="text" class="form-control" placeholder="Nom D'Equipe" @bind="equipeName" required/>
             </div>
 
-           
-            <div class="form-group">
-                <label>Choisir Fonction</label>
-                <select class="form-control" @onchange="OnFonctionChange" required>
-                    <option value="">-- Choisir Fonction --</option>
-                    @if (fonctions != null && fonctions.Any())
-                    {
-                        @foreach (var fonction in fonctions)
-                        {
-                            <option value="@fonction.FonctionID" aria-required>@fonction.NomFonction</option>
-                        }
-                    }
-                    else
-                    {
-                        <option value="0">-- Aucun Fonction disponible --</option>
-                    }
-                </select>
-            </div>
 
-           
-            <div class="form-group">
-                <label>Choisir Le Chef D'equipe</label>
-                <select class="form-control" @bind="selectedChefId" required>
-                    <option value="0">-- Choisir Chef D'equipe --</option>
-                    @if (filteredEmployes != null && filteredEmployes.Any())
-                    {
-                        @foreach (var employe in filteredEmployes)
-                        {
-                            <option value="@employe.EmployeID" aria-required>@employe.Nom @employe.Prenom</option>
-                        }
-                    }
-                    else
-                    {
-                        <option value="0">-- Aucun employé trouvé --</option>
-                    }
-                </select>
-            </div>
+                        <div class="form-group">
+                            <label>Choisir Fonction</label>
+                            <RadzenDropDown @bind-Value="selectedFonctionId"
+                                            Data="@fonctions"
+                                            TextProperty="NomFonction"
+                                            ValueProperty="FonctionID"
+                                            Style="width: 100%;"
+                                            Placeholder="-- Choisir Fonction --"
+                                            AllowClear="true"
+                                            AllowFiltering="true"
+                                            Change="OnFonctionChange" />
 
+                        </div>
+                         <div class="form-group">
+                            <label>Choisir Chef D'equipe</label>
+                        <RadzenDropDown Data="@filteredEmployes"
+                                        TextProperty="FullName"
+                                        ValueProperty="EmployeID"
+                                        @bind-Value="selectedChefId"
+                                        Placeholder="-- Choisir Chef D'equipe --"
+                                        Style="width: 100%;"
+                                        Class="form-control"
+                                        Filterable="true"
+                                        AllowClear="true"
+                                        Disabled="@(filteredEmployes == null || !filteredEmployes.Any())" />
+
+                        </div>
 
                     <div class="form-group">
                         <label>Choisir Les Membres D'Équipe</label>

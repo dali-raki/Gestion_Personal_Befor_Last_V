@@ -178,10 +178,10 @@ ORDER BY
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<List<EquipesInfos>> GetEquipePostesInfoAsync()
+        public async Task<List<EquipesInfos>> GetEquipePostesInfoAsync(DateTime selectedDate)
         {
-            var currentMonth = DateTime.Now.Month;
-            var currentYear = DateTime.Now.Year;
+            var selectedMonth = selectedDate.Month;
+            var selectedYear = selectedDate.Year;
 
             var query = @"
 SELECT 
@@ -189,7 +189,7 @@ SELECT
     E.NomEquipe, 
     Emp.Nom AS ChefEquipeNom,
     COUNT(CASE 
-            WHEN MONTH(P.Date) = @CurrentMonth AND YEAR(P.Date) = @CurrentYear THEN P.IdPosteComplete 
+            WHEN MONTH(P.Date) = @SelectedMonth AND YEAR(P.Date) = @SelectedYear THEN P.IdPosteComplete 
             ELSE NULL 
           END) AS NombreTotalDesPostes
 FROM Equipes E
@@ -203,9 +203,8 @@ GROUP BY E.EquipeID, E.NomEquipe, Emp.Nom;";
             await using var connection = new SqlConnection(_connectionString);
             await using var cmd = new SqlCommand(query, connection);
 
-            // Add parameters for the current month and year with explicit types
-            cmd.Parameters.Add(new SqlParameter("@CurrentMonth", SqlDbType.Int) { Value = currentMonth });
-            cmd.Parameters.Add(new SqlParameter("@CurrentYear", SqlDbType.Int) { Value = currentYear });
+            cmd.Parameters.Add(new SqlParameter("@SelectedMonth", SqlDbType.Int) { Value = selectedMonth });
+            cmd.Parameters.Add(new SqlParameter("@SelectedYear", SqlDbType.Int) { Value = selectedYear });
 
             await connection.OpenAsync();
             await using var reader = await cmd.ExecuteReaderAsync();
@@ -227,7 +226,7 @@ GROUP BY E.EquipeID, E.NomEquipe, Emp.Nom;";
         }
 
 
-    public async Task<List<Employe>> GetEmployeesByEquipeIdAsync(int equipeId)
+        public async Task<List<Employe>> GetEmployeesByEquipeIdAsync(int equipeId)
     {
         await using var connection = new SqlConnection(_connectionString);
         using var cmd = new SqlCommand(SelectEmployeesByEquipeIdQuery, connection);

@@ -14,13 +14,17 @@ public partial class Equipe
     private bool isVisibleUpdateEquipe = false;
     private bool isVisibleAddPost = false;
     private string searchTerm = string.Empty;
-
+    private DateTime? selectedDate = DateTime.Now.Date;
+    private void updatetab()
+    {
+        OnInitializedAsync();
+    }
     protected override async Task OnInitializedAsync()
     {
       
         try
         {
-            equipesinfo = await EquipeService.GetEquipePostesInfoAsync();
+            equipesinfo = await EquipeService.GetEquipePostesInfoAsync(selectedDate.Value);
             filteredEquipesinfo = equipesinfo; // Initialize the filtered list as well
         }
         catch (Exception ex)
@@ -35,7 +39,7 @@ public partial class Equipe
 
     public async Task a()
     {
-        equipesinfo = await EquipeService.GetEquipePostesInfoAsync();
+        equipesinfo = await EquipeService.GetEquipePostesInfoAsync(selectedDate.Value);
         FilterTeams();
     }
 
@@ -84,12 +88,12 @@ public partial class Equipe
 
     private async Task DownloadPDF(int equipeId)
     {
-        
-          
-            var pdfData = await PostGenPdf.GeneratePDF(equipeId, DateTime.Now);
+
+
+        var pdfData = await PostGenPdf.GeneratePDF(equipeId, selectedDate.Value);
 
          
-            await JSRuntime.InvokeVoidAsync("downloadFile", $"Equipe_{equipeId}.pdf", "application/pdf", Convert.ToBase64String(pdfData));
+        await JSRuntime.InvokeVoidAsync("downloadFile", $"Equipe_{equipeId}.pdf", "application/pdf", Convert.ToBase64String(pdfData));
        
     }
 

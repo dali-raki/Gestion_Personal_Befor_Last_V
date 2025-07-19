@@ -30,15 +30,17 @@ public partial class NewequipeADDPost
         equipes = await EquipeService.GetAllEquipesAsync();
     }
 
-    private async Task OnEquipeChanged(ChangeEventArgs e)
+    private async Task OnEquipeChanged(object value)
     {
-        var selectedEquipeId = e.Value.ToString();
-        SelectedEquipeId = int.TryParse(selectedEquipeId, out var id) ? id : (int?)null;
-        Console.WriteLine(selectedEquipeId);
+        SelectedEquipeId = value as int?;
 
         if (SelectedEquipeId.HasValue)
         {
             employees = await EquipeService.GetEmployeesByEquipeIdAsync(SelectedEquipeId.Value);
+        }
+        else
+        {
+            employees = new List<Employe>(); // or keep previous value
         }
     }
 

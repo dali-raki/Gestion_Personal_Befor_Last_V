@@ -47,9 +47,9 @@ namespace GestionPersonnel.Services.EquipeServices
             await _equipeStorage.Delete(equipeId);
         }
 
-        public async Task<List<EquipesInfos>> GetEquipePostesInfoAsync()
+        public async Task<List<EquipesInfos>> GetEquipePostesInfoAsync(DateTime selectedDate)
         {
-            return await _equipeStorage.GetEquipePostesInfoAsync();
+            return await _equipeStorage.GetEquipePostesInfoAsync(selectedDate); 
         }
         public async Task<List<Employe>> GetEmployeesByEquipeIdAsync(int equipeId)
         {

@@ -14,6 +14,7 @@ namespace Gestion_personal.Components.Layout.Equips
         [Inject] private IFonctionService FonctionService { get; set; }
         [Inject] private IEquipeService EquipeService { get; set; }
         [Inject] private IEmployeeEquipeService EmployeeEquipeService { get; set; }
+        [Inject] private NavigationManager Navigation {get; set;}
         [Parameter] public bool IsVisibleAddEquipe { get; set; }
         [Parameter] public EventCallback OnClose { get; set; }
 
@@ -22,7 +23,7 @@ namespace Gestion_personal.Components.Layout.Equips
         private List<Fonction> fonctions;
         private List<Employe> filteredEmployes;
         private string equipeName;
-        private string selectedFonctionId;
+        private int? selectedFonctionId;
         private int selectedChefId { get; set; } = 0;
         private Dictionary<int, bool> employeeSelection = new Dictionary<int, bool>();
 
@@ -37,13 +38,15 @@ namespace Gestion_personal.Components.Layout.Equips
         }
 
 
-        private async Task OnFonctionChange(ChangeEventArgs e)
+        private async Task OnFonctionChange(object value)
         {
-            selectedFonctionId = e.Value?.ToString();
+            selectedFonctionId = value as int?;
 
-            if (!string.IsNullOrEmpty(selectedFonctionId))
+            if (selectedFonctionId.HasValue)
             {
-                filteredEmployes = employes.Where(emp => emp.FonctionID == int.Parse(selectedFonctionId)).ToList();
+                filteredEmployes = employes
+                    .Where(emp => emp.FonctionID == selectedFonctionId.Value)
+                    .ToList();
             }
             else
             {
@@ -52,6 +55,7 @@ namespace Gestion_personal.Components.Layout.Equips
 
             employeeSelection = filteredEmployes.ToDictionary(emp => emp.EmployeID, emp => false);
         }
+
 
         private async Task HandleSubmit()
         {
@@ -96,6 +100,7 @@ namespace Gestion_personal.Components.Layout.Equips
                 employeeSelection = employes.ToDictionary(emp => emp.EmployeID, emp => false);
 
                 Hide_Popup_AddEquipe();
+                Navigation.NavigateTo("/equipe", forceLoad: true);
             }
             catch (Exception ex)
             {
