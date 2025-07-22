@@ -1,5 +1,6 @@
 ﻿@using GestionPersonnel.Services;
 @inject IPointageService PointageService
+@inject UserSessionStateService UserSession
 @if (IsVisiblePointage)
 {
     <div class="modal" tabindex="-1" style="display: block;">

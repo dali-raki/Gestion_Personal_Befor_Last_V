@@ -2,10 +2,13 @@
 using Gestion_personal.Services;
 using GestionPersonnel.Services;
 using Implementation.Services.Dashboard;
+using Implementation.Services.Logs;
 using Infrastructures.Domains.Models;
 using Infrastructures.Domains.Models.Dashboard;
+using Infrastructures.Domains.Models.Logs;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.JSInterop;
 using Radzen.Blazor;
 using Services.Interfaces;
@@ -15,6 +18,9 @@ namespace Gestion_personal.Components.Pages
 {
     public partial class Dashboard
     {
+        [Inject]
+        UserSessionStateService UserSession { get; set; } = null;
+        [Inject] NavigationManager Nav { get; set; }
         [Inject] public IEmployeService EmployeService { get; set; }
         [Inject] public IDetteService DetteService { get; set; }
         [Inject] public IAvanceService AvanceService { get; set; }
@@ -22,6 +28,7 @@ namespace Gestion_personal.Components.Pages
         [Inject] public NavigationManager NavigationManager { get; set; }
         [Inject] IJSRuntime JSRuntime { get; set; }
         [Inject] private ProtectedSessionStorage SessionStorage { get; set; }
+        [Inject] private ILogsActionService logsActionService { get; set; }
         private int SelectedYear => Dashboards?.FirstOrDefault()?.Year ?? DateTime.Now.Year;
         public int Total_Number_Employe;
         public decimal Totale_Dargent;
@@ -44,6 +51,10 @@ namespace Gestion_personal.Components.Pages
         private List<GestionPersonnel.Models.Employe.Employe> filteredEmployees;
         private GestionPersonnel.Models.Employe.Employe selectedEmployee = new GestionPersonnel.Models.Employe.Employe();
         private bool isEditPopupVisible = false;
+        private RadzenDataGrid<LogActions> grid2;
+        private List<LogActions> logs = new();
+        private string searchTerm3 = string.Empty;
+        int selectedIndex = 0;
         public List<DashboardPointage> ListPointage { get; set; } = new();
 
         // Add a private backing field for filtered pointage
@@ -78,6 +89,10 @@ namespace Gestion_personal.Components.Pages
 
         protected override async Task OnInitializedAsync()
         {
+            if (string.IsNullOrEmpty(UserSession.UserId.ToString()))
+            {
+                Nav.NavigateTo("/", forceLoad: true); 
+            }
             Total_Number_Employe = await EmployeService.GetTotaleNumberOfEmployeAsync();
             Totale_Dargent = await EmployeService.GetTotaleSalaryForMonthAsync(DateTime.Now);
             Total_Dette = await DetteService.GetTotalDettesAsync();
@@ -108,6 +123,8 @@ namespace Gestion_personal.Components.Pages
             countEquipe = await DashboardService.GetCountEquipesAsync();
             employees = await EmployeService.GetEmployeesStatus0Async();
             filteredEmployees = employees;
+
+            logs = await logsActionService.GetAllLogs();
 
 
         }
@@ -182,5 +199,12 @@ namespace Gestion_personal.Components.Pages
                     emp.FonctionName.Contains(searchTerm2, StringComparison.OrdinalIgnoreCase)).ToList();
             }
         }
+
+        private IEnumerable<LogActions> FilteredLogs => logs.Where(log =>
+       string.IsNullOrWhiteSpace(searchTerm) ||
+       log.PerformedBy.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+       log.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+       log.ActionType.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+
     }
 }

@@ -5,8 +5,10 @@
 @inject IPDFService PDFService
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
-
-<div class="panel-employe">
+@inject UserSessionStateService UserSession 
+@if (UserSession.Role == "admin" || UserSession.Role == "manager")
+{
+    <div class="panel-employe">
     <div style="display:flex;align-items: flex-start;">
         <button class="btn-p" @onclick="TransferPointageSalaire">
             <i class="fa-solid fa-rotate"></i>
@@ -97,21 +99,7 @@
                     </Template>
                 </RadzenDataGridColumn>
 
-               @*  <!-- Statut -->
-                <RadzenDataGridColumn TItem="SalaireDetail" Title="Statut">
-                    <Template Context="s">
-                        @if (s.SalaireNet > 0)
-                        {
-                            <span class="badge bg-success">Payé</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-warning text-dark">En attente</span>
-                        }
-                    </Template>
-                </RadzenDataGridColumn> *@
-
-                <!-- Actions -->
+         
                 <RadzenDataGridColumn TItem="SalaireDetail" Title="Actions">
                     <Template Context="s">
                         <div class="d-flex gap-1">
@@ -137,7 +125,7 @@
 </div>
 <PaimentAvanceDettePopUp @ref="paimentAvanceDettePopUp" OnSaved="RefreshGrid" />
 <FiceAvance IsVisibleFicheAvance="@isVisibleFicheAvance" OnClose="@Hide_Popup_FicheAvance" />
-
+}
 <style>
     .badge-circle {
         width: 30px;

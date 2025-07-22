@@ -1,5 +1,7 @@
 ﻿using Gestion_personal.Components.Models.Toast;
+using Implementation.Services.Logs;
 using Implementation.Services.ReadUSB;
+using Infrastructures.Domains.Models.Logs;
 using Infrastructures.Storages.ReadUSB;
 using Infrastructures.Storages.TransferData;
 using Microsoft.AspNetCore.Components;
@@ -10,6 +12,7 @@ namespace Gestion_personal.Components.Pages;
 
 public partial class Pointage
 {
+    [Inject] NavigationManager Nav { get; set; }
     [Inject] public ITransferDataStorage transferDataStorage { get; set; }
     private string searchTerm = string.Empty;
     private DateTime? selectedDate = DateTime.Now.Date;
@@ -27,6 +30,7 @@ public partial class Pointage
     private bool isToastVisible = false;
     [Inject]
     private IFileProcessingService FileProcessingService { get; set; } = default!;
+    [Inject] private ILogsActionService logsActionService { get; set; }
     private void CloseModal()
     {
         showFileInput = false;
@@ -52,6 +56,14 @@ public partial class Pointage
             var fileContent = await reader.ReadToEndAsync();
 
             await FileProcessingService.ProcessFile(fileContent);
+            var log = new LogActions
+            {
+                ActionType = ActionType.Insert,
+                ActionDate = DateTime.Now,
+                Description = $"Ajouter list pointage ",
+                PerformedBy = UserSession.Name,
+            };
+            await logsActionService.settLog(log);
 
             ShowToast("Succès", "Fichier téléchargé avec succès!", ToastType.Success);
             selectedFile = null;
@@ -102,6 +114,10 @@ public partial class Pointage
 
     protected override async Task OnInitializedAsync()
     {
+        if (string.IsNullOrEmpty(UserSession.UserId.ToString()))
+        {
+            Nav.NavigateTo("/", forceLoad: true);
+        }
         editContext = new EditContext(new object());
         pointages = await PointageService.GetByDate(selectedDate.Value);
         filteredPointages = pointages ?? new List<GestionPersonnel.Models.Pointage.Pointage>();

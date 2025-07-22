@@ -1,6 +1,8 @@
 ﻿using Gestion_personal.Components.Layout.Paiements;
 using GestionPersonnel.Models.Salaires;
 using GestionPersonnel.Services;
+using Implementation.Services.Logs;
+using Infrastructures.Domains.Models.Logs;
 using Infrastructures.Storages.TransferData;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -10,7 +12,9 @@ namespace Gestion_personal.Components.Pages;
 
 public partial class Paiement
 {
+    [Inject] NavigationManager Nav { get; set; }
     [Inject] public ITransferDataStorage transferDataStorage { get; set; }
+    [Inject] private ILogsActionService logsActionService { get; set; }
     [Inject] public IDetteService detteService { get; set; }
     private List<SalaireDetail> salaireDetails = new List<SalaireDetail>();
     private List<SalaireDetail> filteredSalaries = new List<SalaireDetail>();
@@ -53,6 +57,10 @@ public partial class Paiement
 
     protected override async Task OnInitializedAsync()
     {
+        if (string.IsNullOrEmpty(UserSession.UserId.ToString()))
+        {
+            Nav.NavigateTo("/", forceLoad: true);
+        }
         var today = DateTime.Today;
         var lastDayOfMonth = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
 
@@ -111,7 +119,14 @@ public partial class Paiement
 
     private async Task GeneratePDF(SalaireDetail salaire, DateOnly selectedDate)
     {
-
+        var log = new LogActions
+        {
+            ActionType = ActionType.Update,
+            ActionDate = DateTime.Now,
+            Description = $"Créer une fiche de paie ",
+            PerformedBy = UserSession.Name,
+        };
+        await logsActionService.settLog(log);
         var pdfBytes = await PDFService.GenerateSalairePDFAsync(salaire, selectedDate);
         var base64String = Convert.ToBase64String(pdfBytes);
         var fileName = $"FicheDePaie{salaire.NomEmploye}{salaire.PrenomEmploye}_{selectedDate}.pdf";

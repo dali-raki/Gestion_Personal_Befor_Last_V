@@ -1,4 +1,5 @@
 ﻿using Gestion_personal.Components.Layout.Employes;
+using Gestion_personal.Controllers;
 using GestionPersonnel.Models.Fonctions;
 using Infrastructures.Storages.TransferData;
 using Microsoft.AspNetCore.Components;
@@ -8,6 +9,7 @@ namespace Gestion_personal.Components.Pages;
 
 public partial class Employe
 {
+    [Inject] NavigationManager Nav { get; set; }
     [Inject] public ITransferDataStorage transferDataStorage { get; set; }
     public string datapop;
     private ModifierFonctionPopup modifierPopupRef;
@@ -35,6 +37,10 @@ public partial class Employe
 
     protected override async Task OnInitializedAsync()
     {
+        if (string.IsNullOrEmpty(UserSession.UserId.ToString()))
+        {
+            Nav.NavigateTo("/", forceLoad: true);
+        }
         await LoadEmployees();
     }
     RadzenDataGrid<IDictionary<string, object>> dataGrid;

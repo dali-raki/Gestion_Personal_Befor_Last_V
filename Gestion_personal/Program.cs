@@ -13,6 +13,7 @@ using GestionPersonnel.Storages.SalairesStorages;
 using GestionPersonnel.Storages.Storages.PostesStorages;
 using GestionPersonnel.Storages.TypeDePaimentStorages;
 using Implementation.Services.Dashboard;
+using Implementation.Services.Logs;
 using Implementation.Services.Prime;
 using Implementation.Services.ReadUSB;
 using Implementation.Services.Remboursement;
@@ -20,12 +21,16 @@ using Implementation.Services.SalaireBase;
 using Infrastructures.Domains.Models.Remboursements;
 using Infrastructures.Storages.DashboardStorages;
 using Infrastructures.Storages.EmployeStorages;
+using Infrastructures.Storages.LogActionStorage;
 using Infrastructures.Storages.PrimesStorages;
 using Infrastructures.Storages.ReadUSB;
 using Infrastructures.Storages.RecordStorages;
 using Infrastructures.Storages.RemboursementsStorages;
 using Infrastructures.Storages.TransferData;
 using Infrastructures.Storages.UserStorages;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore;
 using Radzen;
 using Services;
 using Services.Interfaces;
@@ -63,7 +68,7 @@ builder.Services.AddScoped<DashboardStorage>();
 builder.Services.AddScoped<DetteRestantStorage>();
 builder.Services.AddScoped<RemboursementStorage>();
 builder.Services.AddScoped<PrimeStorage>();
-
+builder.Services.AddScoped<LogActionStorage>();
 
 
 builder.Services.AddScoped<IUserStorage,UserStorage>();
@@ -99,16 +104,32 @@ builder.Services.AddScoped<IPrimeStorage, PrimeStorage>();
 
 builder.Services.AddScoped<IRemboursementService,RemboursementService>();
 builder.Services.AddScoped<IPrimeService,PrimeService>();
-
-
+builder.Services.AddScoped<ILogsActionService, LogsActionService>();
+builder.Services.AddControllers();
+builder.Services.AddScoped<Gestion_personal.Controllers.UserSessionStateService>();
 builder.Services.AddRadzenComponents();
-builder.Services.AddAuthentication("Cookies")
-	.AddCookie("Cookies", options => {
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+	.AddCookie(options =>
+	{
+		options.Cookie.Name = "Auth_Token";
 		options.LoginPath = "/";
+		options.Cookie.MaxAge = TimeSpan.FromDays(1);
 		options.AccessDeniedPath = "/";
-		options.ExpireTimeSpan=TimeSpan.FromHours(20);
-		options.Cookie.Name = "Fabelec";
+		options.LogoutPath = "/";
 	});
+
+builder.Services.AddAuthorization();
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddDbContext<AppDbContext>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("DBConnection")));
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped(sp => new HttpClient
+{
+    BaseAddress = new Uri("https://localhost:7276")
+});
+builder.Services.AddSingleton<UserSessionStateService>();
 builder.Logging.SetMinimumLevel(LogLevel.Debug);
 builder.Services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
 var app = builder.Build();
@@ -126,7 +147,9 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
-
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
 app.MapRazorComponents<App>()
 	.AddInteractiveServerRenderMode();
 

@@ -3,6 +3,8 @@ using GestionPersonnel.Models.Equipe;
 using GestionPersonnel.Models.Fonctions;
 using GestionPersonnel.Services;
 using GestionPersonnel.Services.EquipeServices;
+using Implementation.Services.Logs;
+using Infrastructures.Domains.Models.Logs;
 using Microsoft.AspNetCore.Components;
 using Services.Interfaces;
 
@@ -15,6 +17,7 @@ namespace Gestion_personal.Components.Layout.Equips
         [Inject] private IEquipeService EquipeService { get; set; }
         [Inject] private IEmployeeEquipeService EmployeeEquipeService { get; set; }
         [Inject] private NavigationManager Navigation {get; set;}
+        [Inject] private ILogsActionService logsActionService { get; set; }
         [Parameter] public bool IsVisibleAddEquipe { get; set; }
         [Parameter] public EventCallback OnClose { get; set; }
 
@@ -99,6 +102,14 @@ namespace Gestion_personal.Components.Layout.Equips
                 selectedChefId = 0;
                 employeeSelection = employes.ToDictionary(emp => emp.EmployeID, emp => false);
 
+                var log = new LogActions
+                {
+                    ActionType = ActionType.Insert,
+                    ActionDate = DateTime.Now,
+                    Description = $"Ajouter Equipe ",
+                    PerformedBy = UserSession.Name,
+                };
+                await logsActionService.settLog(log);
                 Hide_Popup_AddEquipe();
                 Navigation.NavigateTo("/equipe", forceLoad: true);
             }

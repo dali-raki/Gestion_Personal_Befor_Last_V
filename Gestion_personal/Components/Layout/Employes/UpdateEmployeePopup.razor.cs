@@ -1,5 +1,7 @@
 ﻿using GestionPersonnel.Models.Employe;
 using GestionPersonnel.Models.Fonctions;
+using Implementation.Services.Logs;
+using Infrastructures.Domains.Models.Logs;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 
@@ -11,6 +13,9 @@ public partial class UpdateEmployeePopup
     [Parameter] public EventCallback OnClose { get; set; }
     [Parameter] public EventCallback<Employe> OnSave { get; set; }
     [Parameter] public Employe Employee { get; set; } = new Employe();
+    [Parameter] public bool showbtn { get; set; } = true;
+    [Parameter] public bool IsDisabled { get; set; } = false;
+    [Inject] private ILogsActionService logsActionService { get; set; }
     private List<Fonction> fonctions;
     private bool isSubmitting;
     private string errorMessage;
@@ -44,7 +49,14 @@ public partial class UpdateEmployeePopup
         {
             if (isSubmitting) return;
             isSubmitting = true;
-
+            var log = new LogActions
+            {
+                ActionType = ActionType.Update,
+                ActionDate = DateTime.Now,
+                Description = "modifier Employe",
+                PerformedBy = UserSession.Name,        
+            };
+            await logsActionService.settLog(log);
             await EmployeService.UpdateEmployeAsync(Employee);
             await OnSave.InvokeAsync(Employee);
             await OnClose.InvokeAsync();
@@ -76,8 +88,9 @@ public partial class UpdateEmployeePopup
         }
     }
 
-    private void Hide_Popup_UpdateEmploye()
+    private async Task Hide_Popup_UpdateEmploye()
     {
+        
         OnClose.InvokeAsync();
     }
 }

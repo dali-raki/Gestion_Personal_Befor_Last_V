@@ -3,8 +3,11 @@ using GestionPersonnel.Models.Dettes;
 using GestionPersonnel.Models.Primes;
 using GestionPersonnel.Models.Salaires;
 using GestionPersonnel.Services;
+using Implementation.Services.Logs;
 using Implementation.Services.Prime;
 using Implementation.Services.Remboursement;
+using Infrastructures.Domains.Models;
+using Infrastructures.Domains.Models.Logs;
 using Infrastructures.Domains.Models.Remboursements;
 using Microsoft.AspNetCore.Components;
 using static MudBlazor.CategoryTypes;
@@ -15,7 +18,7 @@ namespace Gestion_personal.Components.Layout.Paiements
     {
         [Parameter] public EventCallback OnSaved { get; set; }
         public SalaireDetail SalaireDetail { get; set; }
-
+        [Inject] private ILogsActionService logsActionService { get; set; }
         [Inject] public IDetteService DetteService { get; set; }
         [Inject] IAvanceService AvanceService { get; set; }
         [Inject] IPrimeService primeService { get; set; }
@@ -56,8 +59,15 @@ namespace Gestion_personal.Components.Layout.Paiements
                     Description = SalaireDetail.Description,
                 };
                 await AvanceService.AddAsync(newAvance);
+                var log = new LogActions
+                {
+                    ActionType = ActionType.Insert,
+                    ActionDate = DateTime.Now,
+                    Description = $"Donner une avance ",
+                    PerformedBy = UserSession.Name,
+                };
+                await logsActionService.settLog(log);
 
-               
             }
             if (type == 2)
             {
@@ -69,6 +79,15 @@ namespace Gestion_personal.Components.Layout.Paiements
                     Description = SalaireDetail.Description,
                 };
                 await DetteService.AddAsync(newDette);
+
+                var log = new LogActions
+                {
+                    ActionType = ActionType.Insert,
+                    ActionDate = DateTime.Now,
+                    Description = $"Donner une Dette ",
+                    PerformedBy = UserSession.Name,
+                };
+                await logsActionService.settLog(log);
             }
             if (type == 3)
             {
@@ -80,6 +99,15 @@ namespace Gestion_personal.Components.Layout.Paiements
                     Description = SalaireDetail.Description,
                 };
                 await remboursement.AddAsync(newRemboursement);
+
+                var log = new LogActions
+                {
+                    ActionType = ActionType.Insert,
+                    ActionDate = DateTime.Now,
+                    Description = $"Donner une Remboursement ",
+                    PerformedBy = UserSession.Name,
+                };
+                await logsActionService.settLog(log);
             }
             if (type == 4)
             {
@@ -91,6 +119,15 @@ namespace Gestion_personal.Components.Layout.Paiements
                     Description = SalaireDetail.Description,
                 };
                 await primeService.AddAsync(newPrime);
+
+                var log = new LogActions
+                {
+                    ActionType = ActionType.Insert,
+                    ActionDate = DateTime.Now,
+                    Description = $"Donner une Prime ",
+                    PerformedBy = UserSession.Name,
+                };
+                await logsActionService.settLog(log);
             }
 
             display = false;

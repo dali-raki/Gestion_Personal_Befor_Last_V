@@ -1,4 +1,6 @@
 using GestionPersonnel.Models.Pointage;
+using Implementation.Services.Logs;
+using Infrastructures.Domains.Models.Logs;
 using Microsoft.AspNetCore.Components;
 
 namespace Gestion_personal.Components.Layout.Pointages
@@ -13,6 +15,7 @@ namespace Gestion_personal.Components.Layout.Pointages
 
         [Parameter]
         public Pointage Pointage { get; set; }
+        [Inject] private ILogsActionService logsActionService { get; set; }
 
         private decimal tempHeuresTravaillees;
         private string tempRemarque;
@@ -41,9 +44,16 @@ namespace Gestion_personal.Components.Layout.Pointages
             await OnClose.InvokeAsync();
         }
 
-        private void SaveChanges()
+        private async Task SaveChanges()
         {
-       
+            var log = new LogActions
+            {
+                ActionType = ActionType.Update,
+                ActionDate = DateTime.Now,
+                Description = $"modifier poinatge",
+                PerformedBy = UserSession.Name ,
+            };
+            await logsActionService.settLog(log);
             Pointage.HeuresTravaillees = tempHeuresTravaillees;
             Pointage.Remarque = tempRemarque; 
             PointageService.Update(Pointage);

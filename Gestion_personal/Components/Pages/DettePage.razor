@@ -1,6 +1,9 @@
 ﻿@page "/dette"
 @rendermode InteractiveServer
 
+
+@if (UserSession.Role == "admin" || UserSession.Role == "manager")
+{
 <div class="panel-employe">
 
 	<div class="title">
@@ -78,3 +81,4 @@
 <FiceAvance IsVisibleFicheAvance="@isVisibleFicheAvance" OnClose="@Hide_Popup_FicheAvance" />
 <DetteAvanceEmployeFrom IsVisibleFicheAvanceDette="@isVisibleFicheAvanceDette" OnClose="@Hide_Popup_FicheAvanceDette" EmployeID="@SelectedEmployeID" />
 <MontantRetireeForm @ref="montantRetireForm" />
+}

@@ -1,4 +1,5 @@
-﻿@if (IsVisiblUpdateEquipe)
+﻿@inject UserSessionStateService UserSession
+@if (IsVisiblUpdateEquipe)
 {
 	<div class="modal" tabindex="-1" style="display: block;">
 		<div class="modal-dialog">
@@ -74,6 +75,8 @@
 @rendermode InteractiveServer
 @using GestionPersonnel.Models.EmplyeeEquipe
 @using GestionPersonnel.Services
+@using Implementation.Services.Logs
+@using Infrastructures.Domains.Models.Logs
 @using global::Services.Interfaces
 
 @using Equipe = GestionPersonnel.Models.Equipe.Equipe
@@ -93,6 +96,7 @@
 	private string selectedEquipeName;
 	private int? selectedChefId;
 	private int? selectedEquipeId;
+	[Inject] private ILogsActionService logsActionService { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -200,7 +204,14 @@
 				}
 			}
 
-			
+			var log = new LogActions
+			{
+				ActionType = ActionType.Update,
+				ActionDate = DateTime.Now,
+				Description = $"modifier Equipe ",
+				PerformedBy = UserSession.Name,
+			};
+			await logsActionService.settLog(log);
 			await OnClose.InvokeAsync();
 
 			Navigation.NavigateTo("/equipe", forceLoad: true);

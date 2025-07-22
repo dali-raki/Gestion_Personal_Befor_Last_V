@@ -3,7 +3,9 @@
 @rendermode InteractiveServer
 @using GestionPersonnel.Models.Equipe
 @inject IEquipeService EquipeService
-
+@inject UserSessionStateService UserSession 
+@if (UserSession.Role == "admin" || UserSession.Role == "manager")
+{
 <div class="panel-employe">
     <div class="title">
         <h1>Equipe</h1>
@@ -77,4 +79,4 @@
         document.body.removeChild(link);
     }
 </script>
-
+}

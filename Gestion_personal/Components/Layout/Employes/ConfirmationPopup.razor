@@ -1,4 +1,7 @@
-﻿@if (IsVisibleConfirm)
+﻿@using Implementation.Services.Logs
+@using Infrastructures.Domains.Models.Logs
+@inject UserSessionStateService UserSession
+@if (IsVisibleConfirm)
 {
 
     <div class="modal" tabindex="-1" style="display: block;">
@@ -25,9 +28,29 @@
     [Parameter] public string Title { get; set; } 
     [Parameter] public EventCallback<bool> OnClose { get; set; }
     [Parameter] public bool IsVisibleConfirm { get; set; }
-
+    [Parameter] public string objective { get; set; } = "Supprimer";
+    [Inject] private ILogsActionService logsActionService { get; set; }
     private async Task OnConfirm()
     {
+        var log = new LogActions
+        {
+
+            ActionDate = DateTime.Now,
+            PerformedBy = UserSession.Name
+        };
+
+        if (objective == "Supprimer")
+        {
+            log.Description = "Supprimer Employe";
+            log.ActionType = ActionType.Delete;
+    }
+        else if (objective == "Renvoyer")
+        {
+            log.Description = "Renvoyer l'employé";
+            log.ActionType = ActionType.Insert;
+        }
+
+        await logsActionService.settLog(log);
         await OnClose.InvokeAsync(true);
     }
 

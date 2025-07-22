@@ -1,4 +1,5 @@
 using Gestion_personal.Components.Layout.Dettes;
+using Gestion_personal.Services;
 using GestionPersonnel.Models.Dettes;
 using GestionPersonnel.Services;
 using Microsoft.AspNetCore.Components;
@@ -8,7 +9,10 @@ namespace Gestion_personal.Components.Pages;
 public partial class DettePage
 {
 	[Inject] public IDetteService detteService { get; set; }
-	private List<PaimentsInfo> paimentsInfos;
+    [Inject]
+    UserSessionStateService UserSession { get; set; } = null;
+    [Inject] NavigationManager Nav { get; set; }
+    private List<PaimentsInfo> paimentsInfos;
 	private List<PaimentsInfo> filteredPaimentsInfos = new List<PaimentsInfo>();
 	private bool isVisibleADDDette = false;
 	private bool isVisibleADDAvance = false;
@@ -24,7 +28,11 @@ public partial class DettePage
 
 	protected override async Task OnInitializedAsync()
 	{
-		await LoadDette();
+        if (string.IsNullOrEmpty(UserSession.UserId.ToString()))
+        {
+            Nav.NavigateTo("/", forceLoad: true);
+        }
+        await LoadDette();
 		filteredPaimentsInfos = paimentsInfos;
 
 	}

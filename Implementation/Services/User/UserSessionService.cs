@@ -5,23 +5,23 @@ namespace Gestion_personal.Services
 {
     public class UserSessionStateService
     {
-        public UserSession? session { get; private set; }
+        public string? Name { get; private set; }
+        public string? Role { get; private set; }
+        public Guid? UserId { get; private set; }
 
-        public event Action? OnChange;
-
-        public void SetUserSession(UserSession userSession)
+        public void SetUser(string name, string role, Guid userId)
         {
-            session = userSession;
-            NotifyStateChanged();
+            Name = name;
+            Role = role;
+            UserId = userId;
         }
 
-        public void ClearUserSession()
+        public void ClearUser()
         {
-            session = null;
-            NotifyStateChanged();
+            Name = null;
+            Role = null;
+            UserId = null;
         }
-
-        private void NotifyStateChanged() => OnChange?.Invoke();
     }
 
 }

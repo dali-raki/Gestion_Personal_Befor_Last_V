@@ -1,5 +1,7 @@
 ﻿using GestionPersonnel.Models.Equipe;
 using GestionPersonnel.Services;
+using Implementation.Services.Logs;
+using Infrastructures.Domains.Models.Logs;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -8,6 +10,7 @@ namespace Gestion_personal.Components.Pages;
 public partial class Equipe
 {
     [Inject] private IPostGeneratePDF PostGenPdf { get; set; }
+    [Inject] NavigationManager Nav { get; set; }
     private List<EquipesInfos> equipesinfo;
     private List<EquipesInfos> filteredEquipesinfo;
     private bool isVisibleAddEquipe = false;
@@ -21,7 +24,11 @@ public partial class Equipe
     }
     protected override async Task OnInitializedAsync()
     {
-      
+        if (string.IsNullOrEmpty(UserSession.UserId.ToString()))
+        {
+            Nav.NavigateTo("/", forceLoad: true);
+        }
+
         try
         {
             equipesinfo = await EquipeService.GetEquipePostesInfoAsync(selectedDate.Value);
@@ -85,10 +92,18 @@ public partial class Equipe
         }
     }
     [Inject] private IJSRuntime JSRuntime { get; set; }
-
+    [Inject] private ILogsActionService logsActionService { get; set; }
     private async Task DownloadPDF(int equipeId)
     {
+        var log = new LogActions
+        {
+            ActionType = ActionType.Insert,
+            ActionDate = DateTime.Now,
+            Description = "Créer un document de description de poste",
+            PerformedBy = UserSession.Name
 
+        };
+        await logsActionService.settLog(log);
 
         var pdfData = await PostGenPdf.GeneratePDF(equipeId, selectedDate.Value);
 

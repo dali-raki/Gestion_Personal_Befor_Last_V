@@ -3,7 +3,9 @@
 @using GestionPersonnel.Services
 @inject IPointageService PointageService
 @rendermode InteractiveServer
-
+@inject UserSessionStateService UserSession 
+@if (UserSession.Role == "admin" || UserSession.Role == "manager")
+{
 
 <div class="panel-employe">
     <div class="title">
@@ -117,4 +119,5 @@
             </div>
         </div>
     </div>
+}
 }

@@ -1,6 +1,8 @@
 ﻿using GestionPersonnel.Models.Employe;
 using GestionPersonnel.Models.EmplyeeEquipe;
 using GestionPersonnel.Models.Equipe;
+using Implementation.Services.Logs;
+using Infrastructures.Domains.Models.Logs;
 using Microsoft.AspNetCore.Components;
 
 namespace Gestion_personal.Components.Layout.Equips;
@@ -10,6 +12,7 @@ public partial class NewequipeADDPost
     [Parameter] public bool IsVisibleAddPost { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
     [Parameter] public EventCallback<EquipesInfos> OnSave { get; set; }
+    [Inject] private ILogsActionService logsActionService { get; set; }
     private List<Employe> employees;
     private List<Equipe> equipes;
     private List<EmployeeEquipe> employeeequipe;
@@ -70,6 +73,16 @@ public partial class NewequipeADDPost
             DateFin = DateTime.Now;
             SelectedEquipeId = null;
             SelectedEmployeeIds = new List<int>();
+
+
+            var log = new LogActions
+            {
+                ActionType = ActionType.Insert,
+                ActionDate = DateTime.Now,
+                Description = $"Ajouter Post",
+                PerformedBy = UserSession.Name,
+            };
+            await logsActionService.settLog(log);
 
             await OnSave.InvokeAsync();
             Hide_Popup_AddPost();

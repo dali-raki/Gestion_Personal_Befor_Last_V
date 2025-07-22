@@ -1,12 +1,14 @@
 ﻿@using GestionPersonnel.Models.Fonctions
 @using GestionPersonnel.Services
+@using Implementation.Services.Logs
+@using Infrastructures.Domains.Models.Logs
 @inject IFonctionService FonctionService
-
+@inject UserSessionStateService UserSession
 @code {
     [Parameter] public bool IsVisibleAddFunction { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
     [Parameter] public EventCallback OnSave { get; set; }
-
+    [Inject] private ILogsActionService logsActionService { get; set; }
     private string FonctionName;
 
 
@@ -32,6 +34,15 @@
         {
             Console.WriteLine("Error saving fonction: " + ex.Message);
         }
+        var log = new LogActions
+        {
+            ActionType = ActionType.Insert,
+            ActionDate = DateTime.Now,
+            Description = $"Ajouter fonction",
+            PerformedBy = UserSession.Name,
+          
+        };
+        await logsActionService.settLog(log);
 
         Hide_Popup_AddFunction();
     }

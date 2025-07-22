@@ -1,4 +1,6 @@
 using GestionPersonnel.Models.Fonctions;
+using Implementation.Services.Logs;
+using Infrastructures.Domains.Models.Logs;
 using Microsoft.AspNetCore.Components;
 
 namespace Gestion_personal.Components.Layout.Employes
@@ -8,7 +10,7 @@ namespace Gestion_personal.Components.Layout.Employes
         [Parameter] public bool IsVisibleUpdateFunction { get; set; }
         [Parameter] public EventCallback OnClose { get; set; }
         [Parameter] public EventCallback<Fonction> OnSave { get; set; }
-
+        [Inject] private ILogsActionService logsActionService { get; set; }
         private List<Fonction> fonctions = new List<Fonction>();
         private int selectedFonctionId;
         private string newFonctionName;
@@ -59,6 +61,14 @@ namespace Gestion_personal.Components.Layout.Employes
                         Console.WriteLine("Error updating fonction: " + ex.Message);
                     }
                 }
+                var log = new LogActions
+                {
+                    ActionType = ActionType.Update,
+                    ActionDate = DateTime.Now,
+                    Description = $"modifier fonction",
+                    PerformedBy = UserSession.Name,
+                };
+                await logsActionService.settLog(log);
             }
         }
 
@@ -75,6 +85,15 @@ namespace Gestion_personal.Components.Layout.Employes
                         selectedFonctionId = 0;
                         await OnClose.InvokeAsync();
                         await LoadFonctions();
+                        var log = new LogActions
+                        {
+                            ActionType = ActionType.Delete,
+                            ActionDate = DateTime.Now,
+                            Description = $"supprimer fonction",
+                            PerformedBy = UserSession.Name,
+                            
+                        };
+                        await logsActionService.settLog(log);
                     }
                     catch (Exception ex)
                     {

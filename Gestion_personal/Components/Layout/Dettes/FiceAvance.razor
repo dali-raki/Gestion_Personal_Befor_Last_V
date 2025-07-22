@@ -1,10 +1,13 @@
 ﻿@page "/generate-pdf"
 @using GestionPersonnel.Models.Avances
 @using GestionPersonnel.Services
+@using Implementation.Services.Logs
+@using Infrastructures.Domains.Models.Logs
 @inject IPdfService PdfService
 @inject IAvanceService AvanceService
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
+@inject UserSessionStateService UserSession
 @if (IsVisibleFicheAvance)
 {
     <div class="modal" tabindex="-1" style="display: block;">
@@ -74,7 +77,7 @@
     [Parameter] public bool IsVisibleFicheAvance { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
 
-
+    [Inject] private ILogsActionService logsActionService { get; set; }
     private DateTime? selectedDate =  DateTime.Now.Date;
     private List<Avance> avances;
     private string media;
@@ -107,6 +110,14 @@
             // Save or prompt download the PDF
             var fileName = $"Avances_Report_{selectedDate.Value:yyyy-MM-dd}.pdf";
             await SaveFile(pdfData, fileName);
+            var log = new LogActions
+            {
+                ActionType = ActionType.Insert,
+                ActionDate = DateTime.Now,
+                Description = $"Créer une fiche des avances ",
+                PerformedBy = UserSession.Name,
+            };
+            await logsActionService.settLog(log);
         }
     }
 
