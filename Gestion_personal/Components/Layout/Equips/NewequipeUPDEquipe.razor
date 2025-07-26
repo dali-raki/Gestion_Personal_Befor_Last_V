@@ -1,78 +1,99 @@
-﻿@inject UserSessionStateService UserSession
+﻿@rendermode InteractiveServer
+@inject UserSessionStateService UserSession
+
 @if (IsVisiblUpdateEquipe)
 {
-	<div class="modal" tabindex="-1" style="display: block;">
-		<div class="modal-dialog">
+    <div class="modal" tabindex="-1" style="display: block;">
+        <div class="modal-dialog w-50">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Mise à jour équipe</h5>
+                </div>
 
-			<div class="modal-content">
+                <div class="modal-body">
+                    <EditForm Model="this" OnSubmit="UpdateEquipe">
+                        <div class="form-group">
+                            <label>Choisir l'équipe</label>
+                            <RadzenDropDown @bind-Value="selectedEquipeId"
+                                            Data="@equipes"
+                                            TextProperty="NomEquipe"
+                                            ValueProperty="EquipeID"
+                                            Style="width: 100%;"
+                                            Placeholder="-- Choisir l'équipe --"
+                                            AllowClear="true"
+                                            AllowFiltering="true"
+                                            Change="OnEquipeChange" />
+                        </div>
 
-				<div class="modal-header">
+                        <div class="form-group">
+                            <label>Modifier le nom d'équipe</label>
+                            <input type="text" class="form-control" placeholder="Nom d'équipe" @bind="selectedEquipeName" />
+                        </div>
 
-					<h5 class="modal-title">Mise à Jour Equipe</h5>
+                        <div class="form-group">
+                            <label>Modifier le chef d'équipe</label>
+                            <RadzenDropDown @bind-Value="selectedChefId"
+                                            Data="@employes"
+                                            ValueProperty="EmployeID"
+                                            Style="width: 100%;"
+                                            Placeholder="-- Choisir le chef --"
+                                            AllowClear="true"
+                                            AllowFiltering="true">
+                                <Template Context="emp">
+                                    @($"{emp.Nom} {emp.Prenom}")
+                                </Template>
+                            </RadzenDropDown>
+                        </div>
 
-				</div>
-				<div class="modal-body">
-					<EditForm Model="this" OnValidSubmit="UpdateEquipe">
-						<div class="form-group">
-							<label>Choisir L'Equipe</label>
-							<RadzenDropDown @bind-Value="selectedEquipeId"
-											Data="@equipes"
-											TextProperty="NomEquipe"
-											ValueProperty="EquipeID"
-											Style="width: 100%;"
-											Placeholder="-- Choisir L'Équipe --"
-											AllowClear="true"
-											AllowFiltering="true"
-											Change="OnEquipeChange" />
+                        <div class="form-group">
+                            <label>Choisir les membres de l'équipe</label>
+                            <input type="text" class="form-control mb-2" placeholder="Nom ou prénom"
+                                   @bind="searchTerm" @bind:event="oninput" />
+                        </div>
 
-						</div>
-						<div class="form-group">
-							<label>Modifier Le Nom D'Equipe</label>
-							<input type="text" class="form-control" placeholder="Nom D'Equipe" @bind="selectedEquipeName" />
-						</div>
-						<div class="form-group">
-							<label>Modifier Le Chef D'Equipe</label>
-							<RadzenDropDown @bind-Value="selectedChefId"
-											Data="@employes"
-											TextProperty="FullName"
-											ValueProperty="EmployeID"
-											Placeholder="-- Choisir Le Chef D'Equipe --"
-											AllowClear="true"
-											AllowFiltering="true"
-											Style="width: 100%;" />
-						</div>
+                        <div class="form-group">
+            
+                            <div class="checkbox-group scrollable border rounded p-2" style="height: 120px;">
+                                @if (FilteredEmployees.Any())
+                                {
+                                    @foreach (var employe in FilteredEmployees)
+                                    {
+                                        <label class="checkbox-item d-block">
+                                            <input type="checkbox"
+                                                   checked="@selectedMemberIds.Contains(employe.EmployeID)"
+                                                   @onchange="e => OnMemberCheckboxChange(e, employe.EmployeID)" />
+                                            @employe.Nom @employe.Prenom
+                                        </label>
+                                    }
+                                }
+                                else
+                                {
+                                    <p class="text-muted">Aucun employé disponible</p>
+                                }
+                            </div>
+                        </div>
 
-						<label>Choisir Les Membres D'Equipe</label>
-						<div class="checkbox-group scrollable">
-							@if (allEmployees != null && allEmployees.Any())
-							{
-								@foreach (var employe in allEmployees)
-								{
-									<label class="checkbox-item">
-										<input type="checkbox" value="@employe.EmployeID"
-											   @onchange="e => OnMemberCheckboxChange(e, employe.EmployeID)"
-											   checked="@selectedMemberIds.Contains(employe.EmployeID)">
-										@employe.Nom @employe.Prenom
-									</label>
-								}
-							}
-							else
-							{
-								<p>Aucun Employé Disponible</p>
-							}
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn-c" @onclick="Hide_popup_UpdateEquipe">Annuler</button>
-							<button type="submit" class="btn-p">Mettre à Jour Equipe</button>
-						</div>
-					</EditForm>
-				</div>
-			</div>
-		</div>
-	</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-c" @onclick="Hide_popup_UpdateEquipe">Annuler</button>
+                            <button type="submit" class="btn-p">Mettre à jour</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        .scrollable {
+            overflow-y: auto;
+            max-height: 150px;
+        }
+
+        .checkbox-item {
+            margin-bottom: 6px;
+        }
+    </style>
 }
 
-@rendermode InteractiveServer
 @using GestionPersonnel.Models.EmplyeeEquipe
 @using GestionPersonnel.Services
 @using Implementation.Services.Logs
@@ -86,138 +107,140 @@
 @inject IEquipeService EquipeService
 
 @code {
-	[Parameter] public bool IsVisiblUpdateEquipe { get; set; }
-	[Parameter] public EventCallback OnClose { get; set; }
-	[Inject] private NavigationManager Navigation { get; set; }
-	private List<Employe> employes;
-	private List<Employe> allEmployees;
-	private List<Equipe> equipes;
-	private List<int> selectedMemberIds = new();
-	private string selectedEquipeName;
-	private int? selectedChefId;
-	private int? selectedEquipeId;
-	[Inject] private ILogsActionService logsActionService { get; set; }
+    [Parameter] public bool IsVisiblUpdateEquipe { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnUpdate { get; set; }
+    [Inject] private ILogsActionService logsActionService { get; set; }
+    [Inject] private NavigationManager Navigation { get; set; }
+    private List<Employe> employes = new();
+    private List<Employe> allEmployees = new();
+    private List<Equipe> equipes = new();
+    private List<int> selectedMemberIds = new();
+    private string selectedEquipeName;
+    private int? selectedChefId;
+    private int? selectedEquipeId;
+    private string searchTerm = "";
 
-	protected override async Task OnInitializedAsync()
-	{
-		employes = await EmployeService.GetEmployeesAsync();
-		equipes = await EquipeService.GetAllEquipesAsync();
-	}
-	protected override async Task OnParametersSetAsync()
-	{
+    protected override async Task OnInitializedAsync()
+    {
+        employes = await EmployeService.GetEmployeesAsync();
+        equipes = await EquipeService.GetAllEquipesAsync();
+    }
 
-		if (IsVisiblUpdateEquipe)
-		{
-			employes = await EmployeService.GetEmployeesAsync();
-			equipes = await EquipeService.GetAllEquipesAsync();
-		}
-	}
-	private async Task OnEquipeChange(object value)
-	{
-		selectedEquipeId = value as int?;
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsVisiblUpdateEquipe)
+        {
+            employes = await EmployeService.GetEmployeesAsync();
+            equipes = await EquipeService.GetAllEquipesAsync();
+        }
+    }
 
-		if (selectedEquipeId.HasValue)
-		{
-			var selectedEquipe = await EquipeService.GetEquipeByIdAsync(selectedEquipeId.Value);
+    private async Task OnEquipeChange(object value)
+    {
+        selectedEquipeId = value as int?;
 
-			if (selectedEquipe != null)
-			{
-				selectedEquipeName = selectedEquipe.NomEquipe;
-				selectedChefId = selectedEquipe.ChefEquipeID;
+        if (selectedEquipeId.HasValue)
+        {
+            var selectedEquipe = await EquipeService.GetEquipeByIdAsync(selectedEquipeId.Value);
 
-				var members = await EmployeeEquipeService.GetEmployeesByEquipeIdAsync(selectedEquipeId.Value);
-				selectedMemberIds = members.Select(emp => emp.EmployeID).ToList();
+            if (selectedEquipe != null)
+            {
+                selectedEquipeName = selectedEquipe.NomEquipe;
+                selectedChefId = selectedEquipe.ChefEquipeID;
 
-				allEmployees = employes; // optionally filter or keep full list
-			}
-		}
-		else
-		{
-			selectedEquipeName = null;
-			selectedChefId = null;
-			selectedMemberIds = new();
-			allEmployees = employes;
-		}
-	}
+                var members = await EmployeeEquipeService.GetEmployeesByEquipeIdAsync(selectedEquipeId.Value);
+                selectedMemberIds = members.Select(emp => emp.EmployeID).ToList();
 
-	private void Hide_popup_UpdateEquipe() {
-		IsVisiblUpdateEquipe = false;
-		OnClose.InvokeAsync();
-	}
+                allEmployees = employes;
+            }
+        }
+        else
+        {
+            selectedEquipeName = null;
+            selectedChefId = null;
+            selectedMemberIds.Clear();
+            allEmployees = employes;
+        }
+    }
 
-	private void OnMemberCheckboxChange(ChangeEventArgs e, int employeId)
-	{
-		if ((bool)e.Value)
-		{
-			
-			if (!selectedMemberIds.Contains(employeId))
-				selectedMemberIds.Add(employeId);
-		}
-		else
-		{
-			
-			selectedMemberIds.Remove(employeId);
-		}
-	}
+    private IEnumerable<Employe> FilteredEmployees =>
+        string.IsNullOrWhiteSpace(searchTerm)
+            ? allEmployees
+            : allEmployees.Where(e =>
+                (!string.IsNullOrEmpty(e.Nom) && e.Nom.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(e.Prenom) && e.Prenom.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
 
-	private async Task UpdateEquipe()
-	{
-		if (selectedEquipeId.HasValue)
-		{
-			
-			var updatedEquipe = new Equipe
-				{
-					EquipeID = selectedEquipeId.Value,
-					NomEquipe = selectedEquipeName,
-					ChefEquipeID = selectedChefId
-				};
+    private void OnMemberCheckboxChange(ChangeEventArgs e, int employeId)
+    {
+        bool isChecked = (bool)e.Value;
+        if (isChecked)
+        {
+            if (!selectedMemberIds.Contains(employeId))
+                selectedMemberIds.Add(employeId);
+        }
+        else
+        {
+            selectedMemberIds.Remove(employeId);
+        }
+    }
 
-		
-			await EquipeService.UpdateEquipeAsync(updatedEquipe);
+    private async Task UpdateEquipe()
+    {
+        if (selectedEquipeId.HasValue)
+        {
+            var updatedEquipe = new Equipe
+            {
+                EquipeID = selectedEquipeId.Value,
+                NomEquipe = selectedEquipeName,
+                ChefEquipeID = selectedChefId
+            };
 
-		
-			var existingMembers = await EmployeeEquipeService.GetEmployeesByEquipeIdAsync(selectedEquipeId.Value);
-			var currentMemberIds = selectedMemberIds.ToHashSet();
+            await EquipeService.UpdateEquipeAsync(updatedEquipe);
 
-			foreach (var existingMember in existingMembers)
-			{
-				if (!currentMemberIds.Contains(existingMember.EmployeID))
-				{
-				
-					await EmployeeEquipeService.DeleteEmployeeEquipeAsync(existingMember.EmployeID);
-				}
-			}
+            var existingMembers = await EmployeeEquipeService.GetEmployeesByEquipeIdAsync(selectedEquipeId.Value);
+            var currentMemberIds = selectedMemberIds.ToHashSet();
 
-			
-			foreach (var employeId in selectedMemberIds)
-			{
-				if (!existingMembers.Any(em => em.EmployeID == employeId))
-				{
-					
-					var newEmployeeEquipe = new EmployeeEquipe
-						{
-							EquipeeID = selectedEquipeId.Value,
-							EmployeeID = employeId,
+            foreach (var existingMember in existingMembers)
+            {
+                if (!currentMemberIds.Contains(existingMember.EmployeID))
+                    await EmployeeEquipeService.DeleteEmployeeEquipeAsync(existingMember.EmployeID);
+            }
 
-						};
-					await EmployeeEquipeService.AddEmployeeEquipeAsync(newEmployeeEquipe);
-				}
-			}
+            foreach (var employeId in selectedMemberIds)
+            {
+                if (!existingMembers.Any(em => em.EmployeID == employeId))
+                {
+                    var newEmployeeEquipe = new EmployeeEquipe
+                    {
+                        EquipeeID = selectedEquipeId.Value,
+                        EmployeeID = employeId,
+                    };
+                    await EmployeeEquipeService.AddEmployeeEquipeAsync(newEmployeeEquipe);
+                }
+            }
 
-			var log = new LogActions
-			{
-				ActionType = ActionType.Update,
-				ActionDate = DateTime.Now,
-				Description = $"modifier Equipe ",
-				PerformedBy = UserSession.Name,
-			};
-			await logsActionService.settLog(log);
-			await OnClose.InvokeAsync();
+            var log = new LogActions
+            {
+                ActionType = ActionType.Update,
+                ActionDate = DateTime.Now,
+                Description = $"Modifier Équipe",
+                PerformedBy = UserSession.Name,
+            };
 
-			Navigation.NavigateTo("/equipe", forceLoad: true);
-		}
-	}
+            await logsActionService.settLog(log);
+            await OnUpdate.InvokeAsync();
+            await OnClose.InvokeAsync();
+         
+        }
+        await Task.Delay(1300);
+        Navigation.NavigateTo("/equipe", forceLoad: true);
+    }
+
+    private void Hide_popup_UpdateEquipe()
+    {
+        IsVisiblUpdateEquipe = false;
+        OnClose.InvokeAsync();
+    }
 }
-
-
 

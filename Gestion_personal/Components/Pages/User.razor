@@ -1,0 +1,147 @@
+﻿@page "/user"
+@using Infrastructures.Domains.Models
+@inject IUserService UserService
+@inject UserSessionStateService UserSession
+@rendermode InteractiveServer
+
+<div style="display: flex;justify-content: space-between;align-items: center;">
+    <div style="display:flex;align-items: baseline;">
+        <div style="display: flex;align-items: center;justify-content: center;background-color: #2563eb ;padding:10px;border-radius: 7px;color:white;">
+            <span class="fa-solid fa-user-tie" style="font-size:22px" aria-hidden="true"></span>
+        </div>
+        <div class="title">
+            <h1>User</h1>
+        </div>
+    </div>
+    <div>
+        <div class="option-employe">
+
+
+            <div class="btn-employe">
+      
+                <button class="btn-p" @onclick="OpenAddModal">  <i class="fa-solid fa-user-plus pr-2"></i>Ajouter un utilisateur</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <div class="input-group w-25 mb-5">
+        <input type="text" class="form-control" placeholder="Search" value="@userSearch" @oninput="SearchUsers" />
+        <button class="btn-p" type="button">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+    </div>
+</div>
+
+
+
+
+
+
+<RadzenDataGrid TItem="Infrastructures.Domains.Models.User " Data="@filteredUsers" AllowPaging="true" PageSize="10">
+    <Columns>
+        <RadzenDataGridColumn TItem="Infrastructures.Domains.Models.User " Property="Username" Title="Nom d'utilisateur" />
+        <RadzenDataGridColumn TItem="Infrastructures.Domains.Models.User " Property="Role" Title="Rôle" />
+        <RadzenDataGridColumn TItem="Infrastructures.Domains.Models.User " Property="State" Title="État" />
+        <RadzenDataGridColumn TItem="Infrastructures.Domains.Models.User " Title="Options" Width="150px">
+            <Template Context="user">
+                <div style="display: flex;align-items: center;justify-content: space-evenly;">
+                    <button class="btn-p px-3 py-2" @onclick="() => OpenUpdateModal(user)"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="btn-d px-3 py-2" @onclick="() => OpenDeleteModal(user)"> <i class="fa-solid fa-trash"></i></button>
+                </div>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+    <EmptyTemplate>
+        <div class="text-center">Aucun utilisateur trouvé.</div>
+    </EmptyTemplate>
+</RadzenDataGrid>
+<SuccessPopup IsVisible="@isSuccessPopupVisible" OnClose="@HideSuccessPopup" data="@datapop" />
+@if (isUpdateModalVisible)
+{
+    <div class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifier Utilisateur</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Nom d'utilisateur</label>
+                        <input class="form-control" @bind="selectedUser.Username" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Rôle</label>
+                        <input class="form-control" @bind="selectedUser.Role" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-c" @onclick="CloseUpdateModal">Annuler</button>
+                    <button class="btn-p" @onclick="UpdateUser">Enregistrer</button>
+           
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (isDeleteModalVisible)
+{
+    <div class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Supprimer l'utilisateur</h5>
+                    <button type="button" class="btn-close" @onclick="CloseDeleteModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir supprimer <strong>@selectedUser?.Username</strong> ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-c" @onclick="CloseDeleteModal">Annuler</button>
+                    <button class="btn-d" @onclick="DeleteUser">Oui, Supprimer</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (isAddModalVisible)
+{
+    <div class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajouter un nouvel utilisateur</h5>
+                   
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Nom d'utilisateur</label>
+                        <input class="form-control" @bind="newUser.Username" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Mot de passe</label>
+                        <input class="form-control" type="password" @bind="newUser.Password" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Rôle</label>
+                        <select class="form-control" @bind="newUser.Role">
+                            <option>select Role</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Manager">Manager</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-c" @onclick="CloseAddModal">Annuler</button>
+                    <button class="btn-p" @onclick="AddUser">Ajouter</button>
+                  
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

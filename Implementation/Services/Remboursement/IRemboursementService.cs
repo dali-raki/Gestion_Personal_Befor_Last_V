@@ -5,5 +5,6 @@ namespace Implementation.Services.Remboursement
     public interface IRemboursementService
     {
         Task AddAsync(RemboursementType remboursement);
+        Task<List<RemboursementType>> SelectByEmployeIdInMonthasync(int employeId, DateTime selectedMonth);
     }
 }

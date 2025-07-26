@@ -38,11 +38,11 @@ namespace GestionPersonnel.Services
             }
         }
 
-        public async Task<List<Avance>> GetByEmployeIdAsync(int employeId)
+        public async Task<List<Avance>> GetByEmployeIdAsync(int employeId, DateTime date)
         {
             try
             {
-                return await _avanceStorage.GetByEmployeId(employeId);
+                return await _avanceStorage.GetByEmployeIdInMonth(employeId,date);
             }
             catch (Exception exception)
             {

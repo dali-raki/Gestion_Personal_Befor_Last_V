@@ -12,49 +12,60 @@
  
 </div>
 <div class="panel-employe">
-    <div style="display:flex;align-items: flex-start;">
-        <button class="btn-p" @onclick="TransferEmploye">
-            <i class="fa-solid fa-rotate"></i>
-        </button>
-        <div class="title">
-            <h1>Employe</h1>
-        </div>
+
+        <div style="display: flex;justify-content: space-between;align-items: center;">
+            <div style="display:flex;align-items: baseline;">
+                <div style="display: flex;align-items: center;justify-content: center;background-color: #2563eb ;padding:10px;border-radius: 7px;color:white;">
+                    <span class="fa-solid fa-user" style="font-size:22px" aria-hidden="true"></span>
+                </div>
+                <div class="title">
+                    <h1>Employe</h1>
+                </div>
+            </div>
+            <div>
+                <div class="option-employe">
+                 
+
+                    <div class="btn-employe">
+                        <button class="btn-p" @onclick="TransferEmploye"><i class="fa-solid fa-download pr-2"></i> Charger les employés</button>
+                        <button class="btn-p" @onclick="Show_Popup_UpdateFunction"><i class="fa-solid fa-rotate pr-2"></i>Modifier Fonction</button>
+                        <button class="btn-p" @onclick="Show_Popup_AddFunction"><i class="fa-solid fa-plus pr-2"></i>Ajouter Fonction</button>
+                    </div>
+                </div>
+            </div>
     </div>
-   
+
+   <div>
+            <div class="input-group w-25">
+                <input type="text" class="form-control" placeholder="Search" @bind-value="searchTerm" @oninput="SearchEmployees" />
+                <button class="btn-p" type="button">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </div>
+   </div>
     
-    <div class="option-employe">
-        <div class="input-group w-25">
-            <input type="text" class="form-control" placeholder="Search" @bind-value="searchTerm" @oninput="SearchEmployees" />
-            <button class="btn-p" type="button">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
-        </div>
+
 
        
-        <div class="btn-employe">
-            <button class="btn-p" @onclick="Show_Popup_UpdateFunction">Modifier Fonction</button>
-            <button class="btn-p" @onclick="Show_Popup_AddFunction">Ajouter Fonction</button>
-        </div>
-    </div>
     <div class="tab-employe">
         <RadzenDataGrid TItem="GestionPersonnel.Models.Employe.Employe" Data="@filteredEmployees"
                         AllowFiltering="true" AllowPaging="true" AllowSorting="true" PageSize="10">
-            <Columns>
-                <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Property="FullName" Title="Nom et Prenom">
-                    <Template Context="employee">
-                        @employee.Nom @employee.Prenom
-                    </Template>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Property="NSecuriteSocial" Title="N Securite Sociale" />
-                <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Property="FonctionName" Title="Fonction" />
-                <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Title="Option">
-                    <Template Context="employee">
-                        <button class="btn-p px-3 py-2" @onclick="() => Show_Popup_UpdateEmploye(employee)">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </button>
-                        <button class="btn-d px-3 py-2" @onclick="() => ConfirmDelete(employee.EmployeID)">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
+            <Columns>    
+                        <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Property="Nom" Title="Nom" Filterable=false />
+                        <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Property="Prenom" Title="Prenom" Filterable=false />
+                        <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Property="FonctionName" Title="Fonction" Filterable=false />
+                        <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Property="NSecuriteSocial" Title="N Securite Sociale" Filterable=false />
+                        <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Title="Option" Width="130px" Filterable=false>
+                    <Template Context="employee" >
+                            <div style="display: flex;align-items: center;justify-content: space-evenly;">
+                                <button class="btn-p px-3 py-2" @onclick="() => Show_Popup_UpdateEmploye(employee)">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button class="btn-d px-3 py-2" @onclick="() => ConfirmDelete(employee.EmployeID)">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                         </div>
+                     
                     </Template>
                 </RadzenDataGridColumn>
             </Columns>
@@ -66,12 +77,11 @@
             </LoadingTemplate>
         </RadzenDataGrid>
     </div>
-
     <AddFonctionPopup IsVisibleAddFunction="@isVisibleAddFunction" OnClose="@Hide_Popup_AddFunction" OnSave="@HandleFonctionSave" />
-    <ModifierFonctionPopup IsVisibleUpdateFunction="@isVisibleUpdFunction" OnClose="@Hide_Popup_UpdateFunction" OnSave="@HandleModifyFonctionSave" />
+        <ModifierFonctionPopup IsVisibleUpdateFunction="@isVisibleUpdFunction" OnClose="@Hide_Popup_UpdateFunction" OnSave="@HandleModifyFonctionSave" OnDelete="HandleDeleteFonction" />
     <SuccessPopup IsVisible="@isSuccessPopupVisible" OnClose="@HideSuccessPopup" data="@datapop"/>
     <UpdateEmployeePopup IsVisibleUpdateEmploye="@isEditPopupVisible" Employee="@selectedEmployee" OnClose="@Hide_Popup_UpdateEmploye" OnSave="@HandleEditSave" />
-    <ConfirmationPopup IsVisibleConfirm="isConfirmVisible" OnClose="HandlePopupResponse" Title="Confirmation" />
+    <ConfirmationPopup IsVisibleConfirm="isConfirmVisible" OnClose="HandlePopupResponse" Title="Confirmation" OnDelete="HandelConfirmation"/>
 </div>
 
 <style>
@@ -85,5 +95,9 @@
     .btn-refresh {
         margin-right: auto; 
     }
+
+        .rz-button.rz-primary{
+            background-color: #2563eb;
+        }
 </style>
 }

@@ -36,13 +36,26 @@ namespace GestionPersonnel.Storages.AvancesStorages
                 Date = (DateTime)row["Date"]
             };
         }
-        public async Task<List<Avance>> GetByEmployeId(int employeId)
+        public async Task<List<Avance>> GetByEmployeIdInMonth(int employeId, DateTime selectedMonth)
         {
             var avances = new List<Avance>();
 
+            // Set start of the month: e.g., 2025-07-01
+            var startOfMonth = new DateTime(selectedMonth.Year, selectedMonth.Month, 1);
+
+            // Set end of the month: e.g., 2025-07-31
+            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
             await using var connection = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("SELECT * FROM Avances WHERE EmployeID = @EmployeID", connection);
+            using var cmd = new SqlCommand(@"
+        SELECT * FROM Avances 
+        WHERE EmployeID = @EmployeID 
+        AND Date >= @StartOfMonth 
+        AND Date <= @EndOfMonth", connection);
+
             cmd.Parameters.AddWithValue("@EmployeID", employeId);
+            cmd.Parameters.AddWithValue("@StartOfMonth", startOfMonth);
+            cmd.Parameters.AddWithValue("@EndOfMonth", endOfMonth);
 
             var dataTable = new DataTable();
             var da = new SqlDataAdapter(cmd);
@@ -57,6 +70,8 @@ namespace GestionPersonnel.Storages.AvancesStorages
 
             return avances;
         }
+
+
 
         public async Task<List<Avance>> GetAll()
         {

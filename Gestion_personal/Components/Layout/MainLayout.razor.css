@@ -9,9 +9,11 @@ main {
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(0, 85, 170) 0%, rgb(0, 43, 128) 70%);
+    background-color: #002A80;
 }
-
+.top-row[b-qvpq44bkbw]{
+    background-color:none !important;
+}
 .top-row {
     background-color: #f7f7f7;
     border-bottom: 1px solid #d6d5d5;

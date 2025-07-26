@@ -7,15 +7,22 @@
     <div class="modal" tabindex="-1" style="display: block;">
   <div class="modal-dialog" role="document">
     <div class="modal-content d-flex align-items-center">
-      <div class="modal-header">
+                <div class="modal-header" style="text-align:end;width:100%;margin-bottom: 20px;">
          <h5 class="modal-title">@Title</h5>
          </div>
+         <div class="mb-5">
+                    <h5>Êtes-vous sûr de vouloir supprimer cet utilisateur ?</h5>
+         </div>
+            <div class="modal-footer" style="width:100%;">
                 <div class="modal-body" style="width:300px">
-                    <div class="d-flex justify-content-center gap-2">
-                        <button class="btn-p" @onclick="OnConfirm">Yes</button>
+                    <div class="d-flex justify-content-evenly gap-2">
                         <button class="btn-c" @onclick="OnCancel">No</button>
+                        <button class="btn-d" @onclick="OnConfirm">Yes</button>
+                   
                     </div>
                 </div>
+                </div>
+
                     </div>
                 </div>
             </div>
@@ -29,6 +36,7 @@
     [Parameter] public EventCallback<bool> OnClose { get; set; }
     [Parameter] public bool IsVisibleConfirm { get; set; }
     [Parameter] public string objective { get; set; } = "Supprimer";
+    [Parameter] public EventCallback OnDelete { get; set; }
     [Inject] private ILogsActionService logsActionService { get; set; }
     private async Task OnConfirm()
     {
@@ -43,7 +51,7 @@
         {
             log.Description = "Supprimer Employe";
             log.ActionType = ActionType.Delete;
-    }
+        }
         else if (objective == "Renvoyer")
         {
             log.Description = "Renvoyer l'employé";
@@ -51,7 +59,9 @@
         }
 
         await logsActionService.settLog(log);
+        await OnDelete.InvokeAsync();
         await OnClose.InvokeAsync(true);
+        
     }
 
     private async Task OnCancel()

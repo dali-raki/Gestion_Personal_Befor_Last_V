@@ -14,9 +14,15 @@ public partial class NewequipeADDPost
     [Parameter] public EventCallback<EquipesInfos> OnSave { get; set; }
     [Inject] private ILogsActionService logsActionService { get; set; }
     private List<Employe> employees;
+    private string searchTerm = "";
     private List<Equipe> equipes;
     private List<EmployeeEquipe> employeeequipe;
     private List<int> SelectedEmployeeIds { get; set; } = new List<int>();
+    private IEnumerable<Employe> FilteredEmployees => string.IsNullOrWhiteSpace(searchTerm)
+    ? employees
+    : employees.Where(e =>
+        (!string.IsNullOrEmpty(e.Nom) && e.Nom.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+        (!string.IsNullOrEmpty(e.Prenom) && e.Prenom.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
 
     private void Hide_Popup_AddPost()
     {

@@ -1,8 +1,10 @@
 ﻿@using GestionPersonnel.Services
+@using Implementation.Services.Remboursement
 @using global::Services.Interfaces
 @inject IEmployeService EmployeService
 @inject IDetteService DetteService
 @inject IAvanceService AvanceService
+@inject IRemboursementService remboursementService
 
 @if (IsVisibleFicheAvanceDette)
 {
@@ -17,18 +19,17 @@
         }
     </style>
     <div class="modal" tabindex="-1" style="display: block;">
-        <div class="modal-dialog" style="width:750px">
+        <div class="modal-dialog" style="width:900px">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Historique de Dette et Avance</h5>
                   
                 </div>
 
-                <!-- Tables for Avance and Dette -->
-                <div class="modal-body d-flex justify-content-between gap-4">
-                    <!-- Left Table: Avance -->
-                    <div class="table-container left-table w-100">
-                        <h4 style="text-align:center">Avance</h4>
+
+                <RadzenTabs RenderMode="TabRenderMode.Client" @bind-SelectedIndex=@selectedIndex>
+    <Tabs>
+                        <RadzenTabsItem Text="Avances">
                         @if (avances != null && avances.Count > 0)
                         {
                             var totalAvance = avances.Sum(a => a.Montant);
@@ -38,6 +39,7 @@
                                         <tr>
                                             <th>Date</th>
                                             <th>Montant</th>
+                                            <th>Description</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -46,6 +48,7 @@
                                             <tr>
                                                 <td>@avance.Date.ToString("yyyy-MM-dd")</td>
                                                 <td>@avance.Montant</td>
+                                                <td>@avance.Description</td>
                                             </tr>
                                         }
                                     </tbody>
@@ -53,6 +56,119 @@
                                         <tr>
                                             <td><strong>Total</strong></td>
                                             <td><strong>@totalAvance</strong></td>
+                                            <td><strong></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                        }
+        </RadzenTabsItem>
+                        <RadzenTabsItem Text="Dettes">
+                        @if (dettes != null && dettes.Count > 0)
+                        {
+                            var totalDette = dettes.Sum(d => d.Montant);
+                            <div style="overflow-y: auto; max-height: 200px;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Montant</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var dette in dettes)
+                                        {
+                                            <tr>
+                                                <td>@dette.Date.ToString("yyyy-MM-dd")</td>
+                                                <td>@dette.Montant</td>
+                                                <td>@dette.Description</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td><strong>Total</strong></td>
+                                            <td><strong>@totalDette</strong></td>
+                                            <td><strong></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        }
+        </RadzenTabsItem>
+                        <RadzenTabsItem Text="Remboursements">
+
+                        @if (remboursements != null && remboursements.Count > 0)
+                        {
+                            var totalDette = remboursements.Sum(d => d.Montant);
+                            <div style="overflow-y: auto; max-height: 200px;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Montant</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var remboursement in remboursements)
+                                        {
+                                            <tr>
+                                                <td>@remboursement.Date.ToString("yyyy-MM-dd")</td>
+                                                <td>@remboursement.Montant</td>
+                                                <td>@remboursement.Description</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td><strong>Total</strong></td>
+                                            <td><strong>@totalDette</strong></td>
+                                            <td><strong></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        }
+        </RadzenTabsItem>
+    </Tabs>
+</RadzenTabs>
+
+
+            @*     <!-- Tables for Avance and Dette -->
+                <div class="modal-body d-flex; flex-direction: column; justify-content-between gap-4">
+                    <!-- Left Table: Avance -->
+                    <div class="table-container left-table w-100">
+                        <h4 style="text-align:left;margin-left:10px;">Avance</h4>
+                        @if (avances != null && avances.Count > 0)
+                        {
+                            var totalAvance = avances.Sum(a => a.Montant);
+                            <div style="overflow-y: auto; max-height: 200px;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Montant</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var avance in avances)
+                                        {
+                                            <tr>
+                                                <td>@avance.Date.ToString("yyyy-MM-dd")</td>
+                                                <td>@avance.Montant</td>
+                                                <td>@avance.Description</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td><strong>Total</strong></td>
+                                            <td><strong>@totalAvance</strong></td>
+                                            <td><strong></strong></td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -66,11 +182,13 @@
                                     <tr>
                                         <th>Date</th>
                                         <th>Montant</th>
+                                        <th>Description</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                   
                                         <tr>
+                                            <td>N/A</td>
                                             <td>N/A</td>
                                             <td>N/A</td>
                                         </tr>
@@ -80,6 +198,7 @@
                                     <tr>
                                         <td><strong>Total</strong></td>
                                         <td><strong>N/A</strong></td>
+                                        <td><strong>N/A</strong></td
                                     </tr>
                                 </tfoot>
                               </table>
@@ -88,7 +207,7 @@
 
                     <!-- Right Table: Dette -->
                     <div class="table-container right-table w-100">
-                        <h4 style="text-align:center">Dette</h4>
+                        <h4 style="text-align:left;margin-left:10px;">Dette</h4>
                         @if (dettes != null && dettes.Count > 0)
                         {
                             var totalDette = dettes.Sum(d => d.Montant);
@@ -98,6 +217,7 @@
                                         <tr>
                                             <th>Date</th>
                                             <th>Montant</th>
+                                            <th>Description</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -106,6 +226,7 @@
                                             <tr>
                                                 <td>@dette.Date.ToString("yyyy-MM-dd")</td>
                                                 <td>@dette.Montant</td>
+                                                <td>@dette.Description</td>
                                             </tr>
                                         }
                                     </tbody>
@@ -113,6 +234,7 @@
                                         <tr>
                                             <td><strong>Total</strong></td>
                                             <td><strong>@totalDette</strong></td>
+                                            <td><strong></strong></td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -125,11 +247,79 @@
                                     <tr>
                                         <th>Date</th>
                                         <th>Montant</th>
+                                        <th>Description</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                   
                                         <tr>
+                                            <td>N/A</td>
+                                            <td>N/A</td>
+                                             <td>N/A</td>
+                                        </tr>
+                                   
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td><strong>Total</strong></td>
+                                        <td><strong>N/A</strong></td>
+                                            <td><strong></strong></td>
+                                    </tr>
+                                </tfoot>
+                              </table>
+                        }
+                      
+                    </div>
+
+                     <!-- Right Table: remboursements -->
+                    <div class="table-container right-table w-100">
+                        <h4 style="text-align:left;margin:10px 0 0 10px;">Remboursement</h4>
+                        @if (remboursements != null && remboursements.Count > 0)
+                        {
+                            var totalDette = remboursements.Sum(d => d.Montant);
+                            <div style="overflow-y: auto; max-height: 200px;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Montant</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var remboursement in remboursements)
+                                        {
+                                            <tr>
+                                                <td>@remboursement.Date.ToString("yyyy-MM-dd")</td>
+                                                <td>@remboursement.Montant</td>
+                                                <td>@remboursement.Description</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td><strong>Total</strong></td>
+                                            <td><strong>@totalDette</strong></td>
+                                            <td><strong></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Montant</th>
+                                          <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                  
+                                        <tr>
+                                            <td>N/A</td>
                                             <td>N/A</td>
                                             <td>N/A</td>
                                         </tr>
@@ -139,6 +329,7 @@
                                     <tr>
                                         <td><strong>Total</strong></td>
                                         <td><strong>N/A</strong></td>
+                                         <td><strong></strong></td>
                                     </tr>
                                 </tfoot>
                               </table>
@@ -146,7 +337,7 @@
                       
                     </div>
                   
-                </div>
+                </div> *@
                 <div class="modal-footer">
                     <button type="button" @onclick="@Hide_Popup_FicheAvanceDette" class="btn-c" data-dismiss="modal" aria-label="Close"> Anuller </button>
 
@@ -154,6 +345,8 @@
             </div>
         </div>
     </div>
+
+
     <style>
         .table {
             width: 100%;

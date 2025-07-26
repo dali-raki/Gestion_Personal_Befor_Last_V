@@ -6,7 +6,7 @@ namespace GestionPersonnel.Services
     {
         Task<List<Avance>> GetAllAsync();
         Task<Avance> GetByIdAsync(int avanceId);
-        Task<List<Avance>> GetByEmployeIdAsync(int employeId);
+        Task<List<Avance>> GetByEmployeIdAsync(int employeId, DateTime date);
         Task<List<Avance>> GetByDateAsync(DateTime date);
         Task<int> AddAsync(Avance avance);
         Task UpdateAsync(Avance avance);

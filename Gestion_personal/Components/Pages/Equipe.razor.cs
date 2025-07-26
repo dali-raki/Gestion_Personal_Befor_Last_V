@@ -12,12 +12,22 @@ public partial class Equipe
     [Inject] private IPostGeneratePDF PostGenPdf { get; set; }
     [Inject] NavigationManager Nav { get; set; }
     private List<EquipesInfos> equipesinfo;
-    private List<EquipesInfos> filteredEquipesinfo;
+    private List<EquipesInfos> filteredEquipesinfo = new();
     private bool isVisibleAddEquipe = false;
     private bool isVisibleUpdateEquipe = false;
     private bool isVisibleAddPost = false;
     private string searchTerm = string.Empty;
+    public string datapop;
+    private bool isSuccessPopupVisible = false;
     private DateTime? selectedDate = DateTime.Now.Date;
+    private void Show_Popupd_AddEquipe() => isVisibleAddEquipe = true;
+    private void Hide_Popupd_AddEquipe() => isVisibleAddEquipe = false;
+    private void Show_Popupd_UpdateEquipe() => isVisibleUpdateEquipe = true;
+    private void Hide_Popupd_UpdateEquipe() => isVisibleUpdateEquipe = false;
+    private void Show_Popupd_AddPost() => isVisibleAddPost = true;
+    private void Hide_Popupd_AddPost() => isVisibleAddPost = false;
+    private void ShowSuccessPopup() => isSuccessPopupVisible = true;
+    private void HideSuccessPopup() => isSuccessPopupVisible = false;
     private void updatetab()
     {
         OnInitializedAsync();
@@ -42,21 +52,23 @@ public partial class Equipe
         }
         
     }
- 
 
-    public async Task a()
+    public async Task hindelUpdate()
     {
-        equipesinfo = await EquipeService.GetEquipePostesInfoAsync(selectedDate.Value);
-        FilterTeams();
+        ShowSuccessPopup();
     }
 
-    private void Show_Popupd_AddEquipe() => isVisibleAddEquipe = true;
-    private void Hide_Popupd_AddEquipe() => isVisibleAddEquipe = false;
-    private void Show_Popupd_UpdateEquipe() => isVisibleUpdateEquipe = true;
-    private void Hide_Popupd_UpdateEquipe() => isVisibleUpdateEquipe = false;
-    private void Show_Popupd_AddPost() => isVisibleAddPost = true;
-    private void Hide_Popupd_AddPost() => isVisibleAddPost = false;
+ 
 
+    public async Task addpost()
+    {
+        equipesinfo = await EquipeService.GetEquipePostesInfoAsync(selectedDate.Value);
+        ShowSuccessPopup();
+
+    FilterTeams();
+    }
+
+  
     private void SearchTeams(ChangeEventArgs changeEventArgs)
     {
         searchTerm = changeEventArgs.Value.ToString();

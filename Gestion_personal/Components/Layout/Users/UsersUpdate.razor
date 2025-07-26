@@ -1,0 +1,52 @@
+﻿@if (isUpdateModalVisible)
+{
+    <div class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifier Utilisateur</h5>
+                    <button type="button" class="btn-close" @onclick="CloseUpdateModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Nom d'utilisateur</label>
+                        <input class="form-control" @bind="selectedUser.Username" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Rôle</label>
+                        <input class="form-control" @bind="selectedUser.Role" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" @onclick="UpdateUser">Enregistrer</button>
+                    <button class="btn btn-secondary" @onclick="CloseUpdateModal">Annuler</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Infrastructures.Domains.Models.User selectedUser { get; set; } = new();
+    [Inject] IUserService UserService { get; set; }
+
+    private bool isUpdateModalVisible = false;
+
+    private async Task UpdateUser()
+    {
+        await UserService.SetUserAsync(selectedUser);
+        isUpdateModalVisible = false;
+        //await RefreshUsers();
+    }
+    private void CloseUpdateModal()
+    {
+        isUpdateModalVisible = false;
+        StateHasChanged();
+    }
+
+    public void OpenUpdateModal()
+    {
+        isUpdateModalVisible = true;
+        StateHasChanged();
+    }
+}

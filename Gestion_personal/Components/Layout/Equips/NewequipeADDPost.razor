@@ -40,25 +40,32 @@
                                         Change="OnEquipeChanged" />
                         </div>
                         <div class="form-group">
-                            <label>Choisir Les Membres Qui Finissent Le Post</label>
-                            <div class="checkbox-group scrollable">
+                            <label>Choisir les membres qui finissent le poste</label>
+
+                            <input type="text" class="form-control mb-2 mt-1" placeholder="Rechercher par nom ou prénom"
+                                   @bind="searchTerm" @bind:event="oninput" />
+
+                            <div class="checkbox-group scrollable mt-2">
                                 @if (employees != null)
                                 {
-                                    @foreach (var employe in employees)
+                                    @foreach (var employe in FilteredEmployees)
                                     {
-                                        <label class="checkbox-item">
-                                            <input type="checkbox" value="@employe.EmployeID" @onclick="() => ToggleEmployeeSelection(employe.EmployeID)" />
-                                            @employe.Nom @employe.Prenom
-                                        </label>
-                                        <br />
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="emp_@employe.EmployeID"
+                                                   @onclick="() => ToggleEmployeeSelection(employe.EmployeID)" />
+                                            <label class="form-check-label" for="emp_@employe.EmployeID">
+                                                @employe.Nom @employe.Prenom
+                                            </label>
+                                        </div>
                                     }
                                 }
                                 else
                                 {
-                                    <p>Loading employees...</p>
+                                    <p>Chargement des employés...</p>
                                 }
                             </div>
                         </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn-c" @onclick="Hide_Popup_AddPost">Annuler</button>
                             <button type="submit" class="btn-p">Ajouter Poste</button>
@@ -68,4 +75,15 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .scrollable {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+    </style>
 }

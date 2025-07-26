@@ -9,7 +9,7 @@
 @if (UserSession.Role == "admin" || UserSession.Role == "manager")
 {
     <div class="panel-employe">
-    <div style="display:flex;align-items: flex-start;">
+  @*   <div style="display:flex;align-items: flex-start;">
         <button class="btn-p" @onclick="TransferPointageSalaire">
             <i class="fa-solid fa-rotate"></i>
         </button>
@@ -28,7 +28,45 @@
         
         </div>
         <button class="btn-p" @onclick="Show_Popup_FicheAvance">Fiche des Avances</button>
-    </div>
+    </div> *@
+
+
+        <div style="display: flex;justify-content: space-between;align-items: center;">
+            <div style="display:flex;align-items: baseline;">
+                <div style="display: flex;align-items: center;justify-content: center;background-color: #2563eb ;padding:10px;border-radius: 7px;color:white;">
+                    <span class="fa-solid fa-money-check-dollar" style="font-size:22px" aria-hidden="true"></span>
+                </div>
+                <div class="title">
+                    <h1>Paiement</h1>
+                </div>
+            </div>
+            <div>
+                <div class="option-employe">
+
+
+                    <div class="btn-employe">
+                        <button class="btn-p" @onclick="Show_Popup_FicheAvance"><i class="fa-solid fa-money-check-dollar pr-2"></i> Fiche des Avances</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="input-group w-25">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" @bind="searchTerm" @oninput="SearchPaiement">
+                    <input type="date" class="form-control" @bind="selectedDate" />
+                    <button class="btn-p" type="button" @onclick="GetSalariesByMonth">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+
+
+
 
     <div class="tab-employe">
         <RadzenDataGrid @ref="grid" TItem="SalaireDetail" Data="@filteredSalaries"
@@ -36,7 +74,7 @@
             <Columns>
 
                 <!-- Employé -->
-                <RadzenDataGridColumn TItem="SalaireDetail" Title="Employé">
+                    <RadzenDataGridColumn TItem="SalaireDetail" Title="Employé" Filterable=false>
                     <Template Context="s">
                         <div class="d-flex align-items-center">
                             <div class="fw-bold">@s.NomEmploye @s.PrenomEmploye</div>
@@ -45,71 +83,74 @@
                 </RadzenDataGridColumn>
 
                 <!-- Fonction -->
-                <RadzenDataGridColumn TItem="SalaireDetail" Property="NomFonction" Title="Fonction" />
+                    <RadzenDataGridColumn TItem="SalaireDetail" Property="NomFonction" Title="Fonction" Filterable=false />
 
                 <!-- Salaire -->
-                <RadzenDataGridColumn TItem="SalaireDetail" Title="Salaire">
+                    <RadzenDataGridColumn TItem="SalaireDetail" Title="Salaire" Filterable=false>
                     <Template Context="s">
                         <span class="fw-bold">@s.Salaire.ToString("N0") DA</span>
                     </Template>
                 </RadzenDataGridColumn>
 
                 <!-- Avance -->
-                <RadzenDataGridColumn TItem="SalaireDetail" Title="Avance">
+                    <RadzenDataGridColumn TItem="SalaireDetail" Title="Avance" Filterable=false Width="120px">
                     <Template Context="s">
-                        <span class="text-danger">@s.Avances.ToString("N0") DA</span>
+                            <span class="fw-bold"  style="color:darkorange;">@s.Avances.ToString("N0") DA</span>
                     </Template>
                 </RadzenDataGridColumn>
 
                 <!-- Dette -->
-                <RadzenDataGridColumn TItem="SalaireDetail" Title="Dette">
+                    <RadzenDataGridColumn TItem="SalaireDetail" Title="Dette" Filterable=false Width="120px">
                     <Template Context="s">
-                        <span class="text-danger">@s.Dettes.ToString("N0") DA</span>
+                        <span class="text-danger fw-bold">@s.Dettes.ToString("N0") DA</span>
                     </Template>
                 </RadzenDataGridColumn>
 
                 <!-- Prime -->
-                <RadzenDataGridColumn TItem="SalaireDetail" Title="Prime">
+                    <RadzenDataGridColumn TItem="SalaireDetail" Title="Prime" Filterable=false Width="120px">
                     <Template Context="s">
-                        <span class="text-success">@s.Primes.ToString("N0") DA</span>
+                            <span class="text-success fw-bold">@s.Primes.ToString("N0") DA</span>
                     </Template>
                 </RadzenDataGridColumn>
 
                 <!-- Rembourcement -->
-                <RadzenDataGridColumn TItem="SalaireDetail" Title="Remboursements">
+                    <RadzenDataGridColumn TItem="SalaireDetail" Title="Remboursements" Filterable=false Width="190px">
                     <Template Context="s">
                         <span class="text-success fw-bold">@s.Refund.ToString("N0") DA</span>
                     </Template>
                 </RadzenDataGridColumn>
 
                 <!-- Net à payer -->
-                <RadzenDataGridColumn TItem="SalaireDetail" Title="Net à payer">
+                    <RadzenDataGridColumn TItem="SalaireDetail" Title="Net à payer" Filterable=false>
                     <Template Context="s">
-                        <span class="text-success fw-bold">@s.SalaireNet.ToString("N0") DA</span>
+                            <span class="fw-bold" style="color:black;"> @s.SalaireNet.ToString("N0") DA</span>
                     </Template>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="SalaireDetail" Title="présence" Width="130px">
+                    <RadzenDataGridColumn TItem="SalaireDetail" Title="présence" Width="130px" Filterable=false>
                     <Template Context="s">
                         <div style="display: flex;justify-content: space-evenly;align-items: baseline;">
-                            <span class="text-success fw-bold" style="background-color: #c8ffdf;padding: 3px 8px; border-radius: 5px;">@s.Presence.ToString("N0")</span>
-                        <span class="text-danger fw-bold" style="background-color: #ffc8c8;padding: 3px 8px; border-radius: 5px;">@s.Absence.ToString("N0")</span> 
-                          
+                            <span class="text-success fw-bold" style="background-color: #c8ffdf;padding: 3px 8px;width:35px; border-radius: 5px;text-align:center;">@s.Presence.ToString("N0")</span>
+                                <span class="text-danger fw-bold" style="background-color: #ffc8c8;padding: 3px 8px;width:35px; border-radius: 5px;text-align:center;">@s.Absence.ToString("N0")</span>
+
                         </div>
                     </Template>
                 </RadzenDataGridColumn>
 
          
-                <RadzenDataGridColumn TItem="SalaireDetail" Title="Actions">
+                    <RadzenDataGridColumn TItem="SalaireDetail" Title="Actions" Filterable=false >
                     <Template Context="s">
-                        <div class="d-flex gap-1">
-                            <button class="btn btn-danger btn-sm"
+                            <div style="display: flex;align-items: center;justify-content: space-evenly;">
+                                <button class="btn-d px-3 py-2"
                                     @onclick="() => GeneratePDF(s, DateOnly.FromDateTime(selectedDate.Value))">
-                                <i class="bi bi-file-earmark-pdf"></i> PDF
+                                    <i class="fa-solid fa-file-pdf"></i>
                             </button>
-                            <button class="btn btn-primary btn-sm" @onclick="() => paimentAvanceDettePopUp.Show(s)" disabled="@(!statusTransaction)">
-                                <i class="fa fa-plus"></i> Transaction
+                                <button class="btn-p px-3 py-2" @onclick="() => paimentAvanceDettePopUp.Show(s)" disabled="@(!statusTransaction)">
+                                    <i class="fa-solid fa-money-bill-transfer"></i> 
                             </button>
+                                <button class="btn-p px-3 py-2" @onclick="() => Show_Popup_FicheAvanceDette(s.EmployeId)">
+                                    <i class="fa-solid fa-magnifying-glass-dollar"></i>
+                                </button>
                         </div>
                     </Template>
                 </RadzenDataGridColumn>
@@ -125,6 +166,9 @@
 </div>
 <PaimentAvanceDettePopUp @ref="paimentAvanceDettePopUp" OnSaved="RefreshGrid" />
 <FiceAvance IsVisibleFicheAvance="@isVisibleFicheAvance" OnClose="@Hide_Popup_FicheAvance" />
+    <DetteAvanceEmployeFrom IsVisibleFicheAvanceDette="@isVisibleFicheAvanceDette" OnClose="@Hide_Popup_FicheAvanceDette" EmployeID="@SelectedEmployeID" Date="selectedDate.Value" />
+    <SuccessPopup IsVisible="@isSuccessPopupVisible" OnClose="@HideSuccessPopup" data="@datapop" />
+
 }
 <style>
     .badge-circle {

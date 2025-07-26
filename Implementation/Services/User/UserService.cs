@@ -34,5 +34,26 @@ namespace GestionPersonnel.Services
 
             return LoginStatus.CanLogin;
         }
+
+        public async Task AddUserAsync(User user)
+        {
+            await _userstorage.InsertUser(user);
+        }
+
+        public async Task SetUserAsync(User user)
+        {
+            await _userstorage.UpdateUser(user);
+        }
+
+
+        public async Task ChangeUserStateAsync(Guid userId, UserState newState)
+        {
+            await _userstorage.ChangeUserState(userId, newState);
+        }
+
+        public async Task<List<User>> GetAllActiveUsers()
+        {
+           return await _userstorage.SelectAllActiveUsers();
+        }
     }
 }

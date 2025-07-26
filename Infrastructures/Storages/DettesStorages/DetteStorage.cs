@@ -30,7 +30,7 @@ namespace GestionPersonnel.Storages.DettesStorages
                 EmployeID = (int)row["EmployeID"],
                 Montant = (decimal)row["Montant"],
                 Date = (DateTime)row["Date"],
-                Description = (string)row["Description"]
+                Description = row["Description"] != DBNull.Value ? (string)row["Description"] : string.Empty
             };
         }
 
@@ -48,16 +48,27 @@ namespace GestionPersonnel.Storages.DettesStorages
             return (from DataRow row in dataTable.Rows select GetDetteFromDataRow(row)).ToList();
         }
 
-        public async Task<List<Dette>> GetByEmployeId(int employeId)
+        public async Task<List<Dette>> GetByEmployeIdInMonth(int employeId, DateTime selectedMonth)
         {
             if (employeId <= 0)
                 throw new ArgumentException("Invalid employee ID.", nameof(employeId));
 
             var dettes = new List<Dette>();
 
+            // Define the start and end of the selected month
+            var startOfMonth = new DateTime(selectedMonth.Year, selectedMonth.Month, 1);
+            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
             await using var connection = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("SELECT * FROM Dettes WHERE EmployeID = @EmployeID", connection);
+            using var cmd = new SqlCommand(@"
+        SELECT * FROM Dettes 
+        WHERE EmployeID = @EmployeID 
+        AND Date >= @StartOfMonth 
+        AND Date <= @EndOfMonth", connection);
+
             cmd.Parameters.AddWithValue("@EmployeID", employeId);
+            cmd.Parameters.AddWithValue("@StartOfMonth", startOfMonth);
+            cmd.Parameters.AddWithValue("@EndOfMonth", endOfMonth);
 
             var dataTable = new DataTable();
             var da = new SqlDataAdapter(cmd);
@@ -72,6 +83,7 @@ namespace GestionPersonnel.Storages.DettesStorages
 
             return dettes;
         }
+
 
 
 

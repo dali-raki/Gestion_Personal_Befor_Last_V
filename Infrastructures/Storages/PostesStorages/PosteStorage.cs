@@ -41,8 +41,8 @@ namespace GestionPersonnel.Storages.Storages.PostesStorages
 
                
                 string insertEmployePosteQuery = @"
-            INSERT INTO [db_aa9d4f_gestionpersonnel].[dbo].[EmployePoste] ([IdEmploye], [Date])
-            VALUES (@IdEmploye, @Date);";
+            INSERT INTO [db_aa9d4f_gestionpersonnel].[dbo].[EmployePoste] ([IdEmploye], [Date],[EquipeID])
+            VALUES (@IdEmploye, @Date,@EquipeID);";
 
                 foreach (int idEmploye in idEmployes)
                 {
@@ -50,6 +50,7 @@ namespace GestionPersonnel.Storages.Storages.PostesStorages
                     {
                         command.Parameters.AddWithValue("@IdEmploye", idEmploye);
                         command.Parameters.AddWithValue("@Date", date);
+                        command.Parameters.AddWithValue("@EquipeID", idEquipe);
                         await command.ExecuteNonQueryAsync();
                     }
                 }

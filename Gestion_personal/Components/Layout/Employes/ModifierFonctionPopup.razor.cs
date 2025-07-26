@@ -9,6 +9,7 @@ namespace Gestion_personal.Components.Layout.Employes
     {
         [Parameter] public bool IsVisibleUpdateFunction { get; set; }
         [Parameter] public EventCallback OnClose { get; set; }
+        [Parameter] public EventCallback OnDelete { get; set; }
         [Parameter] public EventCallback<Fonction> OnSave { get; set; }
         [Inject] private ILogsActionService logsActionService { get; set; }
         private List<Fonction> fonctions = new List<Fonction>();
@@ -83,6 +84,7 @@ namespace Gestion_personal.Components.Layout.Employes
                     {
                         await FonctionService.DeleteAsync(fonctionToDelete.FonctionID);
                         selectedFonctionId = 0;
+                        await OnDelete.InvokeAsync();
                         await OnClose.InvokeAsync();
                         await LoadFonctions();
                         var log = new LogActions
@@ -99,6 +101,7 @@ namespace Gestion_personal.Components.Layout.Employes
                     {
                         Console.WriteLine("Error deleting fonction: " + ex.Message);
                     }
+                
                 }
             }
         }

@@ -28,6 +28,10 @@ public partial class Pointage
     private string toastTitle = string.Empty;
     private string toastMessage = string.Empty;
     private bool isToastVisible = false;
+    private bool isSuccessPopupVisible = false;
+    public string datapop;
+    private void HideSuccessPopup() => isSuccessPopupVisible = false;
+    private void ShowSuccessPopup() => isSuccessPopupVisible = true;
     [Inject]
     private IFileProcessingService FileProcessingService { get; set; } = default!;
     [Inject] private ILogsActionService logsActionService { get; set; }
@@ -35,7 +39,10 @@ public partial class Pointage
     {
         showFileInput = false;
     }
-
+    private void hendelSubmit()
+    {
+        ShowSuccessPopup();
+    }
     private void OnInputFileChange(InputFileChangeEventArgs e)
     {
         selectedFile = e.File;
@@ -64,17 +71,19 @@ public partial class Pointage
                 PerformedBy = UserSession.Name,
             };
             await logsActionService.settLog(log);
-
+            ShowSuccessPopup();
             ShowToast("Succès", "Fichier téléchargé avec succès!", ToastType.Success);
             selectedFile = null;
             showFileInput = false;
+           
         }
         catch (Exception ex)
         {
+            ShowSuccessPopup();
             ShowToast("Erreur", $"Il y a une erreur de fichier.", ToastType.Danger);
             selectedFile = null;
             showFileInput = false;
-
+            
         }
     }
 

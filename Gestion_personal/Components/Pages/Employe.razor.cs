@@ -30,11 +30,15 @@ public partial class Employe
     private void Show_Popup_AddFunction() => isVisibleAddFunction = true;
     private void Hide_Popup_AddFunction() => isVisibleAddFunction = false;
     private void Show_Popup_UpdateFunction() => isVisibleUpdFunction = true;
-    private void Hide_Popup_UpdateFunction() => isVisibleUpdFunction = false;
     private void ShowSuccessPopup() => isSuccessPopupVisible = true;
     private void HideSuccessPopup() => isSuccessPopupVisible = false;
     private void Hide_Popup_UpdateEmploye() => isEditPopupVisible = false;
 
+
+    private void Hide_Popup_UpdateFunction() { 
+        isVisibleUpdFunction = false;
+        
+    }
     protected override async Task OnInitializedAsync()
     {
         if (string.IsNullOrEmpty(UserSession.UserId.ToString()))
@@ -105,6 +109,7 @@ public partial class Employe
 
     private async Task HandleFonctionSave()
     {
+        ShowSuccessPopup();
         Hide_Popup_AddFunction();
         await LoadFonction();
     }
@@ -132,6 +137,21 @@ public partial class Employe
 
         await LoadFonction();
         await LoadEmployees();
+        ShowSuccessPopup();
+    }
+
+    private async Task HandleDeleteFonction()
+    {
+        await LoadFonction();
+        await LoadEmployees();
+        ShowSuccessPopup();
+    }
+
+    private async Task HandelConfirmation()
+    {
+        await LoadFonction();
+        await LoadEmployees();
+        ShowSuccessPopup();
     }
 
     private void Show_Popup_UpdateEmploye(GestionPersonnel.Models.Employe.Employe employee)
@@ -186,6 +206,7 @@ public partial class Employe
             employees = await EmployeService.GetEmployeesAsync();
             filteredEmployees = employees;
             Console.WriteLine("action confirmed!");
+            ShowSuccessPopup();
         }
         else
         {

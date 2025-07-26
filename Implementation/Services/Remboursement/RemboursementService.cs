@@ -23,5 +23,13 @@ namespace Implementation.Services.Remboursement
         {
             await _remboursementStorage.Add(remboursement);
         }
+
+        public async Task<List<RemboursementType>> SelectByEmployeIdInMonthasync(int employeId, DateTime selectedMonth)
+        {
+            return await _remboursementStorage.GetByEmployeIdInMonth(employeId, selectedMonth);  
+        }
+
+
+
     }
 }

@@ -3,13 +3,19 @@
 
 <div class="page" style="background-color:#ecf0f1;">
     <div class="sidebar">
-        <NavMenu />
+        <div style="display: flex;flex-direction: column;justify-content: space-between;height: 100%;">
+            <div>
+                 <NavMenu />
+            </div>
+             <div>
+                   <ProfileDropdown />
+            </div>
+      
+        </div>
+        
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <ProfileDropdown/>
-        </div>
 
         <article class="content px-4">
             @Body

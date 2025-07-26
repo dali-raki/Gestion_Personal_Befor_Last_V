@@ -8,7 +8,7 @@
 {
 
 <div class="panel-employe">
-    <div class="title">
+@*     <div class="title">
         <h1>Pointage</h1>
     </div>
     <div class="option-employe">
@@ -29,7 +29,41 @@
             sélectionner le fichier
         </button>
 
-    </div>
+    </div> *@
+
+
+
+        <div style="display: flex;justify-content: space-between;align-items: center;">
+            <div style="display:flex;align-items: baseline;">
+                <div style="display: flex;align-items: center;justify-content: center;background-color: #2563eb ;padding:10px;border-radius: 7px;color:white;">
+                    <span class="fa-solid fa-clipboard-list" style="font-size:22px" aria-hidden="true"></span>
+                </div>
+                <div class="title">
+                    <h1>Poinateg</h1>
+                </div>
+            </div>
+            <div>
+                <div class="option-employe">
+
+
+                    <div class="btn-employe">
+                        <button class="btn-p" @onclick="ShowFileInput"><i class="fa-solid fa-file pr-2"></i> Sélectionner le fichier</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="input-group w-25">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" @bind-value="searchTerm" @oninput="Searchpointage" />
+                    <input type="date" class="form-control" @bind="selectedDate" />
+                    <button class="btn-p" @onclick="GetPointageByDate"> <i class="fa-solid fa-magnifying-glass"></i></button>
+             
+                </div>
+            </div>
+        </div>
+
 
 
     @using Radzen
@@ -39,14 +73,14 @@
                         AllowFiltering="true" AllowPaging="true" AllowSorting="true" PageSize="10">
             <Columns>
                 <!-- Full Name -->
-                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Title="Nom Complet">
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Title="Nom Complet" Filterable=false>
                     <Template Context="pointage">
                         @($"{pointage.NomEmploye} {pointage.PrenomEmploye}")
                     </Template>
                 </RadzenDataGridColumn>
                 <!-- Function Name -->
-                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="NomFonction" Title="Fonction" />
-                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Title="Entrée / Sortie" Width="180px">
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="NomFonction" Title="Fonction" Filterable=false />
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Title="Entrée / Sortie" Width="200px" Filterable=false>
                     <Template Context="pointage">
                         <span title="Heure d'entrée">
                             <i class="fa-solid fa-sign-in-alt" style="color: green;"></i>
@@ -63,13 +97,13 @@
                     </Template>
                 </RadzenDataGridColumn>
                 <!-- Day -->
-                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="HeuresTravaillees" Title="Heures Travaillees" Width="200px" />
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="HeuresTravaillees" Title="Heures Travaillees" Width="200px" Filterable=false />
                 <!-- Day -->
-                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="journee" Title="Journée" Width="120px" />
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="journee" Title="Journée" Width="120px" Filterable=false />
                 <!-- Remarks -->
-                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="Remarque" Title="Remarque" />
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Property="Remarque" Title="Remarque" Filterable=false />
                 <!-- Option (Edit Button) -->
-                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Title="Option" Width="100px">
+                <RadzenDataGridColumn TItem="ModelsPointage.Pointage" Title="Option" Width="100px" Filterable=false>
                     <Template Context="pointage">
                         <div style="display:flex;justify-content:center;">
                             <button class="btn-p px-3 py-2" @onclick="() => Show_Popup_UpdatePointage(pointage)">
@@ -90,7 +124,10 @@
 
 <NewPointagePopUp IsVisiblePointage="@isVisiblePointage"
                   OnClose="Hide_Popup_UpdatePointage"
+                  Onsubmit="hendelSubmit"
                   Pointage="selectedPointage" />
+
+    <SuccessPopup IsVisible="@isSuccessPopupVisible" OnClose="@HideSuccessPopup" data="@datapop" />
 
 
 @if (showFileInput)
@@ -101,14 +138,13 @@
 
                 <div class="modal-header">
                     <h5 class="modal-title">Télécharger Pointage</h5>
-                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
-                </div>
+                      </div>
 
                 <div class="modal-body">
                     <EditForm EditContext="editContext" OnValidSubmit="UploadRecord" FormName="FileUploadForm">
                         <InputFile OnChange="OnInputFileChange" accept=".data,.datafile" class="form-control" />
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" @onclick="CloseModal">Annuler</button>
+                            <button type="button" class="btn-c" @onclick="CloseModal">Annuler</button>
                             <button type="submit" class="btn-p" form="FileUploadForm" @onclick="UploadRecord">Télécharger</button>                          
                         </div>
 

@@ -2,18 +2,78 @@
 @using Infrastructures.Domains.Models.Logs
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
-@rendermode InteractiveServer
 @inject UserSessionStateService UserSession
 @inject HttpClient Http
-@inject NavigationManager Nav
+@inject ILogsActionService logsActionService
 
+@rendermode InteractiveServer
 
-<div>
-    <p>@UserSession.Role + @UserSession.Name</p>
-    <button @onclick="Logout" @onclick:preventDefault>خروج</button>
+<div class="profile-container">
+    <div class="profile-section">
+        <div class="profile-i">
+            <i class="fas fa-user"></i>
+        </div>
+        <span class="profile-name text-uppercase">@UserSession.Name</span>
+    </div>
+
+    <button class="logout-btn" title="خروج" @onclick="Logout" @onclick:preventDefault>
+        <i class="fas fa-sign-out-alt"></i>
+    </button>
 </div>
+
+<style>
+    .profile-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 10px 16px;
+        border-top: 1px solid #07399f;
+        padding:20px;
+    }
+
+    .profile-section {
+        display: flex;
+        align-items: center;
+        gap:17px;
+    }
+
+    .profile-i{
+        display: flex !important;
+        align-items: center !important;
+        justify-content:center;
+        cursor: pointer !important;
+        height: 36px !important;
+        width: 35px !important;
+        padding: 0.5rem !important;
+        background-color: #1D4ED8 !important;
+        border-radius: 100% !important;
+        border: 1px solid #ddd !important;
+        transition: background-color 0.3s ease !important;
+        color: white !important;
+    }
+
+    .profile-name {
+        font-weight: 500;
+        font-size: 14px;
+        color: white;
+    }
+
+    .logout-btn {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+        margin-left: 20px;
+
+    }
+
+        .logout-button:hover {
+            color: #ff4d4f;
+        }
+</style>
+
 @code {
-    [Inject] private ILogsActionService logsActionService { get; set; }
     private async Task Logout()
     {
         var log = new LogActions
@@ -21,11 +81,11 @@
             ActionType = ActionType.Logout,
             ActionDate = DateTime.Now,
             Description = $"Déconnexion en tant que {UserSession.Name}",
-
         };
+
         await logsActionService.settLog(log);
         await Http.PostAsync("api/auth/logout", null);
         UserSession.ClearUser();
-        Nav.NavigateTo("/");
+        NavigationManager.NavigateTo("/");
     }
 }

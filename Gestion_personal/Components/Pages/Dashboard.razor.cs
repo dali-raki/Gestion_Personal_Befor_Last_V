@@ -55,7 +55,15 @@ namespace Gestion_personal.Components.Pages
         private List<LogActions> logs = new();
         private string searchTerm3 = string.Empty;
         int selectedIndex = 0;
+
+
+
         public List<DashboardPointage> ListPointage { get; set; } = new();
+        public string datapop;
+        private bool isSuccessPopupVisible = false;
+        private void HideSuccessPopup() => isSuccessPopupVisible = false;
+        private void ShowSuccessPopup() => isSuccessPopupVisible = true;
+
 
         // Add a private backing field for filtered pointage
         private IEnumerable<DashboardPointage> filteredPointage;
@@ -174,12 +182,18 @@ namespace Gestion_personal.Components.Pages
             isConfirmVisible = false;
             if (confirmed)
             {
+               
                 await EmployeService.ReturnEmployeAsync(employeeToReturn);
                 employees = await EmployeService.GetEmployeesAsync();
                 filteredEmployees = employees;
-            
+               
             }
            
+        }
+
+        private void handelemplye()
+        {
+            ShowSuccessPopup();
         }
 
         private void SearchEmployees(ChangeEventArgs e)
@@ -200,11 +214,14 @@ namespace Gestion_personal.Components.Pages
             }
         }
 
-        private IEnumerable<LogActions> FilteredLogs => logs.Where(log =>
-       string.IsNullOrWhiteSpace(searchTerm) ||
-       log.PerformedBy.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-       log.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-       log.ActionType.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+        private IEnumerable<LogActions> FilteredLogs => logs
+          .Where(log =>
+              string.IsNullOrWhiteSpace(searchTerm) ||
+              log.PerformedBy.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+              log.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+              log.ActionType.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+          .OrderByDescending(log => log.ActionDate);
+
 
     }
 }

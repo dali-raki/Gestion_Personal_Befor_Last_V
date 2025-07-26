@@ -18,7 +18,7 @@
     color: white;
     font-size: 16px;
     font-weight: bold;
-    padding: 10px 20px;
+    padding: 0.9rem;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -58,15 +58,15 @@
     }
 
 .btn-c {
-    background-color: white; /* White background */
-    color: #007bff; /* Blue text */
-    font-size: 16px;
-    font-weight: bold; /* Font size */
-    padding: 10px 20px; /* Padding for size */
-    border: 2px solid #007bff; /* Blue border */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s, transform 0.2s;
+    background-color: white !important;
+    color: #007bff !important; /* Blue text */
+    font-size: 16px !important;
+    font-weight: bold !important; /* Font size */
+    padding: 10px 20px !important; /* Padding for size */
+    border: 2px solid #007bff !important; /* Blue border */
+    border-radius: 5px !important; /* Rounded corners */
+    cursor: pointer !important; /* Pointer cursor on hover */
+    transition: background-color 0.3s, transform 0.2s !important;
 }
     .btn-c:hover {
         background-color: #f8f9f9;

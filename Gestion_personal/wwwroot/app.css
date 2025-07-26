@@ -68,7 +68,7 @@ h1:focus {
     background-color: white;
     padding: 20px;
     border-radius: 5px;
-    max-width: 500px;
+    max-width: 600px;
     width: 100%;
 }
 
@@ -104,6 +104,63 @@ h1:focus {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
+
+/*=======css table============*/
+
+
+
+.rz-grid-table thead th .rz-column-title {
+    font-size: 12px !important;
+    font-weight: bolder !important;
+}
+
+.rz-cell-data {
+    font-size: 15px !important;
+}
+
+.rz-grid-table-striped tbody > tr:not(.rz-expanded-row-content):nth-child(odd) > td {
+    background-color: #ffffff;
+    border: none;
+    border-bottom: 1px solid #e6dfdf;
+    padding: 0.8rem;
+}
+
+.rz-grid-table-striped tbody > tr:not(.rz-expanded-row-content):nth-child(even) > td {
+    background-color: var(--rz-grid-stripe-background-color);
+    border: none;
+    border-bottom: 1px solid #e6dfdf;
+    padding: 0.8rem;
+}
+
+
+
+    .rz-grid-table thead th .rz-column-title-content {
+        color: white;
+        font-size: larger;
+        font-weight: bold;
+    }
+
+.rz-tabview-nav li a, .rz-tabview-nav li a:not([href]):not([class]) {
+    width: 220px;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.rz-tabview-top > .rz-tabview-nav .rz-tabview-selected {
+    background-color: #2563eb;
+    color: white;
+}
+
+.rz-tabview-top > .rz-tabview-nav li {
+    color: black;
+}
+
 .rz-pager-page.rz-state-active {
-    color: #0479cc !important;
+    color: #2563eb !important;
+}
+.rz-data-grid {
+border-radius:7px !important;
+}
+.rz-grid-table thead th {
+    background-color: #2563eb !important;
 }

@@ -17,9 +17,9 @@ namespace GestionPersonnel.Services
             return await _detteStorage.GetAll();
         }
 
-        public async Task<List<Dette>> GetByEmployeIdAsync(int employeId)
+        public async Task<List<Dette>> GetByEmployeIdAsync(int employeId, DateTime date)
         {
-            return await _detteStorage.GetByEmployeId(employeId);
+            return await _detteStorage.GetByEmployeIdInMonth(employeId, date);
         }
 
         public async Task<int> AddAsync(Dette dette)

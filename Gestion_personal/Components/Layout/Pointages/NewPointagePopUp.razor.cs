@@ -12,6 +12,9 @@ namespace Gestion_personal.Components.Layout.Pointages
     
         [Parameter]
         public EventCallback OnClose { get; set; }
+        [Parameter]
+        public EventCallback Onsubmit { get; set; }
+        
 
         [Parameter]
         public Pointage Pointage { get; set; }
@@ -58,6 +61,7 @@ namespace Gestion_personal.Components.Layout.Pointages
             Pointage.Remarque = tempRemarque; 
             PointageService.Update(Pointage);
             Hide_Popup_UpdatePointage();
+            await Onsubmit.InvokeAsync();
         }
     }
 }

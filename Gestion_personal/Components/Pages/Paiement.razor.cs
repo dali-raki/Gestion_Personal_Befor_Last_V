@@ -26,6 +26,13 @@ public partial class Paiement
     private bool isVisibleFicheAvance = false;
     private bool statusTransaction = true;
     private int currentPage = 0;
+    private bool isSuccessPopupVisible = false;
+    public string datapop;
+    public DateTime selectedDate2;
+    private bool isVisibleFicheAvanceDette = false;
+    private void ShowSuccessPopup() => isSuccessPopupVisible = true;
+    private void HideSuccessPopup() => isSuccessPopupVisible = false;
+    private int SelectedEmployeID { get; set; }
     private async Task RefreshGrid()
     {
         var pageToReturn = currentPage;
@@ -37,6 +44,20 @@ public partial class Paiement
             currentPage = pageToReturn;  
             StateHasChanged();           
         });
+        ShowSuccessPopup();
+    }
+    private void Show_Popup_FicheAvanceDette(int employeId)
+    {
+        SelectedEmployeID = employeId;
+       // selectedDate2 = date;
+        isVisibleFicheAvanceDette = true;
+        StateHasChanged();
+    }
+
+    private void Hide_Popup_FicheAvanceDette()
+    {
+        isVisibleFicheAvanceDette = false;
+        StateHasChanged();
     }
     private void Hide_Popup_FicheAvance()
     {
@@ -108,12 +129,11 @@ public partial class Paiement
         else
         {
             filteredSalaries = salaireDetails.Where(s =>
-                !string.IsNullOrEmpty(s.NomEmploye) &&
-                s.NomEmploye.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                !string.IsNullOrEmpty(s.PrenomEmploye) &&
-                s.PrenomEmploye.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                !string.IsNullOrEmpty(s.NomFonction) &&
-                s.NomFonction.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                (!string.IsNullOrEmpty(s.NomEmploye) && s.NomEmploye.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(s.PrenomEmploye) && s.PrenomEmploye.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(s.NomFonction) && s.NomFonction.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                s.EmployeId.ToString().Contains(searchTerm)
+            ).ToList();
         }
     }
 

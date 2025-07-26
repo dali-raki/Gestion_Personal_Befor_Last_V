@@ -1,21 +1,22 @@
 ﻿@rendermode InteractiveServer
 @inject UserSessionStateService UserSession
+
 @if (IsVisibleAddEquipe)
 {
-<div class="modal" tabindex="-1" style="display: block;">
-    <div class="modal-dialog w-50">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Ajouter Equipe</h5>
-             </div>
-            <div class="modal-body">
-        <form class="form-container" @onsubmit="HandleSubmit">
-          
-            <div class="form-group">
-                <label>Nom D'Equipe</label>
-                <input type="text" class="form-control" placeholder="Nom D'Equipe" @bind="equipeName" required/>
-            </div>
+    <div class="modal" tabindex="-1" style="display: block;">
+        <div class="modal-dialog w-50">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajouter Équipe</h5>
+                </div>
+                <div class="modal-body">
+                    <form class="form-container" @onsubmit="HandleSubmit">
 
+                        <div class="form-group">
+                            <label>Nom d'équipe</label>
+                            <input type="text" class="form-control" placeholder="Nom d'équipe"
+                                   @bind="equipeName" required />
+                        </div>
 
                         <div class="form-group">
                             <label>Choisir Fonction</label>
@@ -28,57 +29,58 @@
                                             AllowClear="true"
                                             AllowFiltering="true"
                                             Change="OnFonctionChange" />
-
-                        </div>
-                         <div class="form-group">
-                            <label>Choisir Chef D'equipe</label>
-                        <RadzenDropDown Data="@filteredEmployes"
-                                        TextProperty="FullName"
-                                        ValueProperty="EmployeID"
-                                        @bind-Value="selectedChefId"
-                                        Placeholder="-- Choisir Chef D'equipe --"
-                                        Style="width: 100%;"
-                                        Class="form-control"
-                                        Filterable="true"
-                                        AllowClear="true"
-                                        Disabled="@(filteredEmployes == null || !filteredEmployes.Any())" />
-
                         </div>
 
-                    <div class="form-group">
-                        <label>Choisir Les Membres D'Équipe</label>
-                        <div class="checkbox-group scrollable" style="height:100px">
-                            @if (filteredEmployes != null && filteredEmployes.Any())
-                            {
-                                @foreach (var employe in filteredEmployes)
+                        <div class="form-group">
+                            <label>Choisir Chef d'équipe</label>
+                            <RadzenDropDown Data="@filteredEmployes"
+                                            ValueProperty="EmployeID"
+                                            @bind-Value="selectedChefId"
+                                            Placeholder="-- Choisir Chef d'équipe --"
+                                            Style="width: 100%;"
+                                            Class="form-control"
+                                            Filterable="true"
+                                            AllowClear="true"
+                                            Disabled="@(filteredEmployes == null || !filteredEmployes.Any())">
+                                <Template Context="emp">
+                                    @($"{emp.Nom} {emp.Prenom}")
+                                </Template>
+                            </RadzenDropDown>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Choisir les membres de l'équipe</label>
+                            <input type="text" class="form-control mb-2" placeholder="Nom ou prénom"
+                                   @bind="searchTerm" @bind:event="oninput" />
+                        </div>
+
+                        <div class="form-group">
+
+                            <div class="checkbox-group scrollable border rounded p-2" style="height: 120px;">
+                                @if (FilteredEmployes.Any())
                                 {
-                                    <label class="checkbox-item">
-                                        <input type="checkbox" @bind="employeeSelection[employe.EmployeID]" />
-                                        @employe.Nom @employe.Prenom
-                                    </label>
+                                    @foreach (var employe in FilteredEmployes)
+                                    {
+                                        <label class="checkbox-item d-block">
+                                            <input type="checkbox" @bind="employeeSelection[employe.EmployeID]" />
+                                            @employe.Nom @employe.Prenom
+                                        </label>
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                <p class="no-employees">Aucun employé disponible</p>
-                            }
+                                else
+                                {
+                                    <p class="text-muted">Aucun employé disponible</p>
+                                }
+                            </div>
                         </div>
-                    </div>
 
-
-             <div class="modal-footer">
-
+                        <div class="modal-footer">
                             <button type="button" class="btn-c" @onclick="Hide_Popup_AddEquipe">Annuler</button>
-                        <button type="submit" class="btn-p">Ajouter Equipe</button>
-                        
-                  
-             </div>
-        </form>
+                            <button type="submit" class="btn-p">Ajouter Équipe</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 }
-
-
-

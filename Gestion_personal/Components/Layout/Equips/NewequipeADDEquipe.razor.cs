@@ -16,20 +16,22 @@ namespace Gestion_personal.Components.Layout.Equips
         [Inject] private IFonctionService FonctionService { get; set; }
         [Inject] private IEquipeService EquipeService { get; set; }
         [Inject] private IEmployeeEquipeService EmployeeEquipeService { get; set; }
-        [Inject] private NavigationManager Navigation {get; set;}
+        [Inject] private NavigationManager Navigation { get; set; }
         [Inject] private ILogsActionService logsActionService { get; set; }
+
         [Parameter] public bool IsVisibleAddEquipe { get; set; }
         [Parameter] public EventCallback OnClose { get; set; }
+        [Parameter] public EventCallback OnAddEquipe { get; set; }
+        
 
-        private string keyframes;
-        private List<Employe> employes;
-        private List<Fonction> fonctions;
-        private List<Employe> filteredEmployes;
+        private List<Employe> employes = new();
+        private List<Fonction> fonctions = new();
+        private List<Employe> filteredEmployes = new();
+        private Dictionary<int, bool> employeeSelection = new();
         private string equipeName;
         private int? selectedFonctionId;
-        private int selectedChefId { get; set; } = 0;
-        private Dictionary<int, bool> employeeSelection = new Dictionary<int, bool>();
-
+        private int selectedChefId = 0;
+        private string searchTerm = "";
 
         protected override async Task OnInitializedAsync()
         {
@@ -39,7 +41,6 @@ namespace Gestion_personal.Components.Layout.Equips
 
             employeeSelection = employes.ToDictionary(emp => emp.EmployeID, emp => false);
         }
-
 
         private async Task OnFonctionChange(object value)
         {
@@ -59,24 +60,21 @@ namespace Gestion_personal.Components.Layout.Equips
             employeeSelection = filteredEmployes.ToDictionary(emp => emp.EmployeID, emp => false);
         }
 
+        private IEnumerable<Employe> FilteredEmployes =>
+            string.IsNullOrWhiteSpace(searchTerm)
+                ? filteredEmployes
+                : filteredEmployes.Where(e =>
+                    (!string.IsNullOrEmpty(e.Nom) && e.Nom.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    (!string.IsNullOrEmpty(e.Prenom) && e.Prenom.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
 
         private async Task HandleSubmit()
         {
             try
             {
-                if (string.IsNullOrEmpty(equipeName))
-                {
-                    Console.Error.WriteLine("Nom d'Equipe is required.");
+                if (string.IsNullOrEmpty(equipeName) || selectedChefId == 0)
                     return;
-                }
 
-                if (selectedChefId == 0)
-                {
-                    Console.Error.WriteLine("Chef d'Equipe must be selected.");
-                    return;
-                }
-
-                Equipe newEquipe = new Equipe
+                var newEquipe = new Equipe
                 {
                     NomEquipe = equipeName,
                     ChefEquipeID = selectedChefId,
@@ -85,38 +83,46 @@ namespace Gestion_personal.Components.Layout.Equips
 
                 int equipeId = await EquipeService.Add(newEquipe);
 
-                List<int> selectedEmployeeIds = employeeSelection
-                    .Where(emp => emp.Value)
-                    .Select(emp => emp.Key)
+                var selectedIds = employeeSelection
+                    .Where(e => e.Value)
+                    .Select(e => e.Key)
                     .ToList();
 
-                if (selectedEmployeeIds.Any())
+                if (selectedIds.Any())
                 {
-                    await EmployeeEquipeService.AddEmployeesToEquipeAsync(equipeId, selectedEmployeeIds);
+                    await EmployeeEquipeService.AddEmployeesToEquipeAsync(equipeId, selectedIds);
                 }
-
-                Console.WriteLine("Equipe and its members added successfully!");
-
-
-                equipeName = string.Empty;
-                selectedChefId = 0;
-                employeeSelection = employes.ToDictionary(emp => emp.EmployeID, emp => false);
 
                 var log = new LogActions
                 {
                     ActionType = ActionType.Insert,
                     ActionDate = DateTime.Now,
-                    Description = $"Ajouter Equipe ",
-                    PerformedBy = UserSession.Name,
+                    Description = $"Ajouter Equipe",
+                    PerformedBy = UserSession.Name
                 };
+
                 await logsActionService.settLog(log);
+
+                ResetForm();
                 Hide_Popup_AddEquipe();
+                await OnAddEquipe.InvokeAsync();
+                await Task.Delay(1300);
                 Navigation.NavigateTo("/equipe", forceLoad: true);
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"Error adding equipe: {ex.Message}");
+                Console.Error.WriteLine($"Erreur lors de l'ajout: {ex.Message}");
             }
+        }
+
+        private void ResetForm()
+        {
+            equipeName = string.Empty;
+            selectedChefId = 0;
+            selectedFonctionId = null;
+            employeeSelection = employes.ToDictionary(emp => emp.EmployeID, emp => false);
+            filteredEmployes = employes;
+            searchTerm = "";
         }
 
         private void Hide_Popup_AddEquipe()

@@ -67,7 +67,7 @@
                         <!-- Montant -->
                         <div class="mb-3">
                             <label class="form-label">Montant (DA)</label>
-                            <InputNumber class="form-control" @bind-Value="SalaireDetail.amount" placeholder="0.00" />
+                            <InputNumber @bind-Value="SalaireDetail.amount" class="form-control" placeholder="0.00" min="500" />
                         </div>
 
                         <!-- Description -->
@@ -81,7 +81,7 @@
 
                     <!-- Footer -->
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @onclick="Hide">Annuler</button>
+                        <button type="button" class="btn-c" @onclick="Hide">Annuler</button>
                         <button type="submit" class="@GetButtonClass()">@GetButtonText()</button>
                     </div>
                 </div>
