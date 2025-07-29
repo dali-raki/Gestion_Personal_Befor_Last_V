@@ -1,6 +1,7 @@
-﻿<div class="ps-3 navbar navbar-dark" style="border-bottom: 1px solid #073fb2;padding:20px;">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">GRH DZ</a>
+﻿@inject UserSessionStateService UserSession
+<div class="ps-3 navbar navbar-dark" style="border-bottom: 1px solid #073fb2;">
+    <div class="container-fluid login-background">
+       
     </div>
 </div>
 
@@ -21,12 +22,14 @@
                     <span class="fa-solid fa-user" style="font-size:22px" aria-hidden="true"></span> Employe
                 </NavLink>
             </div>
-            <div class="nav-item px-3">
+            @if (UserSession.Role == "Admin")
+            {
+                <div class="nav-item px-3">
                 <NavLink class="nav-link gap-2" style="font-weight:bold;" href="User">
                     <span class="fa-solid fa-user-tie" style="font-size:22px" aria-hidden="true"></span> User
                 </NavLink>
-            </div>
-
+                </div>
+            }
             <div class="nav-item px-3">
                 <NavLink class="nav-link gap-2" style="font-weight:bold;" href="Equipe">
                     <span class="fa-solid fa-users" style="font-size:22px" aria-hidden="true"></span> Equipe
@@ -52,3 +55,17 @@
     </div>
 
 </div>
+
+<style>
+    .login-background {
+        background-image: url("Images/GRH2.png");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        width: 70%;
+        height: 10vh;
+        position: relative;
+        right: 40px;
+    }
+
+</style>

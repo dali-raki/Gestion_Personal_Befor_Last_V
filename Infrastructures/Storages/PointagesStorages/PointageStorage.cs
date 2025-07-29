@@ -22,8 +22,7 @@ namespace GestionPersonnel.Storages.PointagesStorages
             "INSERT INTO Pointage (EmployeID, Date, HeureEntree, HeureSortie, HeuresTravaillees) VALUES (@EmployeID, @Date, @HeureEntree, @HeureSortie, @HeuresTravaillees); SELECT SCOPE_IDENTITY();";
 
         private const string _updateQuery =
-            "UPDATE Pointage SET HeuresTravaillees = @HeuresTravaillees, Remarque = @Remarque WHERE PointageID = @PointageID;";
-
+           "UPDATE Pointage SET HeuresTravaillees = @HeuresTravaillees, Remarque = @Remarque, EstModifieManuellement = 1 WHERE PointageID = @PointageID;";
         private const string _deleteQuery = "DELETE FROM Pointage WHERE PointageID = @PointageID;";
 
         private const string _selectWithEmployeAndFonctionQuery = @"
@@ -42,7 +41,7 @@ namespace GestionPersonnel.Storages.PointagesStorages
 
         private const string _selectByDateQuery = @"
             
-         SELECT DISTINCT
+SELECT
     p.*,  
     e.Nom AS EmployeNom, 
     e.Prenom AS EmployePrenom, 
@@ -59,8 +58,8 @@ LEFT JOIN
 LEFT JOIN 
     [db_aa9d4f_gestionpersonnel].[dbo].[CoefficientsTravail] c ON c.EmployeID = p.EmployeID AND c.Date = @Date
 WHERE 
-    p.Date = @Date;
-
+    p.Date = @Date
+    AND e.Status = 1;
 ";
 
         private static Pointage GetPointageFromDataRow(DataRow row)

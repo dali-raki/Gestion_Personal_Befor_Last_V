@@ -2,7 +2,7 @@
 @rendermode InteractiveServer
 @using Infrastructures.Domains.Models.Dashboard
 @using Infrastructures.Domains.Models.Logs
-@if (UserSession.Role == "admin" || UserSession.Role == "manager")
+@if (UserSession.Role == "Admin" || UserSession.Role == "Manager")
 {
 <div class="panel-employe">
 
@@ -72,6 +72,34 @@
   <RadzenCard Style="margin-bottom:2rem;">
     <RadzenTabs RenderMode="TabRenderMode.Client" @bind-SelectedIndex=@selectedIndex>
         <Tabs>
+                    <RadzenTabsItem Text="Suivi De Présence">
+                        <div class="pointage-tab">
+                            <div class="option-employe mb-5">
+                                <div class="searchZone w-25">
+
+                                    <div class="input-group ">
+                                        <input type="text" class="form-control" placeholder="Search" @bind="searchTerm" @bind:event="oninput" />
+                                        <input type="date" class="form-control" @bind="selectedDate" />
+                                        <button class="btn-p" type="button" @onclick="() => GetPointageByDate(selectedDate.Year, selectedDate.Month)">
+                                            <i class="fa-solid fa-magnifying-glass"></i>
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <RadzenDataGrid @ref="grid" Data="@FilteredPointage" TItem="DashboardPointage"
+                                            ShowPagingSummary="true" PageSize="10" AllowPaging="true" AllowSorting="true">
+                                <Columns>
+                                    <RadzenDataGridColumn TItem="DashboardPointage" Property="EmployeID" Title="Id" Width="50px" Filterable=false />
+                                    <RadzenDataGridColumn TItem="DashboardPointage" Property="NomComplet" Title="Full Name" Width="200px" Filterable=false />
+                                    <RadzenDataGridColumn TItem="DashboardPointage" Property="NombrePresences" Title="Presences" Width="110px" Filterable=false />
+                                    <RadzenDataGridColumn TItem="DashboardPointage" Property="NombreAbsences" Title="Absences" Width="110px" Filterable=false />
+                                    <RadzenDataGridColumn TItem="DashboardPointage" Property="NombreHeuresSupp" Title="Overtime" Width="100px" Filterable=false />
+                                </Columns>
+                            </RadzenDataGrid>
+
+                        </div>
+                    </RadzenTabsItem>
                 <RadzenTabsItem Text="Employes Sortants">
                 <!--Tab1start-->
                     <div class="option-employe">
@@ -86,11 +114,6 @@
                         <RadzenDataGrid TItem="GestionPersonnel.Models.Employe.Employe" Data="@filteredEmployees"
                                         AllowFiltering="true" AllowPaging="true" AllowSorting="true" PageSize="10">
                             <Columns>
-                               @*  <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Property="FullName" Title="Nom et Prenom">
-                                    <Template Context="employee">
-                                        @employee.Nom @employee.Prenom
-                                    </Template>
-                                </RadzenDataGridColumn> *@
                                     <RadzenDataGridColumn TItem="GestionPersonnel.Models.Employe.Employe" Title="Nom" Filterable=false>
                                         <Template Context="employee">
                                             <span style="text-transform: uppercase; font-weight: bold;">
@@ -129,35 +152,8 @@
                         <ConfirmationPopup IsVisibleConfirm="isConfirmVisible" OnClose="HandlePopupResponse" OnDelete="handelemplye" Title="Confirmation" objective="Renvoyer" />
                     <!--Tab1end-->
             </RadzenTabsItem>
-                    <RadzenTabsItem Text="Suivi De Présence">
-                    <div class="pointage-tab">
-                        <div class="option-employe mb-5">
-                                <div class="searchZone w-25">
-
-                                <div class="input-group ">
-                                    <input type="text" class="form-control" placeholder="Search" @bind="searchTerm" @bind:event="oninput" />
-                                    <input type="date" class="form-control" @bind="selectedDate" />
-                                    <button class="btn-p" type="button" @onclick="() => GetPointageByDate(selectedDate.Year, selectedDate.Month)">
-                                        <i class="fa-solid fa-magnifying-glass"></i>
-                                    </button>
-                                </div>
-
-                            </div>
-                            </div>
-                            <RadzenDataGrid @ref="grid" Data="@FilteredPointage" TItem="DashboardPointage"
-                                            ShowPagingSummary="true" PageSize="10" AllowPaging="true" AllowSorting="true" >
-                                <Columns>
-                                    <RadzenDataGridColumn TItem="DashboardPointage" Property="EmployeID" Title="Id" Width="50px" Filterable=false />
-                                    <RadzenDataGridColumn TItem="DashboardPointage" Property="NomComplet" Title="Full Name" Width="200px" Filterable=false />
-                                    <RadzenDataGridColumn TItem="DashboardPointage" Property="NombrePresences" Title="Presences" Width="110px" Filterable=false />
-                                    <RadzenDataGridColumn TItem="DashboardPointage" Property="NombreAbsences" Title="Absences" Width="110px" Filterable=false />
-                                    <RadzenDataGridColumn TItem="DashboardPointage" Property="NombreHeuresSupp" Title="Overtime" Width="100px" Filterable=false />
-                                </Columns>
-                            </RadzenDataGrid>
-                       
-                    </div>
-            </RadzenTabsItem>
-                @if (UserSession.Role == "admin")
+                   
+                @if (UserSession.Role == "Admin")
                 {
 
                         <RadzenTabsItem Text="Trace Des opérations">

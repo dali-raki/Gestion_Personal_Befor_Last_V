@@ -3,8 +3,9 @@
 @inject IUserService UserService
 @inject UserSessionStateService UserSession
 @rendermode InteractiveServer
-
-<div style="display: flex;justify-content: space-between;align-items: center;">
+@if (UserSession.Role == "Admin")
+{
+    <div style="display: flex;justify-content: space-between;align-items: center;">
     <div style="display:flex;align-items: baseline;">
         <div style="display: flex;align-items: center;justify-content: center;background-color: #2563eb ;padding:10px;border-radius: 7px;color:white;">
             <span class="fa-solid fa-user-tie" style="font-size:22px" aria-hidden="true"></span>
@@ -58,13 +59,14 @@
     </EmptyTemplate>
 </RadzenDataGrid>
 <SuccessPopup IsVisible="@isSuccessPopupVisible" OnClose="@HideSuccessPopup" data="@datapop" />
+
 @if (isUpdateModalVisible)
 {
     <div class="modal show d-block" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Modifier Utilisateur</h5>
+                    <h5 class="modal-title">Modifier l'utilisateur</h5>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -72,14 +74,21 @@
                         <input class="form-control" @bind="selectedUser.Username" />
                     </div>
                     <div class="mb-3">
+                        <label>Mot de passe</label>
+                        <input class="form-control" type="password" @bind="selectedUser.Password" />
+                    </div>
+                    <div class="mb-3">
                         <label>Rôle</label>
-                        <input class="form-control" @bind="selectedUser.Role" />
+                        <select class="form-control" @bind="selectedUser.Role">
+                            <option>select Role</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Manager">Manager</option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn-c" @onclick="CloseUpdateModal">Annuler</button>
                     <button class="btn-p" @onclick="UpdateUser">Enregistrer</button>
-           
                 </div>
             </div>
         </div>
@@ -145,3 +154,4 @@
     </div>
 }
 
+}

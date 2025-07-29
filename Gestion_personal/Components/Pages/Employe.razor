@@ -6,7 +6,7 @@
 @inject IFonctionService FonctionService
 @rendermode InteractiveServer
 @inject UserSessionStateService UserSession 
-@if (UserSession.Role == "admin" || UserSession.Role == "manager")
+@if (UserSession.Role == "Admin" || UserSession.Role == "Manager")
 {
 <div class="btn-refresh">
  
@@ -27,7 +27,6 @@
                  
 
                     <div class="btn-employe">
-                        <button class="btn-p" @onclick="TransferEmploye"><i class="fa-solid fa-download pr-2"></i> Charger les employés</button>
                         <button class="btn-p" @onclick="Show_Popup_UpdateFunction"><i class="fa-solid fa-rotate pr-2"></i>Modifier Fonction</button>
                         <button class="btn-p" @onclick="Show_Popup_AddFunction"><i class="fa-solid fa-plus pr-2"></i>Ajouter Fonction</button>
                     </div>

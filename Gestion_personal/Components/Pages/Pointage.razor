@@ -4,34 +4,10 @@
 @inject IPointageService PointageService
 @rendermode InteractiveServer
 @inject UserSessionStateService UserSession 
-@if (UserSession.Role == "admin" || UserSession.Role == "manager")
+@if (UserSession.Role == "Admin" || UserSession.Role == "Manager")
 {
 
 <div class="panel-employe">
-@*     <div class="title">
-        <h1>Pointage</h1>
-    </div>
-    <div class="option-employe">
-
-        <div class="input-group w-25">
-            <input type="text" class="form-control" placeholder="Search" @bind-value="searchTerm" @oninput="Searchpointage" />
-            <button class="btn-p" type="button">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
-        </div>
-
-
-        <div class="btn-employe">
-            <input type="date" class="form-control" @bind="selectedDate" />
-            <button class="btn-p" @onclick="GetPointageByDate">Get</button>
-        </div>
-        <button class="btn-p" @onclick="ShowFileInput">
-            sélectionner le fichier
-        </button>
-
-    </div> *@
-
-
 
         <div style="display: flex;justify-content: space-between;align-items: center;">
             <div style="display:flex;align-items: baseline;">
