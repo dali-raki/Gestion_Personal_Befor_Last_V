@@ -41,7 +41,7 @@ namespace GestionPersonnel.Storages.PointagesStorages
 
         private const string _selectByDateQuery = @"
             
-SELECT
+    SELECT DISTINCT
     p.*,  
     e.Nom AS EmployeNom, 
     e.Prenom AS EmployePrenom, 
